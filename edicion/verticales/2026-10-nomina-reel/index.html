@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --ink: #0b0a08; --line: rgba(201,165,76,0.38); --red: #e5484d; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      .goldtext { background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-lo) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      #bg { background: radial-gradient(900px 600px at 50% 18%, rgba(201,165,76,0.2), transparent 70%), linear-gradient(180deg, #14110b 0%, #0b0a08 60%); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.07) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 55%); mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 55%); }
+
+      /* the 16:9 source is laid out at 1920x1080 and scaled/cropped into the 9:16 frame */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 930px 0px; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.04); }
+      #camfade { position: absolute; left: 0; top: -2px; width: 1920px; height: 200px; opacity: 1;
+        background: linear-gradient(180deg, #0b0a08 0%, rgba(11,10,8,0.7) 30%, rgba(11,10,8,0) 100%); }
+      #topfade { position: absolute; left: 0; top: 0; width: 1080px; height: 260px; pointer-events: none;
+        background: linear-gradient(180deg, rgba(11,10,8,1) 0%, rgba(11,10,8,0.6) 40%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(130% 85% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%), linear-gradient(180deg, transparent 65%, rgba(0,0,0,0.45) 100%); }
+
+      .card { position: absolute; left: 50px; width: 980px; top: 185px; height: 420px; border-radius: 36px; opacity: 0;
+        background: rgba(22,19,13,0.93); border: 1.5px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(201,165,76,0.18); }
+      .card .lbl { position: absolute; left: 44px; top: 32px; font-weight: 700; font-size: 26px; letter-spacing: 0.18em; color: var(--gold); }
+      .card .lbl .serif { letter-spacing: 0; font-size: 32px; color: #cfc3a6; margin-left: 10px; }
+
+      /* nómina */
+      #bar { position: absolute; left: 44px; right: 44px; top: 86px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.06); overflow: hidden; }
+      .seg { position: absolute; top: 0; bottom: 0; transform-origin: 0 50%; border-right: 2px solid #16130d; }
+      #rows { position: absolute; left: 44px; right: 44px; top: 150px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+      .r { display: flex; align-items: center; gap: 16px; height: 76px; padding: 0 20px; border-radius: 18px; background: rgba(255,255,255,0.04); opacity: 0; }
+      .r i { flex: none; width: 26px; height: 26px; border-radius: 7px; }
+      .r b { font-size: 36px; font-weight: 800; }
+      .r.inv { border: 1.5px solid var(--gold); background: rgba(201,165,76,0.12); box-shadow: 0 0 30px rgba(201,165,76,0.35); }
+      .r.inv b { color: var(--gold-hi); }
+      #oblig { margin-left: auto; font-size: 18px; font-weight: 800; letter-spacing: 0.06em; padding: 6px 12px; border-radius: 999px; background: var(--red); opacity: 0; }
+
+      /* activos */
+      #assets { position: absolute; left: 50px; right: 50px; top: 200px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+      .as { display: flex; align-items: center; gap: 20px; padding: 26px 28px; border-radius: 30px; opacity: 0;
+        background: rgba(22,19,13,0.93); border: 1.5px solid var(--line); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+      .as span { flex: none; width: 92px; height: 92px; border-radius: 50%; background: var(--gold); color: #1a1408; font-weight: 900; font-size: 46px; display: flex; align-items: center; justify-content: center; }
+      .as b { font-size: 48px; font-weight: 800; }
+
+      /* patrimonio */
+      #pat h3 { position: absolute; left: 44px; top: 66px; font-size: 64px; color: #f3e3b5; }
+      #months { position: absolute; left: 44px; right: 44px; bottom: 34px; height: 250px; display: flex; align-items: flex-end; gap: 12px; }
+      .m { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+      .m div { width: 100%; border-radius: 8px 8px 0 0; background: linear-gradient(180deg, var(--gold-hi), var(--gold) 50%, var(--gold-lo)); transform-origin: 50% 100%; }
+      .m span { margin-top: 8px; font-size: 20px; font-weight: 700; color: #9c8f73; }
+      #futuro { position: absolute; right: 40px; top: 40px; font-size: 26px; font-weight: 800; letter-spacing: 0.1em; color: #1a1408; background: var(--gold-hi); padding: 10px 20px; border-radius: 999px; opacity: 0;
+        box-shadow: 0 0 40px rgba(201,165,76,0.7); }
+
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 60px; right: 60px; top: 1420px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 22px; opacity: 0; text-align: center; }
+      .cg.hook { top: 1400px; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 76px; line-height: 1.12; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 92px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 98px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.b { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); padding: 0 22px; border-radius: 16px; text-shadow: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 12px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="36.84" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="36.84" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="36.84" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="36.84" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="camfade"></div>
+      </div>
+      <div id="topfade" class="clip" data-start="0" data-duration="36.84" data-track-index="2"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="36.84" data-track-index="2"></div>
+
+      <div id="pNom" class="clip" data-start="5.3" data-duration="17.0" data-track-index="3">
+        <div class="card" id="nom">
+          <div class="lbl">TU NÓMINA <span class="serif">cada mes</span></div>
+          <div id="bar">
+            <div class="seg" style="left:0;width:32%;background:#6d6352"></div>
+            <div class="seg" style="left:32%;width:10%;background:#857a63"></div>
+            <div class="seg" style="left:42%;width:13%;background:#5a5244"></div>
+            <div class="seg" style="left:55%;width:20%;background:#9a8d72"></div>
+            <div class="seg" style="left:75%;width:8%;background:#b3a585"></div>
+            <div class="seg" style="left:83%;width:17%;background:linear-gradient(90deg,var(--gold-hi),var(--gold));border:0"></div>
+          </div>
+          <div id="rows">
+            <div class="r"><i style="background:#6d6352"></i><b>Hipoteca</b></div>
+            <div class="r"><i style="background:#857a63"></i><b>Seguros</b></div>
+            <div class="r"><i style="background:#5a5244"></i><b>Otros gastos</b></div>
+            <div class="r"><i style="background:#9a8d72"></i><b>Comida</b></div>
+            <div class="r"><i style="background:#b3a585"></i><b>Ocio</b></div>
+            <div class="r inv"><i style="background:var(--gold-hi)"></i><b>Inversión</b><span id="oblig">OBLIGATORIO</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="pAssets" class="clip" data-start="23.9" data-duration="4.1" data-track-index="3">
+        <div id="assets">
+          <div class="as"><span>₿</span><b>Bitcoin</b></div>
+          <div class="as"><span style="font-size:30px">500</span><b>S&amp;P 500</b></div>
+          <div class="as"><span>↗</span><b>Acciones</b></div>
+          <div class="as"><span style="font-size:32px">ETF</span><b>ETFs</b></div>
+        </div>
+      </div>
+
+      <div id="pPat" class="clip" data-start="29.3" data-duration="4.5" data-track-index="3">
+        <div class="card" id="pat">
+          <div class="lbl">TU PATRIMONIO</div>
+          <h3 class="serif">mes a mes</h3>
+          <div id="futuro">TU FUTURO</div>
+          <div id="months"></div>
+        </div>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="36.84" data-track-index="4"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+
+      const M = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+      M.forEach((m, i) => {
+        const c = document.createElement("div"); c.className = "m";
+        c.innerHTML = `<div style="height:${30 + Math.pow(i / 11, 1.5) * 200}px"></div><span>${m}</span>`; $("#months").appendChild(c);
+      });
+      gsap.set(".seg", { scaleX: 0 });
+      gsap.set(".m div", { scaleY: 0 });
+
+      // ---------- captions ----------
+      const G = [
+        { e: 1.28, hook: 1, w: [["Lo", 0], ["que", 0.2], ["yo", 0.34], ["siempre", 0.6], ["digo", 0.98]] },
+        { e: 2.66, hook: 1, w: [["cuando", 1.28], ["cobramos", 1.94]] },
+        { e: 3.64, hook: 1, w: [["el", 2.66], ["sueldo,", 3.0, "g"]] },
+        { e: 4.12, w: [["lo", 3.64], ["que", 3.72], ["hay", 3.8], ["que", 3.88], ["hacer", 3.98]] },
+        { e: 4.98, w: [["en", 4.12], ["el", 4.3], ["momento", 4.44], ["que", 4.7]] },
+        { e: 6.2, w: [["cobramos", 4.98], ["esa", 5.48], ["nómina", 5.72, "u"]] },
+        { e: 8.46, w: [["es", 6.2], ["pagamos", 7.24], ["hipoteca,", 7.68]] },
+        { e: 9.44, w: [["pagamos", 8.46], ["seguros,", 8.82]] },
+        { e: 11.24, w: [["pagamos", 9.44], ["X…", 10.04, "s"]] },
+        { e: 12.74, w: [["destinamos", 11.24], ["una", 11.46], ["parte", 11.68], ["para", 11.86], ["comer,", 12.16]] },
+        { e: 14.22, w: [["evidentemente", 12.74], ["una", 13.18], ["pequeña", 13.52, "s"], ["parte", 13.94]] },
+        { e: 15.36, w: [["para", 14.22], ["ocio", 14.48, "g"], ["si", 14.72], ["puede", 14.96], ["ser", 15.14]] },
+        { e: 17.04, w: [["y", 15.36], ["hay", 16.02], ["que", 16.34], ["destinar", 16.68]] },
+        { e: 18.02, w: [["OBLIGATORIAMENTE", 17.04, "b"]] },
+        { e: 18.88, w: [["una", 18.02], ["parte", 18.56]] },
+        { e: 20.22, w: [["que", 18.88], ["estemos", 19.08], ["dispuestos", 19.44]] },
+        { e: 21.98, w: [["a", 20.22], ["asumir", 20.68, "u"], ["esa", 21.04], ["pérdida", 21.26, "s"]] },
+        { e: 23.7, w: [["en", 21.98], ["inversiones.", 22.46, "g"]] },
+        { e: 25.02, w: [["Inversiones", 23.7], ["como", 24.02], ["Bitcoin,", 24.32, "g"]] },
+        { e: 26.7, w: [["como", 25.26], ["el", 25.48], ["S&P 500,", 25.62, "g"]] },
+        { e: 27.72, w: [["acciones,", 26.7], ["ETFs…", 27.32]] },
+        { e: 28.08, w: [["me", 27.72], ["da", 27.76], ["igual", 27.9, "s"]] },
+        { e: 29.28, w: [["pero", 28.08], ["necesitamos", 28.6]] },
+        { e: 31.28, w: [["ir", 29.28], ["construyendo", 29.54], ["el", 30.1], ["patrimonio", 30.3, "g"]] },
+        { e: 32.46, w: [["mes", 31.28, "u"], ["a", 31.62, "u"], ["mes", 32.14, "u"]] },
+        { e: 34.0, w: [["de", 32.46], ["cara", 32.9], ["a", 33.1], ["nuestro", 33.36], ["futuro.", 33.52, "s"]] },
+        { e: 34.74, w: [["Es", 34.0], ["que", 34.1], ["es", 34.12], ["OBLIGATORIO", 34.24, "b"]] },
+        { e: 35.64, w: [["lo", 34.74], ["tendrían", 34.86], ["que", 35.12], ["enseñar", 35.3]] },
+        { e: 36.2, w: [["en", 35.64], ["los", 35.74], ["COLEGIOS", 35.96, "b"]] },
+        { e: 36.84, w: [["y", 36.2], ["no", 36.34], ["lo", 36.42], ["hacen.", 36.6, "s"]] },
+      ];
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const el = document.createElement("div"); el.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          el.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(el); return { el, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+
+      // ---------- camera ----------
+      // FULL: head just below the Instagram top bar; SPLIT: graphic on top, head where the captions are
+      const FULL = { x: -390, y: 140, scale: 1.66 }, SPLIT = { x: -390, y: 760, scale: 1.12 };
+      const UP = -780;
+      const toSplit = (t, s = SPLIT.scale) => {
+        tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: s, duration: 0.5, ease: "power3.inOut" }, t);
+        tl.to("#camfade", { opacity: 1, duration: 0.4 }, t + 0.1);
+        tl.to("#caps", { y: UP, duration: 0.5, ease: "power3.inOut" }, t);
+      };
+      const toFull = (t, s = FULL.scale) => {
+        tl.to(cam, { x: FULL.x, y: FULL.y, scale: s, duration: 0.5, ease: "power3.inOut" }, t);
+        tl.to("#camfade", { opacity: 1, duration: 0.3 }, t + 0.05);
+        tl.to("#caps", { y: 0, duration: 0.5, ease: "power3.inOut" }, t);
+      };
+      tl.fromTo(cam, { x: FULL.x, y: FULL.y, scale: 1.66 }, { scale: 1.7, duration: 1.94, ease: "none" }, 0);
+      tl.set(cam, { scale: 1.76 }, 1.94);
+      tl.set(cam, { scale: 1.66 }, 3.64);
+      tl.to(cam, { scale: 1.7, duration: 1.5, ease: "none" }, 3.64);
+      toSplit(5.2);
+      [[7.68, 1.2], [10.04, 1.12], [12.16, 1.2], [14.48, 1.12], [17.04, 1.24], [20.68, 1.14]].forEach(([t, s]) => tl.set(cam, { scale: s }, t));
+      toFull(22.3, 1.66);
+      tl.set(cam, { scale: 1.76 }, 23.7);
+      toSplit(23.95);
+      toFull(27.95, 1.66);
+      tl.set(cam, { scale: 1.76 }, 28.6);
+      toSplit(29.2);
+      tl.set(cam, { scale: 1.2 }, 31.28);
+      toFull(33.75, 1.68);
+      tl.set(cam, { scale: 1.72 }, 34.74);
+      tl.to(cam, { scale: 1.75, duration: 2.1, ease: "none" }, 34.74);
+
+      // ---------- nómina ----------
+      tl.fromTo("#nom", { opacity: 0, y: -40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 5.5);
+      [7.68, 8.82, 10.04, 12.16, 14.48, 17.04].forEach((t, i) => {
+        tl.fromTo($$(".r")[i], { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, t);
+        tl.to($$(".seg")[i], { scaleX: 1, duration: 0.45, ease: "power3.out" }, t);
+      });
+      tl.fromTo("#oblig", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 17.3);
+      tl.to("#nom", { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, 22.1);
+
+      // ---------- activos ----------
+      [24.32, 25.62, 26.7, 27.32].forEach((t, i) => tl.fromTo($$(".as")[i], { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, t));
+      $$(".as").forEach((a, i) => tl.to(a, { opacity: 0, y: -40, duration: 0.2, ease: "power2.in" }, 27.75 + i * 0.03));
+
+      // ---------- patrimonio ----------
+      tl.fromTo("#pat", { opacity: 0, y: -40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 29.4);
+      $$(".m div").forEach((b, i) => tl.to(b, { scaleY: 1, duration: 0.4, ease: "power3.out" }, 29.6 + i * 0.32));
+      tl.fromTo("#futuro", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 33.36);
+      tl.to("#pat", { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, 33.6);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 26, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.16, ease: "back.out(2)" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (w.st === "b" || w.st === "s" || w.st === "g") tl.fromTo(w.el, { scale: 0.6 }, { scale: 1, duration: 0.22, ease: "back.out(3)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, 36.84);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
