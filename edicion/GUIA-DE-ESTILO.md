@@ -1,0 +1,44 @@
+# Guía de estilo — TheCryptons (@TheCryptons_)
+
+Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cualquier video.**
+
+## Marca
+
+- **Colores:** dorado `#C9A54C` (brillo `#F0D488`, sombra `#8A6D2A`) sobre negro cálido `#0B0A08` / `#16130D`.
+- **Logo:** `marca/logo-tc.jpg` (TC dorado sobre negro).
+- **Tipografías** (en `marca/fonts/`): Inter 800/900 para lo fuerte; Instrument Serif *cursiva* para dar contraste ("*si te interesa…* **SÍGUEME**").
+- **Tono:** Bitcoin explicado fácil, cercano, sin humo ("sin pelotazos ni Lamborghinis alquilados").
+
+## Ritmo y cantidad de efectos
+
+- **Estilo "yapping" orgánico.** La base es Unai hablando a cámara a pantalla completa. Pocos gráficos.
+- **Gráficos solo si aportan información real** (una cifra, quién es, un concepto visual). Ejemplos que le gustaron: gráfico de velas al inicio, rótulo "UNAI · En Bitcoin desde 2018", red de personas + contador "+50.000", tarjeta final de seguir.
+- **No le gustaron:** nubes de palabras, maquetas de perfil, cronómetros, tachados animados. Demasiado "motion".
+- **Ritmo:** zooms de **corte seco** (jump cuts) en frases fuertes, no zooms con rebote. Zoom lento continuo entre cortes.
+- **"Segundo ángulo":** se puede simular con un primer plano cerrado (corte seco) en una parte poco importante. No se inventan ángulos con IA.
+
+## Encuadre (muy importante)
+
+- **Poco aire arriba.** No quiere ver techo. Con la persona sola a pantalla completa, la cabeza cerca de la parte superior (respetando la barra de Instagram, ~200 px).
+- **En pantalla partida** (gráfico arriba, persona abajo): la parte de arriba de la cabeza empieza justo donde está el subtítulo. Sin hueco entre gráfico y cabeza.
+- **Primer plano:** cara centrada y cabeza completa (sin cortar el pelo).
+- Comprobar el encuadre con capturas en varios segundos antes de renderizar: la cara se mueve.
+
+## Subtítulos
+
+- Palabra por palabra: la palabra que suena en blanco, las siguientes apagadas.
+- Estilos mezclados según el significado: **dorado** (palabras clave), **subrayado animado**, *serif cursiva* (contraste/emoción), **caja dorada** (golpes fuertes: "NADA", "clic", "2018").
+- Nunca encima de la cara. En pantalla completa van a la altura del pecho; en pantalla partida, entre el gráfico y la cabeza.
+- Corregir errores de la transcripción automática (ej. "ve las" → "velas").
+
+## Sonido
+
+- **Pocos efectos y bajos.** La voz manda.
+- Nada de golpes ("pum") seguidos ni en cada corte. Solo: un golpe suave al inicio, whoosh muy bajo en cambios de plano, clics donde hay un clic en pantalla, contador y "ding" en momentos clave.
+- Volumen final normalizado a -14 LUFS.
+- Sin música por ahora (si la quiere, la aportará él).
+
+## Formatos
+
+- **Vertical (Reels/anuncio Meta):** 1080x1920, 30 fps. Objetivo habitual: seguidores → cierre con tarjeta "SÍGUEME" y botón Seguir.
+- **Horizontal (YouTube):** 1920x1080. Ver `horizontales/README.md`.
