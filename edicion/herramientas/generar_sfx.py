@@ -39,3 +39,7 @@ save("glitch",g)
 # riser to CTA
 tt=t(1.0); f=200*np.exp(tt*2.2); r=np.sin(2*np.pi*np.cumsum(f)/SR)*tt**2*0.5+bandsweep(rng.standard_normal(len(tt)),400,6000)*tt**2
 save("riser",r)
+# swish suave para zooms de corte (sustituye al "impact", que resulta agresivo)
+tt=t(0.32); x=rng.standard_normal(len(tt))
+env=np.minimum(1,tt/0.06)*np.exp(-np.maximum(0,tt-0.06)*14)
+save("swish",bandsweep(x,2500,900,q=1.2)*env*0.6)

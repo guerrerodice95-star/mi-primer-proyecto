@@ -1,0 +1,10 @@
+[
+ {"sonido": "swish", "segundo": 1.44, "volumen": 0.35},
+ {"sonido": "swish", "segundo": 3.24, "volumen": 0.35},
+ {"sonido": "whoosh", "segundo": 4.6, "volumen": 0.18},
+ {"sonido": "pop", "segundo": 7.36, "volumen": 0.12},
+ {"sonido": "ding", "segundo": 7.9, "volumen": 0.15},
+ {"sonido": "pop", "segundo": 9.26, "volumen": 0.12},
+ {"sonido": "whoosh", "segundo": 9.65, "volumen": 0.14},
+ {"sonido": "swish", "segundo": 11.06, "volumen": 0.35}
+]
