@@ -34,7 +34,8 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 ## Sonido
 
 - **Pocos efectos y bajos.** La voz manda.
-- Nada de golpes ("pum") seguidos ni en cada corte. Solo: un golpe suave al inicio, whoosh muy bajo en cambios de plano, clics donde hay un clic en pantalla, contador y "ding" en momentos clave.
+- **Nada de "pum" (sonido `impact`): le resulta agresivo**, también en los zooms. Para los zooms de corte usar `swish` (suave, con aire) a volumen bajo, o nada.
+- Solo: whoosh muy bajo en cambios de plano, clics donde hay un clic en pantalla, contador y "ding" suave en momentos clave.
 - Volumen final normalizado a -14 LUFS.
 - Sin música por ahora (si la quiere, la aportará él).
 
@@ -42,3 +43,10 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 
 - **Vertical (Reels/anuncio Meta):** 1080x1920, 30 fps. Objetivo habitual: seguidores → cierre con tarjeta "SÍGUEME" y botón Seguir.
 - **Horizontal (YouTube):** 1920x1080. Ver `horizontales/README.md`.
+
+## Horizontal (YouTube)
+
+- **Sin subtítulos.** Como mucho alguna palabra clave abajo ("NO LLEGAS *a fin de mes*").
+- Que sea **atractivo**: gráficos con datos (tarjeta con contador, barras) en el lado izquierdo, con la persona desplazada a la derecha, y vuelta a pantalla completa.
+- Mismos colores dorado/negro que los reels, para que el canal y los reels se vean iguales.
+- Su grabación ya tiene la cabeza pegada arriba: los zooms crecen hacia abajo (origen arriba) para no cortar más pelo.

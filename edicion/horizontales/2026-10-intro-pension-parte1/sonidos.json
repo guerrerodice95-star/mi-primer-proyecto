@@ -1,0 +1,27 @@
+[
+ {
+  "sonido": "whoosh",
+  "segundo": 1.25,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "ding",
+  "segundo": 3.8,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 5.1,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "pop",
+  "segundo": 6.36,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.22,
+  "volumen": 0.2
+ }
+]
