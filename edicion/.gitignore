@@ -1,0 +1,9 @@
+# Videos y archivos generados (van en Drive, no en GitHub)
+*.mp4
+*.mov
+*.wav
+node_modules/
+render/
+sfx/
+capturas/
+.hyperframes/
