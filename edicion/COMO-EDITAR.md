@@ -50,6 +50,11 @@ npx hyperframes browser ensure
 
 ## Problemas conocidos
 
+- Si el original ya trae cortes y se cambia el encuadre en cada corte, medir el fotograma exacto del corte en el
+  `cam.mp4` a 30 fps (`ffmpeg -i assets/cam.mp4 -vf "select='gt(scene,0.15)',showinfo" -f null -`) y poner el
+  `tl.set` de cámara ~1/2 fotograma ANTES del corte. Si va después, el plano nuevo sale 1–2 fotogramas con el
+  encuadre del anterior y se nota un "salto raro".
+
 - `cdn.jsdelivr.net` está bloqueado: GSAP y las fuentes van en local (`herramientas/vendor/`, `marca/fonts/`).
 - `npx hyperframes init` intenta bajar "skills": usar `HYPERFRAMES_SKIP_SKILLS=1`.
 - faster-whisper falla abriendo archivos con algunas versiones de PyAV: `transcribir.py` ya lo evita.
