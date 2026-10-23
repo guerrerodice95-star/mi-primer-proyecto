@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --cream: #f3e3b5; --green: #3fbf7f; --red: #e5484d; --line: rgba(201,165,76,0.38); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0a08; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+
+      #bg { background: radial-gradient(900px 700px at 50% 25%, rgba(201,165,76,0.16), transparent 70%), linear-gradient(180deg, #14110b 0%, #0b0a08 55%); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.07) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 55%); mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 55%); }
+
+      /* 16:9 source laid out at 1920x1080, cropped into 9:16; origin on the face */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 870px 0px; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #camfade { position: absolute; left: 0; top: -2px; width: 1920px; height: 180px; background: linear-gradient(180deg, #0b0a08 0%, rgba(11,10,8,0.7) 35%, rgba(11,10,8,0) 100%); }
+      #topfade { position: absolute; left: 0; top: 0; width: 1080px; height: 240px; pointer-events: none; background: linear-gradient(180deg, rgba(11,10,8,1) 0%, rgba(11,10,8,0.55) 45%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 45%, transparent 60%, rgba(0,0,0,0.45) 100%); }
+
+      /* chart */
+      #chartCard { position: absolute; left: 40px; top: 190px; width: 1000px; height: 700px; border-radius: 34px; opacity: 0;
+        background: rgba(18,15,10,0.94); border: 1.5px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(201,165,76,0.16); overflow: hidden; }
+      #chart { position: absolute; inset: 0; }
+      #chart text { font-family: "Inter", sans-serif; }
+      .lbl { font-size: 26px; font-weight: 800; letter-spacing: 0.12em; fill: var(--cream); }
+      .pill { position: absolute; padding: 10px 22px; border-radius: 999px; font-weight: 900; font-size: 34px; letter-spacing: 0.06em; opacity: 0; white-space: nowrap; }
+      #pill15 { left: 250px; top: 24px; font-size: 28px; color: #1a1408; background: var(--gold-hi); box-shadow: 0 0 30px rgba(201,165,76,0.6); }
+      #pillShort { right: 40px; color: #fff; background: var(--red); box-shadow: 0 0 30px rgba(229,72,77,0.6); top: 120px; }
+      #pillLong { right: 40px; color: #fff; background: var(--green); box-shadow: 0 0 30px rgba(63,191,127,0.6); top: 526px; }
+      #stamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-8deg); padding: 18px 40px; border: 6px solid var(--red); border-radius: 20px;
+        color: var(--red); font-weight: 900; font-size: 74px; letter-spacing: 0.04em; background: rgba(11,10,8,0.85); opacity: 0; white-space: nowrap; }
+      #rentable { position: absolute; right: 50px; top: 40px; font-weight: 900; font-size: 46px; color: var(--green); opacity: 0; text-shadow: 0 0 24px rgba(63,191,127,0.7); }
+
+      /* CTA */
+      #cta { position: absolute; left: 70px; top: 300px; width: 940px; height: 500px; border-radius: 40px; opacity: 0;
+        background: rgba(22,19,13,0.95); border: 1.5px solid var(--gold); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 70px rgba(201,165,76,0.3); }
+      #cta .row { position: absolute; left: 50px; top: 50px; display: flex; align-items: center; gap: 30px; }
+      #cta img { width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; }
+      #cta .h { font-size: 56px; font-weight: 800; }
+      #cta .b { font-size: 34px; color: #cfc3a6; margin-top: 6px; }
+      .btn { position: absolute; bottom: 50px; height: 120px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; font-weight: 900; font-size: 46px; }
+      #bFollow { left: 50px; width: 470px; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 40px rgba(201,165,76,0.5); }
+      #bSave { right: 50px; width: 330px; color: var(--cream); background: #1d1910; border: 2px solid var(--gold); }
+      .btn .on { position: absolute; inset: 0; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 14px; opacity: 0; }
+      #bFollow .on { background: #1d1910; border: 2px solid var(--gold); color: var(--gold-hi); }
+      #bSave .on { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408; }
+      .bm { width: 30px; height: 40px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%); background: currentColor; }
+
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 50px; right: 50px; top: 1500px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 20px; opacity: 0; text-align: center; }
+      .cg.hook { top: 1480px; gap: 0 28px; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 72px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 90px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 94px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.up { color: #6fe0a6; }
+      .w.dn { color: #ff7a7e; }
+      .w.b, .w.bup, .w.bdn { padding: 0 22px; border-radius: 16px; text-shadow: none; font-weight: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      .w.b { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.bup { color: #fff; background: var(--green); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(63,191,127,0.5); }
+      .w.bdn { color: #fff; background: var(--red); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(229,72,77,0.5); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 11px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="71.4" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="71.4" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="71.4" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="71.4" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="camfade"></div>
+      </div>
+      <div id="topfade" class="clip" data-start="0" data-duration="71.4" data-track-index="2"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="71.4" data-track-index="2"></div>
+
+      <div id="pChart" class="clip" data-start="0.9" data-duration="66.2" data-track-index="3">
+        <div id="chartCard">
+          <svg id="chart" viewBox="0 0 1000 700" width="1000" height="700">
+            <defs>
+              <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d488"/><stop offset="1" stop-color="#8a6d2a"/></linearGradient>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <g id="zones"></g>
+            <!-- levels -->
+            <line id="lMax" x1="130" y1="110" x2="130" y2="110" stroke="#f3e3b5" stroke-width="4"/>
+            <line id="lMin" x1="130" y1="590" x2="130" y2="590" stroke="#f3e3b5" stroke-width="4"/>
+            <line id="lMid" x1="130" y1="350" x2="130" y2="350" stroke="#f0d488" stroke-width="4" stroke-dasharray="16 12"/>
+            <text id="tMax" class="lbl" x="960" y="92" text-anchor="end" opacity="0">MÁXIMO</text>
+            <text id="tMin" class="lbl" x="960" y="630" text-anchor="end" opacity="0">MÍNIMO</text>
+            <text id="tMid" class="lbl" x="960" y="334" text-anchor="end" opacity="0" style="fill:#f0d488">50%</text>
+            <ellipse id="cMid" cx="922" cy="325" rx="62" ry="34" fill="none" stroke="#f0d488" stroke-width="4" stroke-dasharray="420" stroke-dashoffset="420"/>
+            <!-- daily candle -->
+            <g id="daily">
+              <line x1="75" y1="110" x2="75" y2="590" stroke="#f0d488" stroke-width="6"/>
+              <rect x="40" y="160" width="70" height="380" rx="8" fill="url(#gGold)" filter="url(#glow)"/>
+              <text x="75" y="356" text-anchor="middle" font-weight="900" font-size="30" fill="#1a1408" transform="rotate(-90 75 350)">1D</text>
+            </g>
+            <text id="tPrev" x="28" y="60" text-anchor="start" font-weight="800" font-size="22" letter-spacing="2" fill="#f0d488" opacity="0">VELA ANTERIOR</text>
+            <g id="intro"></g>
+            <g id="arrows">
+              <path id="aUp" d="M520 350 C 590 350, 640 320, 690 230" fill="none" stroke="#3fbf7f" stroke-width="7" stroke-linecap="round" stroke-dasharray="300" stroke-dashoffset="300"/>
+              <path id="aUpH" d="M668 236 L692 226 L696 252" fill="none" stroke="#3fbf7f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+              <path id="aDn" d="M520 350 C 590 350, 640 380, 690 470" fill="none" stroke="#e5484d" stroke-width="7" stroke-linecap="round" stroke-dasharray="300" stroke-dashoffset="300"/>
+              <path id="aDnH" d="M668 464 L692 474 L696 448" fill="none" stroke="#e5484d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+            </g>
+            <g id="scA"></g>
+            <g id="scB"></g>
+            <g id="scC"></g>
+            <g id="xMark" opacity="0">
+              <line id="x1" x1="150" y1="60" x2="960" y2="650" stroke="#e5484d" stroke-width="10" stroke-linecap="round" stroke-dasharray="1010" stroke-dashoffset="1010"/>
+              <line id="x2" x1="960" y1="60" x2="150" y2="650" stroke="#e5484d" stroke-width="10" stroke-linecap="round" stroke-dasharray="1010" stroke-dashoffset="1010"/>
+            </g>
+          </svg>
+          <div class="pill" id="pill15">⏱ 15 MIN</div>
+          <div class="pill" id="pillShort">SHORT ↓</div>
+          <div class="pill" id="pillLong">LONG ↑</div>
+          <div id="rentable">+ RENTABLE</div>
+          <div id="stamp">EVITAR OPERAR</div>
+        </div>
+      </div>
+
+      <div id="pCta" class="clip" data-start="66.8" data-duration="4.6" data-track-index="3">
+        <div id="cta">
+          <div class="row"><img src="assets/logo.jpg" alt="" /><div><div class="h">@TheCryptons_</div><div class="b">Bitcoin explicado fácil</div></div></div>
+          <div class="btn" id="bFollow">Seguir<div class="on">Siguiendo ✓</div></div>
+          <div class="btn" id="bSave"><i class="bm"></i>Guardar<div class="on"><i class="bm"></i>Guardado</div></div>
+        </div>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="71.4" data-track-index="4"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const NS = "http://www.w3.org/2000/svg";
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const MAXY = 110, MINY = 590, MIDY = 350;
+
+      // ---------- candles ----------
+      // closes are y coordinates (smaller y = higher price). opts.hi / opts.lo override wick ends per index.
+      function candles(parent, x0, closes, start, opts = {}) {
+        const g = $(parent); const out = [];
+        let prev = start;
+        closes.forEach((c, i) => {
+          const o = prev, up = c < o;
+          const top = Math.min(o, c), bot = Math.max(o, c);
+          const hi = (opts.hi && opts.hi[i] !== undefined) ? opts.hi[i] : top - 6 - rnd(i + x0) * 14;
+          const lo = (opts.lo && opts.lo[i] !== undefined) ? opts.lo[i] : bot + 6 + rnd(i + x0 + 50) * 14;
+          const x = x0 + i * 22, col = up ? "#3fbf7f" : "#e5484d";
+          const cg = document.createElementNS(NS, "g");
+          cg.innerHTML = `<line x1="${x + 8}" x2="${x + 8}" y1="${hi}" y2="${lo}" stroke="${col}" stroke-width="2.5"/>` +
+            `<rect x="${x}" y="${top}" width="16" height="${Math.max(4, bot - top)}" rx="2" fill="${col}"/>`;
+          cg.style.opacity = 0; g.appendChild(cg); out.push({ el: cg, x: x + 8 });
+          prev = c;
+        });
+        return out;
+      }
+      const reveal = (list, t0, t1) => list.forEach((c, i) => tl.to(c.el, { opacity: 1, duration: 0.08 }, t0 + (t1 - t0) * (i / Math.max(1, list.length - 1))));
+      function zone(id, y1, y2, col) {
+        const r = document.createElementNS(NS, "rect");
+        r.setAttribute("id", id); r.setAttribute("x", 560); r.setAttribute("width", 400);
+        r.setAttribute("y", Math.min(y1, y2)); r.setAttribute("height", Math.abs(y2 - y1)); r.setAttribute("fill", col); r.setAttribute("opacity", 0);
+        $("#zones").appendChild(r); return r;
+      }
+      function ztext(parent, id, x, y, txt, col) {
+        const t = document.createElementNS(NS, "text");
+        t.setAttribute("id", id); t.setAttribute("x", x); t.setAttribute("y", y); t.setAttribute("text-anchor", "end");
+        t.setAttribute("font-weight", "900"); t.setAttribute("font-size", "26"); t.setAttribute("fill", col); t.setAttribute("opacity", 0); t.textContent = txt;
+        $(parent).appendChild(t); return t;
+      }
+      function ring(parent, cx, cy) {
+        const e = document.createElementNS(NS, "ellipse");
+        e.setAttribute("cx", cx); e.setAttribute("cy", cy); e.setAttribute("rx", 70); e.setAttribute("ry", 52); e.setAttribute("fill", "none");
+        e.setAttribute("stroke", "#f0d488"); e.setAttribute("stroke-width", 5); e.setAttribute("stroke-dasharray", 400); e.setAttribute("stroke-dashoffset", 400);
+        $(parent).appendChild(e); return e;
+      }
+      function hline(parent, y, col, dash) {
+        const l = document.createElementNS(NS, "line");
+        l.setAttribute("x1", 170); l.setAttribute("x2", 960); l.setAttribute("y1", y); l.setAttribute("y2", y);
+        l.setAttribute("stroke", col); l.setAttribute("stroke-width", 3); l.setAttribute("stroke-dasharray", dash || "8 8"); l.setAttribute("opacity", 0);
+        $(parent).appendChild(l); return l;
+      }
+      const mirror = (a) => a.map((y) => 700 - y);
+
+      // intro rally: "consistentemente rentable"
+      const introC = candles("#intro", 180, [560, 540, 548, 515, 500, 470, 480, 440, 410, 420, 380, 340, 300, 310, 260, 220, 190], 575);
+
+      // scenario A (short): above 50%, sweep of the high, back inside, targets 50% and the low
+      const A1 = [330, 322, 305, 312, 288, 272, 262, 244, 232, 215];
+      const A2 = [196, 176, 180]; const A3 = [172, 186, 178];
+      const A5 = [196, 226, 262, 294, 330, 356, 344, 382, 424, 470, 512, 552, 586, 600];
+      const scA1 = candles("#scA", 180, A1, 345);
+      const scA2 = candles("#scA", 180 + 10 * 22, A2, 215, { hi: [undefined, 78, undefined] });
+      const scA3 = candles("#scA", 180 + 13 * 22, A3, 180);
+      const scA5 = candles("#scA", 180 + 16 * 22, A5, 178);
+      const ringA = ring("#scA", 180 + 11 * 22 + 8, 112);
+      const entryA = hline("#scA", 186, "#f0d488");
+      const zA1 = zone("zA1", 186, MIDY, "rgba(229,72,77,0.22)"), zA2 = zone("zA2", MIDY, MINY, "rgba(229,72,77,0.14)");
+      const tA1 = ztext("#scA", "tA1", 950, 275, "OBJETIVO 1", "#ff8d90"), tA2 = ztext("#scA", "tA2", 950, 520, "OBJETIVO 2", "#ff8d90");
+      const tInA = ztext("#scA", "tInA", 700, 245, "DENTRO", "#f0d488");
+
+      // scenario B (long): mirrored
+      const scB1 = candles("#scB", 180, mirror(A1), 355);
+      const scB2 = candles("#scB", 180 + 10 * 22, mirror(A2), 485, { lo: [undefined, 622, undefined] });
+      const scB3 = candles("#scB", 180 + 13 * 22, mirror(A3), 520);
+      const scB5 = candles("#scB", 180 + 16 * 22, mirror(A5), 522);
+      const ringB = ring("#scB", 180 + 11 * 22 + 8, 588);
+      const entryB = hline("#scB", 514, "#f0d488");
+      const zB1 = zone("zB1", 514, MIDY, "rgba(63,191,127,0.22)"), zB2 = zone("zB2", MIDY, MAXY, "rgba(63,191,127,0.14)");
+      const tB1 = ztext("#scB", "tB1", 950, 440, "OBJETIVO 1", "#7ff0b5"), tB2 = ztext("#scB", "tB2", 950, 200, "OBJETIVO 2", "#7ff0b5");
+      const tInB = ztext("#scB", "tInB", 700, 470, "DENTRO", "#f0d488");
+
+      // scenario C: chop around 50%
+      const Cc = []; for (let i = 0; i < 26; i++) Cc.push(350 + Math.sin(i * 0.9) * 38 + (rnd(i + 7) - 0.5) * 30);
+      const scC = candles("#scC", 180, Cc, 350);
+
+      // ---------- captions ----------
+      const G = [{"e": 1.06, "hook": 1, "w": [["Esto", 0.0, ""], ["es", 0.46, ""], ["una", 0.88, ""]]}, {"e": 1.94, "hook": 0, "w": [["vela", 1.06, "g"], ["diaria", 1.3, "g"], ["y", 1.6, ""]]}, {"e": 2.94, "hook": 0, "w": [["si", 1.94, ""], ["entiendes", 2.12, "u"], ["esto", 2.56, ""]]}, {"e": 4.18, "hook": 0, "w": [["nadie", 2.94, "s"], ["podrá", 3.46, ""], ["impedir", 3.78, ""]]}, {"e": 4.94, "hook": 0, "w": [["que", 4.18, ""], ["te", 4.34, ""], ["vuelvas", 4.5, ""]]}, {"e": 6.86, "hook": 0, "w": [["consistentemente", 4.94, "s"], ["rentable", 5.9, "b"], ["en", 6.56, ""]]}, {"e": 8.02, "hook": 0, "w": [["el", 6.86, ""], ["mercado.", 7.08, ""]]}, {"e": 9.24, "hook": 0, "w": [["Lo", 8.02, ""], ["primero", 8.16, ""], ["marcamos", 8.5, "u"]]}, {"e": 10.02, "hook": 0, "w": [["el", 9.24, ""], ["máximo,", 9.42, "g"]]}, {"e": 10.72, "hook": 0, "w": [["el", 10.02, ""], ["mínimo", 10.18, "g"], ["y", 10.42, ""]]}, {"e": 11.26, "hook": 0, "w": [["el", 10.72, ""], ["nivel", 10.88, ""], ["del", 11.04, ""]]}, {"e": 12.0, "hook": 0, "w": [["50%", 11.26, "b"]]}, {"e": 12.82, "hook": 0, "w": [["de", 12.0, ""], ["la", 12.42, ""], ["vela", 12.58, "g"]]}, {"e": 13.88, "hook": 0, "w": [["anterior", 12.82, "s"], ["porque", 13.1, ""], ["esos", 13.66, ""]]}, {"e": 14.74, "hook": 0, "w": [["son", 13.88, ""], ["los", 14.08, ""], ["niveles", 14.4, ""]]}, {"e": 15.38, "hook": 0, "w": [["que", 14.74, ""], ["nos", 14.9, ""], ["darán", 15.06, ""]]}, {"e": 16.68, "hook": 0, "w": [["nuestro", 15.38, ""], ["setup", 15.88, "b"], ["para", 16.24, ""]]}, {"e": 17.18, "hook": 0, "w": [["operar.", 16.68, ""]]}, {"e": 17.78, "hook": 0, "w": [["Después", 17.18, ""], ["de", 17.4, ""], ["eso", 17.58, ""]]}, {"e": 18.7, "hook": 0, "w": [["debemos", 17.78, ""], ["cambiar", 18.24, ""], ["el", 18.52, ""]]}, {"e": 19.9, "hook": 0, "w": [["marco", 18.7, ""], ["temporal", 18.98, ""], ["a", 19.34, ""]]}, {"e": 20.7, "hook": 0, "w": [["15", 19.9, "g"], ["minutos", 20.14, "g"], ["y", 20.46, ""]]}, {"e": 21.42, "hook": 0, "w": [["observar", 20.7, "u"], ["si", 21.16, ""], ["el", 21.26, ""]]}, {"e": 22.14, "hook": 0, "w": [["precio", 21.42, ""], ["está", 21.58, ""], ["por", 21.82, ""]]}, {"e": 22.96, "hook": 0, "w": [["encima", 22.14, "up"], ["o", 22.46, ""], ["por", 22.72, ""]]}, {"e": 23.88, "hook": 0, "w": [["debajo", 22.96, "dn"], ["del", 23.3, ""], ["nivel", 23.5, ""]]}, {"e": 25.2, "hook": 0, "w": [["del", 23.88, ""], ["50%.", 24.26, "b"]]}, {"e": 25.74, "hook": 0, "w": [["Si", 25.2, ""], ["el", 25.4, ""], ["precio", 25.54, ""]]}, {"e": 26.32, "hook": 0, "w": [["está", 25.74, ""], ["por", 25.9, ""], ["encima", 26.08, "up"]]}, {"e": 26.96, "hook": 0, "w": [["del", 26.32, ""], ["nivel", 26.52, ""], ["del", 26.74, ""]]}, {"e": 28.34, "hook": 0, "w": [["50%", 26.96, "b"], ["y", 27.66, ""], ["después", 27.9, ""]]}, {"e": 29.04, "hook": 0, "w": [["de", 28.34, ""], ["barrer", 28.5, "u"], ["la", 28.82, ""]]}, {"e": 29.94, "hook": 0, "w": [["liquidez", 29.04, "g"], ["del", 29.38, ""], ["máximo", 29.6, "g"]]}, {"e": 31.04, "hook": 0, "w": [["se", 29.94, ""], ["mantiene", 30.28, ""], ["dentro", 30.68, "u"]]}, {"e": 31.94, "hook": 0, "w": [["de", 31.04, ""], ["esa", 31.46, ""], ["vela", 31.6, "g"]]}, {"e": 33.52, "hook": 0, "w": [["anterior", 31.94, "s"], ["entonces", 32.22, ""], ["debemos", 33.14, ""]]}, {"e": 34.58, "hook": 0, "w": [["planificar", 33.52, "u"], ["una", 34.0, ""], ["entrada", 34.32, ""]]}, {"e": 35.6, "hook": 0, "w": [["en", 34.58, ""], ["short.", 35.14, "bdn"]]}, {"e": 36.14, "hook": 0, "w": [["En", 35.6, ""], ["este", 35.66, ""], ["caso", 35.8, ""]]}, {"e": 37.2, "hook": 0, "w": [["nuestro", 36.14, ""], ["objetivo", 36.56, "g"], ["será", 36.94, ""]]}, {"e": 37.88, "hook": 0, "w": [["el", 37.2, ""], ["nivel", 37.42, ""], ["del", 37.62, ""]]}, {"e": 39.0, "hook": 0, "w": [["50%", 37.88, "b"], ["y", 38.52, ""], ["el", 38.78, ""]]}, {"e": 39.96, "hook": 0, "w": [["segundo", 39.0, "s"], ["objetivo", 39.3, "g"], ["será", 39.7, ""]]}, {"e": 41.18, "hook": 0, "w": [["el", 39.96, ""], ["mínimo", 40.56, "g"], ["de", 40.94, ""]]}, {"e": 41.94, "hook": 0, "w": [["la", 41.18, ""], ["vela", 41.3, "g"], ["anterior.", 41.56, "s"]]}, {"e": 42.42, "hook": 0, "w": [["Pero", 41.94, ""], ["en", 42.1, ""], ["cambio", 42.24, ""]]}, {"e": 43.36, "hook": 0, "w": [["si", 42.42, ""], ["el", 42.76, ""], ["mercado", 43.02, ""]]}, {"e": 44.14, "hook": 0, "w": [["está", 43.36, ""], ["por", 43.66, ""], ["debajo", 43.88, "dn"]]}, {"e": 44.86, "hook": 0, "w": [["del", 44.14, ""], ["nivel", 44.34, ""], ["del", 44.58, ""]]}, {"e": 46.26, "hook": 0, "w": [["50%", 44.86, "b"], ["y", 45.56, ""], ["después", 45.9, ""]]}, {"e": 46.94, "hook": 0, "w": [["de", 46.26, ""], ["barrer", 46.44, "u"], ["la", 46.74, ""]]}, {"e": 47.78, "hook": 0, "w": [["liquidez", 46.94, "g"], ["del", 47.26, ""], ["mínimo", 47.54, "g"]]}, {"e": 48.76, "hook": 0, "w": [["se", 47.78, ""], ["mantiene", 48.02, ""], ["dentro", 48.36, "u"]]}, {"e": 49.58, "hook": 0, "w": [["de", 48.76, ""], ["la", 49.12, ""], ["vela", 49.26, "g"]]}, {"e": 51.24, "hook": 0, "w": [["diaria", 49.58, "g"], ["anterior", 49.9, "s"], ["entonces", 50.28, ""]]}, {"e": 52.6, "hook": 0, "w": [["deberemos", 51.24, ""], ["entrar", 51.62, ""], ["en", 52.12, ""]]}, {"e": 53.12, "hook": 0, "w": [["long.", 52.6, "bup"]]}, {"e": 53.72, "hook": 0, "w": [["En", 53.12, ""], ["ese", 53.32, ""], ["caso", 53.44, ""]]}, {"e": 54.74, "hook": 0, "w": [["nuestro", 53.72, ""], ["objetivo", 54.14, "g"], ["será", 54.5, ""]]}, {"e": 55.54, "hook": 0, "w": [["el", 54.74, ""], ["nivel", 54.94, ""], ["del", 55.16, ""]]}, {"e": 56.78, "hook": 0, "w": [["50%", 55.54, "b"], ["y", 56.28, ""], ["el", 56.56, ""]]}, {"e": 57.86, "hook": 0, "w": [["segundo", 56.78, "s"], ["objetivo", 57.02, "g"], ["será", 57.42, ""]]}, {"e": 59.1, "hook": 0, "w": [["el", 57.86, ""], ["máximo", 58.32, "g"], ["de", 58.82, ""]]}, {"e": 60.18, "hook": 0, "w": [["la", 59.1, ""], ["vela", 59.22, "g"], ["diaria.", 59.74, "g"]]}, {"e": 60.64, "hook": 0, "w": [["Si", 60.18, ""], ["por", 60.38, ""], ["un", 60.52, ""]]}, {"e": 61.38, "hook": 0, "w": [["casual", 60.64, "s"], ["el", 60.88, ""], ["mercado", 61.08, ""]]}, {"e": 62.62, "hook": 0, "w": [["está", 61.38, ""], ["operando", 61.62, ""], ["alrededor", 62.02, ""]]}, {"e": 63.42, "hook": 0, "w": [["del", 62.62, ""], ["nivel", 62.94, ""], ["del", 63.18, ""]]}, {"e": 64.62, "hook": 0, "w": [["50%", 63.42, "b"], ["en", 64.12, ""], ["ese", 64.46, ""]]}, {"e": 66.22, "hook": 0, "w": [["caso", 64.62, ""], ["debemos", 64.94, ""], ["evitar", 65.7, "bdn"]]}, {"e": 67.18, "hook": 0, "w": [["operar.", 66.22, "bdn"]]}, {"e": 67.82, "hook": 0, "w": [["Eso", 67.18, ""], ["es", 67.22, ""], ["todo,", 67.38, ""]]}, {"e": 68.38, "hook": 0, "w": [["sígueme", 67.82, "b"], ["y", 68.0, ""], ["guarda", 68.16, "u"]]}, {"e": 69.32, "hook": 0, "w": [["tu", 68.38, ""], ["operativa", 68.48, ""], ["para", 68.84, ""]]}, {"e": 70.08, "hook": 0, "w": [["poder", 69.32, ""], ["operar", 69.62, ""], ["el", 69.94, ""]]}, {"e": 71.18, "hook": 0, "w": [["mercado", 70.08, ""], ["así", 70.44, ""], ["de", 71.02, ""]]}, {"e": 71.4, "hook": 0, "w": [["simple.", 71.18, "s"]]}];
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const el = document.createElement("div"); el.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          el.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(el); return { el, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+      gsap.set("#daily", { scaleY: 0, svgOrigin: "75 350" });
+
+      // ---------- camera ----------
+      const FULL = { x: -330, y: 140, scale: 1.66 }, SPLIT = { x: -330, y: 1020, scale: 0.9 };
+      const UP = -585;
+      const toSplit = (t, s = SPLIT.scale) => {
+        tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: s, duration: 0.5, ease: "power3.inOut" }, t);
+        tl.to("#caps", { y: UP, duration: 0.5, ease: "power3.inOut" }, t);
+        tl.to("#chartCard", { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, t + 0.15);
+      };
+      const toFull = (t, s = FULL.scale, y = FULL.y) => {
+        tl.to("#chartCard", { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, t - 0.05);
+        tl.to(cam, { x: FULL.x, y: y, scale: s, duration: 0.5, ease: "power3.inOut" }, t);
+        tl.to("#caps", { y: 0, duration: 0.5, ease: "power3.inOut" }, t);
+      };
+      tl.fromTo(cam, { x: FULL.x, y: FULL.y, scale: 1.82 }, { scale: 1.68, duration: 0.95, ease: "power2.out" }, 0);
+      gsap.set("#chartCard", { y: -30 });
+      toSplit(0.95);
+      tl.to(cam, { scale: 0.94, duration: 11.6, ease: "none" }, 1.45);
+      toFull(13.1, 1.66);
+      tl.set(cam, { scale: 1.8 }, 15.38);
+      toSplit(17.1);
+      tl.to(cam, { scale: 0.94, duration: 24.0, ease: "none" }, 17.6);
+      toFull(41.95, 1.5, 300);
+      tl.to("#caps", { y: 170, duration: 0.3 }, 42.2);
+      toSplit(43.6);
+      tl.to(cam, { scale: 0.94, duration: 15.6, ease: "none" }, 44.1);
+      toFull(59.85, 1.5, 300);
+      toSplit(61.4);
+      tl.to(cam, { scale: 0.94, duration: 5.4, ease: "none" }, 61.9);
+      tl.to("#chartCard", { opacity: 0, y: -30, duration: 0.3 }, 66.75);
+      tl.fromTo("#cta", { opacity: 0, y: -40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)" }, 66.95);
+
+      // ---------- chart: intro ----------
+      tl.to("#daily", { scaleY: 1, duration: 0.5, ease: "power3.out" }, 1.06);
+      reveal(introC, 4.94, 6.5);
+      tl.fromTo("#rentable", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, 5.9);
+      tl.to(["#intro", "#rentable"], { opacity: 0, duration: 0.3 }, 7.7);
+
+      // levels
+      tl.to("#lMax", { attr: { x2: 960 }, duration: 0.55, ease: "power2.out" }, 9.42);
+      tl.to("#tMax", { opacity: 1, duration: 0.2 }, 9.7);
+      tl.to("#lMin", { attr: { x2: 960 }, duration: 0.55, ease: "power2.out" }, 10.18);
+      tl.to("#tMin", { opacity: 1, duration: 0.2 }, 10.45);
+      tl.to("#lMid", { attr: { x2: 960 }, duration: 0.55, ease: "power2.out" }, 11.26);
+      tl.to("#tMid", { opacity: 1, duration: 0.2 }, 11.55);
+      tl.to("#tPrev", { opacity: 1, duration: 0.3 }, 12.58);
+
+      // 15 min + direction
+      tl.fromTo("#pill15", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 19.9);
+      tl.to("#aUp", { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: "power2.out" }, 22.14);
+      tl.to("#aUpH", { opacity: 1, duration: 0.1 }, 22.5);
+      tl.to("#aDn", { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: "power2.out" }, 22.96);
+      tl.to("#aDnH", { opacity: 1, duration: 0.1 }, 23.32);
+      tl.to("#cMid", { attr: { "stroke-dashoffset": 0 }, duration: 0.5, ease: "power2.out" }, 24.26);
+      tl.to(["#arrows", "#cMid"], { opacity: 0, duration: 0.3 }, 25.05);
+
+      // scenario A: short
+      reveal(scA1, 26.0, 28.3);
+      reveal(scA2, 28.5, 29.5);
+      tl.to(ringA, { attr: { "stroke-dashoffset": 0 }, duration: 0.5, ease: "power2.out" }, 29.6);
+      reveal(scA3, 30.68, 31.8);
+      tl.to(tInA, { opacity: 1, duration: 0.2 }, 30.68);
+      tl.to(entryA, { opacity: 1, duration: 0.3 }, 34.0);
+      tl.fromTo("#pillShort", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 35.14);
+      tl.to([zA1, tA1], { opacity: 1, duration: 0.35 }, 36.56);
+      tl.to([zA2, tA2], { opacity: 1, duration: 0.35 }, 39.3);
+      reveal(scA5, 36.6, 41.3);
+      tl.to(["#scA", "#zA1", "#zA2", "#pillShort"], { opacity: 0, duration: 0.3 }, 41.85);
+
+      // scenario B: long
+      reveal(scB1, 43.88, 46.3);
+      reveal(scB2, 46.44, 47.45);
+      tl.to(ringB, { attr: { "stroke-dashoffset": 0 }, duration: 0.5, ease: "power2.out" }, 47.54);
+      reveal(scB3, 48.36, 49.8);
+      tl.to(tInB, { opacity: 1, duration: 0.2 }, 48.36);
+      tl.to(entryB, { opacity: 1, duration: 0.3 }, 51.3);
+      tl.fromTo("#pillLong", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 52.6);
+      tl.to([zB1, tB1], { opacity: 1, duration: 0.35 }, 54.14);
+      tl.to([zB2, tB2], { opacity: 1, duration: 0.35 }, 56.78);
+      reveal(scB5, 54.2, 58.9);
+      tl.to(["#scB", "#zB1", "#zB2", "#pillLong"], { opacity: 0, duration: 0.3 }, 59.7);
+
+      // scenario C: chop -> avoid
+      reveal(scC, 61.62, 64.9);
+      tl.set("#xMark", { opacity: 1 }, 65.6);
+      tl.to("#x1", { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power2.in" }, 65.7);
+      tl.to("#x2", { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power2.in" }, 65.9);
+      tl.fromTo("#stamp", { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 66.0);
+
+      // CTA
+      tl.to("#bFollow", { scale: 0.93, duration: 0.08, yoyo: true, repeat: 1 }, 67.82);
+      tl.to("#bFollow .on", { opacity: 1, duration: 0.12 }, 67.88);
+      tl.to("#bSave", { scale: 0.93, duration: 0.08, yoyo: true, repeat: 1 }, 68.16);
+      tl.to("#bSave .on", { opacity: 1, duration: 0.12 }, 68.22);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 26, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.16, ease: "back.out(2)" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (["b", "bup", "bdn", "s", "g"].includes(w.st)) tl.fromTo(w.el, { scale: 0.6 }, { scale: 1, duration: 0.22, ease: "back.out(3)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, 71.4);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
