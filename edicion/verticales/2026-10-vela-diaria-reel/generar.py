@@ -49,6 +49,7 @@ for gi, g in enumerate(groups):
     e = min(e, g[-1]["e"] + 0.7) if gi + 1 < len(groups) else DUR
     G.append({"e": round(e, 2), "hook": 1 if s < 1.0 else 0, "w": [[x["w"], round(x["s"], 2), style(x)] for x in g]})
 
-html = open(sys.argv[3]).read().replace("__G__", json.dumps(G, ensure_ascii=False)).replace("__DUR__", str(DUR))
+face = open(sys.argv[4]).read() if len(sys.argv) > 4 else "[]"
+html = open(sys.argv[3]).read().replace("__G__", json.dumps(G, ensure_ascii=False)).replace("__DUR__", str(DUR)).replace("__FACE__", face)
 open(out, "w").write(html)
 print(len(G), "grupos")
