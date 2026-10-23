@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0a08; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+
+      /* origin near the face: zooms push the head up (less ceiling) */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 540px 700px; }
+      #cam { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; filter: contrast(1.1) saturate(1.06) brightness(0.95) sepia(0.07); }
+      #vignette { position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(130% 85% at 50% 38%, transparent 55%, rgba(0,0,0,0.5) 100%), linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.45) 100%); }
+
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 60px; right: 60px; top: 1270px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 22px; opacity: 0; text-align: center; }
+      .cg.hook { top: 1250px; gap: 0 30px; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 78px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 94px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 100px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.b { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); padding: 0 24px; border-radius: 16px; text-shadow: none; font-weight: 900;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 12px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+      #wheel { width: 150px; height: 150px; margin-top: 6px; opacity: 0; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.6)) drop-shadow(0 0 16px rgba(201,165,76,0.5)); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="12.77" data-width="1080" data-height="1920">
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="12.77" data-track-index="0" src="assets/cam.mp4" muted playsinline></video>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="12.77" data-track-index="1"></div>
+      <div id="caps" class="clip" data-start="0" data-duration="12.77" data-track-index="2"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const NS = "http://www.w3.org/2000/svg";
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+
+      // ---------- captions ----------
+      const G = [
+        { e: 1.0, hook: 1, w: [["Hay", 0], ["una", 0.38], ["frase", 0.66, "s"]] },
+        { e: 2.24, hook: 1, w: [["que", 1.0], ["me", 1.34], ["repetí", 1.58, "u"]] },
+        { e: 3.26, w: [["muchas", 2.24], ["veces", 2.7]] },
+        { e: 4.7, w: [["cada", 3.26], ["vez", 3.62], ["que", 3.86], ["invertía.", 4.06, "g"]] },
+        { e: 5.54, w: [["«Cuando", 4.7, "s"], ["vuelva", 5.08, "s"], ["a", 5.46, "s"]] },
+        { e: 7.12, w: [["subir,", 5.54, "s"], ["VENDO»", 6.6, "b"]] },
+        { e: 8.22, w: [["Y", 7.12], ["NO", 7.26, "b"], ["VOLVIÓ", 7.42, "b"]], icon: 1 },
+        { e: 9.36, w: [["Ese", 8.22], ["día", 8.56], ["me", 8.8], ["di", 9.04], ["cuenta", 9.14]] },
+        { e: 10.7, w: [["que", 9.36], ["el", 9.54], ["problema", 9.7, "g"], ["no", 10.1], ["es", 10.36]] },
+        { e: 11.46, w: [["cuándo", 10.7], ["comprar,", 10.9, "u"]] },
+        { e: 12.77, w: [["sino", 11.46], ["cuándo", 11.68], ["VENDER", 12.18, "b"]] },
+      ];
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const el = document.createElement("div"); el.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          el.appendChild(sp); return { el: sp, s, st };
+        });
+        if (g.icon) {
+          const svg = document.createElementNS(NS, "svg"); svg.id = "wheel"; svg.setAttribute("viewBox", "0 0 100 100");
+          svg.innerHTML = '<rect x="4" y="4" width="92" height="92" rx="20" fill="#16130d" stroke="#c9a54c" stroke-width="4"/>' +
+            '<path id="fall" d="M16 70 L32 52 L44 60 L60 28 L70 36 L84 82" fill="none" stroke="#e5484d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="150" stroke-dashoffset="150"/>' +
+            '<path d="M74 80 L86 84 L88 71" fill="none" stroke="#e5484d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0" id="arrow"/>';
+          el.appendChild(svg);
+        }
+        caps.appendChild(el); return { el, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+
+      // ---------- camera: tight framing, jump cuts on strong phrases ----------
+      // (ad4) parts 1 and 2 join at 7.0 with the same framing: no reframe needed at 1.067, 3.167 (second, closer angle) and 5.4: reframe just before each one
+      const Y = -40, X = 40;  // face sits a little left of centre in this recording
+      tl.fromTo(cam, { scale: 1.28, x: X, y: Y }, { scale: 1.18, duration: 2.24, ease: "power2.out" }, 0);
+      tl.to(cam, { scale: 1.22, duration: 2.46, ease: "none" }, 2.24);
+      tl.set(cam, { scale: 1.3 }, 4.7);
+      tl.to(cam, { scale: 1.33, duration: 2.42, ease: "none" }, 4.7);
+      tl.set(cam, { scale: 1.38 }, 7.12);
+      tl.to(cam, { scale: 1.4, duration: 2.58, ease: "none" }, 7.12);
+      tl.set(cam, { scale: 1.2 }, 9.7);
+      tl.to(cam, { scale: 1.3, duration: 3.07, ease: "sine.inOut" }, 9.7);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 26, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.16, ease: "back.out(2)" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (w.st === "b" || w.st === "s" || w.st === "g") tl.fromTo(w.el, { scale: 0.6 }, { scale: 1, duration: 0.22, ease: "back.out(3)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+      tl.fromTo("#wheel", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 7.26);
+      tl.to("#fall", { attr: { "stroke-dashoffset": 0 }, duration: 0.6, ease: "power2.in" }, 7.35);
+      tl.to("#arrow", { opacity: 1, duration: 0.1 }, 7.9);
+
+      tl.set({}, {}, 12.77);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
