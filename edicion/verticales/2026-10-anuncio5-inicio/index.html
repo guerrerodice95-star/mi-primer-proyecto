@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0a08; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+
+      /* origin near the face: zooms push the head up (less ceiling) */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 540px 700px; }
+      #cam { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; filter: contrast(1.1) saturate(1.06) brightness(0.95) sepia(0.07); }
+      #vignette { position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(130% 85% at 50% 38%, transparent 55%, rgba(0,0,0,0.5) 100%), linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.45) 100%); }
+
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 60px; right: 60px; top: 1270px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 22px; opacity: 0; text-align: center; }
+      .cg.hook { top: 1250px; gap: 0 30px; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 78px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 94px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 100px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.b { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); padding: 0 24px; border-radius: 16px; text-shadow: none; font-weight: 900;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 12px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+      #wheel { width: 150px; height: 150px; margin-top: 6px; opacity: 0; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.6)) drop-shadow(0 0 16px rgba(201,165,76,0.5)); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10.0" data-width="1080" data-height="1920">
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="10.0" data-track-index="0" src="assets/cam.mp4" muted playsinline></video>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="10.0" data-track-index="1"></div>
+      <div id="caps" class="clip" data-start="0" data-duration="10.0" data-track-index="2"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const NS = "http://www.w3.org/2000/svg";
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+
+      // ---------- captions ----------
+      const G = [
+        { e: 0.84, hook: 1, w: [["Durante", 0], ["meses", 0.64, "s"]] },
+        { e: 1.98, hook: 1, w: [["compraba", 0.84], ["todo", 1.56, "u"]] },
+        { e: 3.26, w: [["lo", 1.98], ["que", 2.34], ["decían", 2.5], ["los", 2.72], ["GURÚS", 2.92, "b"]] },
+        { e: 4.04, w: [["Cuando", 3.26], ["bajaba", 3.48, "g"]] },
+        { e: 5.26, w: [["no", 4.04], ["sabía", 4.32], ["por", 4.58], ["qué,", 4.8, "s"]] },
+        { e: 6.6, w: [["cuando", 5.26], ["subía", 5.46, "g"], ["tampoco", 6.1, "s"]] },
+        { e: 7.66, w: [["y", 6.6], ["yo", 7.02], ["lo", 7.14], ["único", 7.22, "u"], ["que", 7.44]] },
+        { e: 8.68, w: [["notaba", 7.66], ["es", 8.04], ["que", 8.42]] },
+        { e: 10.0, w: [["siempre", 8.68, "u"], ["llegaba", 9.18], ["TARDE", 9.72, "b"]], icon: 1 },
+      ];
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const el = document.createElement("div"); el.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          el.appendChild(sp); return { el: sp, s, st };
+        });
+        if (g.icon) {
+          const svg = document.createElementNS(NS, "svg"); svg.id = "wheel"; svg.setAttribute("viewBox", "-50 -50 100 100");
+          svg.innerHTML = '<circle r="44" fill="#16130d" stroke="#c9a54c" stroke-width="6"/>' +
+            [0, 90, 180, 270].map((a) => `<rect x="-2.5" y="-38" width="5" height="9" rx="2" fill="#f0d488" transform="rotate(${a})"/>`).join("") +
+            '<rect id="hHour" x="-3" y="-20" width="6" height="22" rx="3" fill="#f0d488"/>' +
+            '<rect id="hMin" x="-2" y="-32" width="4" height="34" rx="2" fill="#e5484d"/>' +
+            '<circle r="5" fill="#f0d488"/>';
+          el.appendChild(svg);
+        }
+        caps.appendChild(el); return { el, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+
+      // ---------- camera: tight framing, jump cuts on strong phrases ----------
+      // part 1 (0-4.967) and part 2 (4.967-end) were framed differently: reframe each so the head sits just under the top bar
+      const P1 = { x: 25, y: -110 }, P2 = { x: 0, y: -260 };
+      tl.fromTo(cam, { scale: 1.3, x: P1.x, y: P1.y }, { scale: 1.2, duration: 2.0, ease: "power2.out" }, 0);
+      tl.to(cam, { scale: 1.22, duration: 0.92, ease: "none" }, 2.0);
+      tl.set(cam, { scale: 1.32 }, 2.92);
+      tl.to(cam, { scale: 1.35, duration: 2.03, ease: "none" }, 2.92);
+      tl.set(cam, { scale: 1.25, x: P2.x, y: P2.y }, 4.95);
+      tl.to(cam, { scale: 1.28, duration: 2.27, ease: "none" }, 4.95);
+      tl.set(cam, { scale: 1.38 }, 7.22);
+      tl.to(cam, { scale: 1.41, duration: 2.5, ease: "none" }, 7.22);
+      tl.set(cam, { scale: 1.48 }, 9.72);
+      tl.to(cam, { scale: 1.5, duration: 0.28, ease: "none" }, 9.72);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 26, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.16, ease: "back.out(2)" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (w.st === "b" || w.st === "s" || w.st === "g") tl.fromTo(w.el, { scale: 0.6 }, { scale: 1, duration: 0.22, ease: "back.out(3)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+      tl.fromTo("#wheel", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2.5)" }, 8.68);
+      tl.fromTo("#hMin", { rotation: 0, svgOrigin: "0 0" }, { rotation: 720, svgOrigin: "0 0", duration: 1.32, ease: "power1.in" }, 8.68);
+      tl.fromTo("#hHour", { rotation: 0, svgOrigin: "0 0" }, { rotation: 60, svgOrigin: "0 0", duration: 1.32, ease: "power1.in" }, 8.68);
+
+      tl.set({}, {}, 10.0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

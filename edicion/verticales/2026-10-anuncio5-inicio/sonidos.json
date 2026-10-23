@@ -1,0 +1,42 @@
+[
+ {
+  "sonido": "swish",
+  "segundo": 2.9,
+  "volumen": 0.22
+ },
+ {
+  "sonido": "swish",
+  "segundo": 7.2,
+  "volumen": 0.22
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.7,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.0,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.3,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.6,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "swish",
+  "segundo": 9.7,
+  "volumen": 0.22
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.9,
+  "volumen": 0.09
+ }
+]
