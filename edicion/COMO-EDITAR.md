@@ -25,7 +25,7 @@ instagram.com
 **Instalación en la sesión:**
 
 ```bash
-pip install faster-whisper soundfile gdown yt-dlp
+pip install faster-whisper soundfile gdown yt-dlp "opencv-python-headless<5"
 cd edicion && npm i hyperframes@0.8.183
 npx hyperframes browser ensure
 ```

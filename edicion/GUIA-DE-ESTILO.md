@@ -23,6 +23,7 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Poco aire arriba.** No quiere ver techo. Con la persona sola a pantalla completa, la cabeza cerca de la parte superior (respetando la barra de Instagram, ~200 px).
 - **En pantalla partida** (gráfico arriba, persona abajo): la parte de arriba de la cabeza empieza justo donde está el subtítulo. Sin hueco entre gráfico y cabeza.
 - **Primer plano:** cara centrada y cabeza completa (sin cortar el pelo).
+- **La cabeza siempre en el centro horizontal.** Si se mueve en el plano, usar seguimiento de cara (`herramientas/seguir_cara.py`, 10 muestras/s, suavizado 0,5 s) en vez de un encuadre fijo.
 - Comprobar el encuadre con capturas en varios segundos antes de renderizar: la cara se mueve.
 
 ## Subtítulos
@@ -42,7 +43,7 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 
 ## Formatos
 
-- **Vertical (Reels/anuncio Meta):** 1080x1920, 30 fps. Objetivo habitual: seguidores → cierre con tarjeta "SÍGUEME" y botón Seguir.
+- **Vertical (Reels/anuncio Meta):** 1080x1920, 30 fps. Objetivo habitual: seguidores. Cierre preferido: persona a pantalla completa y abajo una **pastilla blanca flotante estilo Instagram** (sin fondo) con su foto de perfil (`marca/foto-perfil-instagram.png`), @TheCryptons_, "Seguir" → "Siguiendo" y botón Guardar.
 - **Horizontal (YouTube):** 1920x1080. Ver `horizontales/README.md`.
 
 ## Horizontal (YouTube)

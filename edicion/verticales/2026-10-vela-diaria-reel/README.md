@@ -7,8 +7,10 @@ Referencia de formato: reel de Toni Maura (https://www.instagram.com/reel/DcOoWZ
 - Layout invertido: gráfico **arriba**, Unai **abajo** (cabeza donde empiezan los subtítulos), como en nuestros reels.
 - Colores TheCryptons: vela diaria dorada, líneas crema/doradas, cuadrícula dorada; velas **verdes/rojas** según el escenario.
 - Etiquetas en español (MÁXIMO, MÍNIMO, 50 %, OBJETIVO 1/2, DENTRO), pastillas SHORT/LONG, sello "EVITAR OPERAR".
-- Cortes a pantalla completa en 0–1 s, 13–17 s, 42–43,6 s y 60–61,4 s; cierre con tarjeta @TheCryptons_ (Seguir + Guardar).
+- Cortes a pantalla completa en 0–1 s, 13–17 s, 42–43,6 s y 60–61,4 s.
+- Cierre (66,8 s): Unai a pantalla completa y abajo una pastilla blanca flotante estilo Instagram con su foto de perfil, @TheCryptons_ letra a letra, "Seguir" → "Siguiendo" y marcador de Guardar que se rellena.
+- Seguimiento de cara (`cara.json`, generado con `herramientas/seguir_cara.py`) para que la cabeza quede siempre centrada.
 
 ## Cómo se genera
 `plantilla.html` tiene toda la animación; `generar.py` agrupa la transcripción en subtítulos con estilos y escribe `index.html`:
-`python3 generar.py transcripcion.json index.html plantilla.html`
+`python3 generar.py transcripcion.json index.html plantilla.html cara.json`
