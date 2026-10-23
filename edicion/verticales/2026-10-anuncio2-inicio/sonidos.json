@@ -1,0 +1,52 @@
+[
+ {
+  "sonido": "tick",
+  "segundo": 9.96,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.999,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.047,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.103,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.167,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.24,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.321,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.411,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.509,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "tick",
+  "segundo": 10.615,
+  "volumen": 0.05
+ }
+]
