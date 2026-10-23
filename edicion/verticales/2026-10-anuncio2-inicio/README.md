@@ -8,4 +8,4 @@ que yo solo en mi habitación estaba más cerca de jugar a la ruleta que de ente
 
 - Estilo yapping: pantalla completa, sin gráficos salvo una ruleta dorada girando junto a "RULETA".
 - El original ya trae cortes propios (1,08 s, 3,16 s segundo ángulo cerrado, 5,4 s); el encuadre se ajusta por tramo.
-- Zooms de corte en "estaba más cerca", "ruleta" y "entender por fin", sin sonido. Único sonido: tic-tic bajo de la ruleta.
+- Un zoom de corte en "estaba más cerca" y desde ahí acercamiento suave hasta el final (dos cortes seguidos en "ruleta" y "entender" daban trompicones). Sin sonido salvo un tic-tic bajo de la ruleta.
