@@ -15,6 +15,7 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Gráficos solo si aportan información real** (una cifra, quién es, un concepto visual). Ejemplos que le gustaron: gráfico de velas al inicio, rótulo "UNAI · En Bitcoin desde 2018", red de personas + contador "+50.000", tarjeta final de seguir.
 - **No le gustaron:** nubes de palabras, maquetas de perfil, cronómetros, tachados animados. Demasiado "motion".
 - **Ritmo:** zooms de **corte seco** (jump cuts) en frases fuertes, no zooms con rebote. Zoom lento continuo entre cortes.
+- **No encadenar zooms de corte muy seguidos** (menos de ~2 s entre ellos, y menos aún acercar-alejar-acercar): se ven como "trompicones". Mejor un corte y luego acercamiento suave.
 - **"Segundo ángulo":** se puede simular con un primer plano cerrado (corte seco) en una parte poco importante. No se inventan ángulos con IA.
 
 ## Encuadre (muy importante)
