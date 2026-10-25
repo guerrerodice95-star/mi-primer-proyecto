@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --cream: #f3e3b5; --green: #3fbf7f; --red: #e5484d; --line: rgba(201,165,76,0.38); --bg: #0b0a08; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+
+      #bg { background: radial-gradient(900px 600px at 50% 72%, rgba(201,165,76,0.14), transparent 70%), var(--bg); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, transparent 50%, #000 60%, #000 85%, transparent 95%); mask-image: linear-gradient(180deg, transparent 50%, #000 60%, #000 85%, transparent 95%); }
+
+      /* source (cropped band 1728x1448) */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1728px; height: 1448px; transform-origin: 864px 0px; }
+      #track { position: absolute; inset: 0; }
+      #cam { position: absolute; inset: 0; width: 1728px; height: 1448px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #topfade { position: absolute; left: 0; top: 0; width: 1080px; height: 220px; pointer-events: none; background: linear-gradient(180deg, rgba(11,10,8,0.9) 0%, rgba(11,10,8,0.4) 50%, rgba(11,10,8,0) 100%); }
+      /* below the face strip everything is clean background for the chart */
+      #strip { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none;
+        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 900px, var(--bg) 990px, var(--bg) 1920px); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 30%, transparent 60%, rgba(0,0,0,0.4) 100%); }
+
+      /* chart card */
+      #card { position: absolute; left: 30px; top: 1085px; width: 1020px; height: 560px; border-radius: 34px; opacity: 0;
+        background: rgba(18,15,10,0.95); border: 1.5px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(201,165,76,0.14); overflow: hidden; }
+      #card svg { position: absolute; inset: 0; }
+      text { font-family: "Inter", sans-serif; }
+      .yr { font-size: 30px; font-weight: 900; letter-spacing: 0.08em; fill: var(--gold-hi); }
+      .px { font-size: 30px; font-weight: 900; }
+      .sm { font-size: 24px; font-weight: 800; letter-spacing: 0.06em; }
+
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 50px; right: 50px; top: 1500px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 20px; opacity: 0; text-align: center; }
+      .cg.hook { gap: 0 26px; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 70px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 80px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 90px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.up { color: #6fe0a6; }
+      .w.dn { color: #ff7a7e; }
+      .w.b, .w.bup, .w.bdn { padding: 0 20px; border-radius: 16px; text-shadow: none; font-weight: 900; }
+      .w.b { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.bup { color: #fff; background: var(--green); }
+      .w.bdn { color: #fff; background: var(--red); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 11px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+
+      /* Instagram follow pill */
+      #ig { position: absolute; left: 90px; right: 90px; top: 1600px; height: 150px; border-radius: 34px; background: #ffffff; opacity: 0;
+        display: flex; align-items: center; padding: 0 26px; gap: 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+      #ig img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 4px #fff, 0 0 0 7px #d62976; }
+      #igName { flex: 1; font-weight: 800; font-size: 40px; color: #111; letter-spacing: -0.01em; white-space: nowrap; }
+      #igName span { display: inline-block; }
+      #igBtn { position: relative; flex: none; width: 220px; height: 88px; border-radius: 18px; background: #0095f6; color: #fff; font-weight: 800; font-size: 38px; display: flex; align-items: center; justify-content: center; }
+      #igBtn .on { position: absolute; inset: 0; border-radius: 18px; background: #efefef; color: #111; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #igSave { position: relative; flex: none; width: 88px; height: 88px; border-radius: 18px; background: #efefef; display: flex; align-items: center; justify-content: center; margin-left: -8px; }
+      #igSave svg { width: 46px; height: 46px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      #ripple { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(255,255,255,0.9); left: 0; top: 0; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="__DUR__" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="__DUR__" data-track-index="0"></div>
+      <div id="camwrap">
+        <div id="track">
+          <video id="cam" class="clip" data-start="0" data-duration="__DUR__" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        </div>
+      </div>
+      <div id="strip" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+      <div id="topfade" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+
+      <div id="pCard" class="clip" data-start="0" data-duration="48.9" data-track-index="3">
+        <div id="card"><svg id="chart" viewBox="0 0 1020 560" width="1020" height="560"></svg></div>
+      </div>
+
+      <div id="pCta" class="clip" data-start="48.6" data-duration="5.16" data-track-index="3">
+        <div id="ig">
+          <img src="assets/perfil.png" alt="" />
+          <div id="igName"></div>
+          <div id="igBtn">Seguir<div class="on">Siguiendo</div></div>
+          <div id="igSave"><svg viewBox="0 0 24 24"><path id="bmk" d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div id="ripple"></div>
+        <svg id="tap" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="__DUR__" data-track-index="4"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const NS = "http://www.w3.org/2000/svg";
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const svg = $("#chart");
+      const GREEN = "#3fbf7f", RED = "#e5484d", GOLD = "#f0d488", CREAM = "#f3e3b5";
+
+      function el(tag, attrs, parent, text) {
+        const e = document.createElementNS(NS, tag);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        if (text !== undefined) e.textContent = text;
+        (parent || svg).appendChild(e); return e;
+      }
+      const group = (id) => el("g", { id, opacity: 0 });
+
+      // Same weekly structure for both years (normalised: 0 = bottom, 1 = top of the 12-week rally)
+      // [open, close, high, low]
+      const BASE = [
+        [0.55, 0.42, 0.58, 0.38], [0.42, 0.24, 0.45, 0.20], [0.24, 0.04, 0.27, -0.03], [0.04, 0.08, 0.12, 0.0],
+        [0.08, 0.05, 0.11, 0.02], [0.05, 0.10, 0.13, 0.03], [0.10, 0.07, 0.12, 0.04], [0.07, 0.24, 0.27, 0.06],
+        [0.24, 0.44, 0.47, 0.22], [0.44, 0.60, 0.63, 0.40], [0.60, 0.76, 0.79, 0.57], [0.76, 0.90, 0.93, 0.72],
+        [0.90, 0.97, 1.02, 0.86], [0.97, 0.86, 0.99, 0.82], [0.86, 0.70, 0.88, 0.66], [0.70, 0.56, 0.72, 0.49],
+        [0.56, 0.66, 0.69, 0.52], [0.66, 0.82, 0.85, 0.63], [0.82, 0.98, 1.01, 0.79], [0.98, 1.14, 1.17, 0.95], [1.14, 1.28, 1.31, 1.10],
+      ];
+      const IB = 2, IT = 12, ITOUCH = 15; // bottom, top, touch of the 50%
+
+      // draws candles; returns per-candle groups (hidden) + mapping helpers
+      function chart(parentId, x0, step, w, yBase, yScale, data) {
+        const P = $(parentId) || group(parentId.slice(1));
+        const Y = (n) => yBase - n * yScale, X = (i) => x0 + i * step;
+        const cs = data.map((c, i) => {
+          const [o, cl, h, l] = c, col = cl >= o ? GREEN : RED;
+          const g = el("g", { opacity: 0 }, P);
+          el("line", { x1: X(i), x2: X(i), y1: Y(h), y2: Y(l), stroke: col, "stroke-width": Math.max(2, w / 7), "stroke-linecap": "round" }, g);
+          el("rect", { x: X(i) - w / 2, y: Y(Math.max(o, cl)), width: w, height: Math.max(3, Math.abs(cl - o) * yScale), rx: 3, fill: col }, g);
+          return g;
+        });
+        return { P, cs, X, Y };
+      }
+      const reveal = (cs, from, to, t0, t1) => { for (let i = from; i <= to; i++) tl.to(cs[i], { opacity: 1, duration: 0.12 }, t0 + (t1 - t0) * ((i - from) / Math.max(1, to - from))); };
+      const show = (target, t, d = 0.35) => tl.to(target, { opacity: 1, duration: d }, t);
+      const draw = (path, t, d = 0.6) => tl.fromTo(path, { attr: { "stroke-dashoffset": path.getTotalLength ? 1000 : 1000 } }, { attr: { "stroke-dashoffset": 0 }, duration: d, ease: "power2.out" }, t);
+      function ring(P, cx, cy, rx, ry, col) { return el("ellipse", { cx, cy, rx, ry, fill: "none", stroke: col || GOLD, "stroke-width": 5, "stroke-dasharray": 1000, "stroke-dashoffset": 1000 }, P); }
+      function arrow(P, x1, y1, x2, y2, col) {
+        const g = el("g", { opacity: 0 }, P);
+        el("line", { x1, y1, x2, y2, stroke: col, "stroke-width": 7, "stroke-linecap": "round" }, g);
+        const a = Math.atan2(y2 - y1, x2 - x1), L = 22;
+        el("path", { d: `M${x2 - L * Math.cos(a - 0.5)} ${y2 - L * Math.sin(a - 0.5)} L${x2} ${y2} L${x2 - L * Math.cos(a + 0.5)} ${y2 - L * Math.sin(a + 0.5)}`, fill: "none", stroke: col, "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round" }, g);
+        return g;
+      }
+      function pill(P, x, y, txt, bg, fg, anchor) {
+        const g = el("g", { opacity: 0 }, P);
+        const wdt = txt.length * 19 + 36;
+        const xx = anchor === "end" ? x - wdt : anchor === "middle" ? x - wdt / 2 : x;
+        el("rect", { x: xx, y: y - 30, width: wdt, height: 46, rx: 23, fill: bg }, g);
+        el("text", { x: xx + wdt / 2, y: y + 2, "text-anchor": "middle", class: "px", fill: fg, "font-size": 28 }, g, txt);
+        return g;
+      }
+
+      // ================= HOOK: the mirror (2023 | 2026) =================
+      const H = group("hook");
+      el("text", { x: 255, y: 52, "text-anchor": "middle", class: "yr" }, H, "2023");
+      el("text", { x: 765, y: 52, "text-anchor": "middle", class: "yr" }, H, "2026");
+      el("line", { x1: 510, x2: 510, y1: 30, y2: 530, stroke: "rgba(240,212,136,0.35)", "stroke-width": 2, "stroke-dasharray": "6 8" }, H);
+      const m23 = chart("#hook", 50, 21, 13, 470, 300, BASE);
+      const m26 = chart("#hook", 560, 21, 13, 470, 300, BASE.slice(0, 15));
+      // projection on 2026: down to the 50% and up again
+      const projH = el("path", { d: `M${m26.X(14)} ${m26.Y(0.70)} L${m26.X(16)} ${m26.Y(0.5)} L${m26.X(20)} ${m26.Y(1.25)}`, fill: "none", stroke: GOLD, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0 }, H);
+      const midH = el("line", { x1: 560, x2: 990, y1: m26.Y(0.5), y2: m26.Y(0.5), stroke: GOLD, "stroke-width": 3, "stroke-dasharray": "10 8", opacity: 0 }, H);
+      const qH = el("text", { x: m26.X(16), y: m26.Y(0.5) + 60, "text-anchor": "middle", "font-size": 60, "font-weight": 900, fill: GOLD, opacity: 0 }, H, "?");
+      const dotH = el("circle", { cx: m26.X(16), cy: m26.Y(0.5), r: 12, fill: GOLD, opacity: 0 }, H);
+      const eqH = pill(H, 510, 290, "=", "#1d1910", GOLD, "middle");
+
+      // ================= 2023 =================
+      const C1 = group("y23");
+      el("text", { x: 40, y: 56, class: "yr" }, C1, "2023");
+      const c23 = chart("#y23", 90, 41, 24, 425, 290, BASE);
+      const low23 = pill(C1, c23.X(IB) + 30, c23.Y(-0.03) + 36, "$15.500", "#1d1910", "#ff8d90");
+      const ringLow23 = ring(C1, c23.X(IB), c23.Y(0.0), 46, 34, RED);
+      const top23 = pill(C1, c23.X(IT), c23.Y(1.02) - 22, "$25.000", "#1d1910", "#7ff0b5", "middle");
+      const br23 = el("g", { opacity: 0 }, C1);
+      el("path", { d: `M${c23.X(IB)} ${c23.Y(-0.1) + 42} v12 H${c23.X(IT)} v-12`, fill: "none", stroke: CREAM, "stroke-width": 3 }, br23);
+      el("text", { x: (c23.X(IB) + c23.X(IT)) / 2, y: c23.Y(-0.1) + 86, "text-anchor": "middle", class: "sm", fill: CREAM }, br23, "12 SEMANAS");
+      const dropA = arrow(C1, c23.X(13) + 40, c23.Y(0.98), c23.X(15) + 40, c23.Y(0.58), RED);
+      const dropP = pill(C1, c23.X(15) + 60, c23.Y(0.80), "−22%", RED, "#fff");
+      const mid23 = el("line", { x1: c23.X(IB), x2: 990, y1: c23.Y(0.5), y2: c23.Y(0.5), stroke: GOLD, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0 }, C1);
+      const midL23 = pill(C1, 990, c23.Y(0.5) - 22, "50%", GOLD, "#1a1408", "end");
+      const ringTouch23 = ring(C1, c23.X(ITOUCH), c23.Y(0.49), 40, 36, GOLD);
+      const up23 = arrow(C1, c23.X(16) + 10, c23.Y(0.6), c23.X(20) + 6, c23.Y(1.3), GREEN);
+
+      // ================= 2026 =================
+      const C2 = group("y26");
+      el("text", { x: 40, y: 56, class: "yr" }, C2, "2026");
+      const N26 = 15; // candles printed so far (up to the current pullback)
+      const c26 = chart("#y26", 90, 41, 24, 425, 290, BASE.slice(0, N26));
+      const ghost = el("polyline", { points: BASE.map((c, i) => `${c26.X(i)},${c26.Y(c[1])}`).join(" "), fill: "none", stroke: "rgba(240,212,136,0.55)", "stroke-width": 4, "stroke-dasharray": "4 8", opacity: 0 }, C2);
+      const ghostL = pill(C2, c26.X(18), c26.Y(1.25) + 6, "= 2023", "#1d1910", GOLD, "middle");
+      const low26 = pill(C2, c26.X(IB) + 30, c26.Y(-0.03) + 36, "$57.000", "#1d1910", "#ff8d90");
+      const ringLow26 = ring(C2, c26.X(IB), c26.Y(0.0), 46, 34, RED);
+      const top26 = pill(C2, c26.X(IT), c26.Y(1.02) - 22, "$87.000", "#1d1910", "#7ff0b5", "middle");
+      const br26 = el("g", { opacity: 0 }, C2);
+      el("path", { d: `M${c26.X(IB)} ${c26.Y(-0.1) + 42} v12 H${c26.X(IT)} v-12`, fill: "none", stroke: CREAM, "stroke-width": 3 }, br26);
+      el("text", { x: (c26.X(IB) + c26.X(IT)) / 2, y: c26.Y(-0.1) + 86, "text-anchor": "middle", class: "sm", fill: CREAM }, br26, "12 SEMANAS");
+      const mid26 = el("line", { x1: c26.X(IB), x2: 990, y1: c26.Y(0.5), y2: c26.Y(0.5), stroke: GOLD, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0 }, C2);
+      const midL26 = pill(C2, 990, c26.Y(0.5) + 50, "50% · $72.000", GOLD, "#1a1408", "end");
+      const proj = el("path", { d: `M${c26.X(14)} ${c26.Y(0.70)} L${c26.X(15)} ${c26.Y(0.5)} L${c26.X(16)} ${c26.Y(0.5)} L${c26.X(20)} ${c26.Y(1.3)}`, fill: "none", stroke: GOLD, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0 }, C2);
+      const dot26 = el("circle", { cx: c26.X(15.5), cy: c26.Y(0.5), r: 14, fill: GOLD, opacity: 0 }, C2);
+      const ringDot26 = ring(C2, c26.X(15.5), c26.Y(0.5), 44, 34, GOLD);
+      const up26 = arrow(C2, c26.X(16) + 10, c26.Y(0.62), c26.X(20), c26.Y(1.28), GREEN);
+      const hist = pill(C2, 150, 52, "SI LA HISTORIA SE REPITE", "#1d1910", GOLD);
+
+      // ---------- captions ----------
+      const G = __G__;
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const e = document.createElement("div"); e.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          e.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(e); return { el: e, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+
+      // ---------- face tracking (keeps the head centred) ----------
+      const FACE = __FACE__;
+      FACE.forEach((f, i) => {
+        const v = Math.max(-140, Math.min(140, 864 - f.x));
+        if (i === 0) tl.set("#track", { x: v }, 0);
+        else tl.to("#track", { x: v, duration: f.t - FACE[i - 1].t, ease: "none" }, FACE[i - 1].t);
+      });
+
+      // ---------- camera / layout ----------
+      // SPLIT: face strip on top, chart below; FULL: person fills the frame
+      const SPLIT = { x: -324, y: 140, scale: 0.75 }, FULL = { x: -324, y: 40, scale: 1.3 };
+      const CAP_SPLIT = -510; // captions between the face strip and the chart
+      const toSplit = (t) => {
+        tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale, duration: 0.6, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 1, duration: 0.4 }, t + 0.1);
+        tl.to("#caps", { y: CAP_SPLIT, duration: 0.6, ease: "power3.inOut" }, t);
+        tl.to("#card", { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, t + 0.2);
+      };
+      const toFull = (t) => {
+        tl.to("#card", { opacity: 0, y: 30, duration: 0.3, ease: "power2.in" }, t - 0.1);
+        tl.to(cam, { x: FULL.x, y: FULL.y, scale: FULL.scale, duration: 0.6, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 0, duration: 0.4 }, t);
+        tl.to("#caps", { y: 0, duration: 0.6, ease: "power3.inOut" }, t);
+      };
+      // start already in split so the mirror is on screen from the first frame
+      tl.set(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale }, 0);
+      tl.set("#caps", { y: CAP_SPLIT }, 0);
+      tl.fromTo("#card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 0);
+      toFull(23.5); toSplit(25.85);
+      toFull(41.3); toSplit(44.0);
+      toFull(48.75);
+
+      // ---------- HOOK (0 - 7.3) ----------
+      tl.set("#hook", { opacity: 1 }, 0);
+      reveal(m23.cs, 0, BASE.length - 1, 0.1, 2.4);
+      reveal(m26.cs, 0, 14, 0.4, 2.7);
+      show(eqH, 2.96);
+      show(midH, 4.2, 0.3);
+      tl.to(projH, { opacity: 1, duration: 0.8 }, 4.78);
+      show(dotH, 5.64, 0.2);
+      tl.fromTo(dotH, { attr: { r: 12 } }, { attr: { r: 18 }, duration: 0.45, yoyo: true, repeat: 3, ease: "sine.inOut" }, 5.7);
+      show(qH, 6.2, 0.25);
+      tl.to("#hook", { opacity: 0, duration: 0.35 }, 7.2);
+
+      // ---------- 2023 (7.56 - 23.4) ----------
+      tl.set("#y23", { opacity: 1 }, 7.5);
+      reveal(c23.cs, 0, IB + 1, 7.8, 9.6);
+      show(low23, 9.66); draw(ringLow23, 9.8, 0.5);
+      reveal(c23.cs, IB + 2, IT, 11.0, 12.3);
+      show(top23, 12.22);
+      show(br23, 13.7);
+      reveal(c23.cs, IT + 1, ITOUCH, 15.5, 17.2);
+      show(dropA, 15.7); show(dropP, 16.0);
+      tl.to(mid23, { opacity: 1, duration: 0.4 }, 18.3);
+      show(midL23, 19.9);
+      draw(ringTouch23, 20.94, 0.55);
+      reveal(c23.cs, ITOUCH + 1, BASE.length - 1, 22.24, 23.0);
+      show(up23, 22.4);
+      tl.to("#y23", { opacity: 0, duration: 0.3 }, 23.4);
+
+      // ---------- 2026 (25.85 - 41.3) ----------
+      tl.set("#y26", { opacity: 1 }, 25.8);
+      reveal(c26.cs, 0, IB + 1, 26.1, 27.5);
+      show(low26, 27.6); draw(ringLow26, 27.75, 0.5);
+      reveal(c26.cs, IB + 2, IT, 29.0, 30.3);
+      show(top26, 30.34);
+      show(br26, 32.74);
+      tl.to(ghost, { opacity: 1, duration: 0.5 }, 33.8);
+      show(ghostL, 34.0);
+      reveal(c26.cs, IT + 1, N26 - 1, 35.0, 35.6);
+      tl.to(ghost, { opacity: 0.25, duration: 0.5 }, 36.2);
+      tl.to(ghostL, { opacity: 0, duration: 0.3 }, 36.2);
+      tl.to(mid26, { opacity: 1, duration: 0.4 }, 37.9);
+      show(midL26, 39.72);
+      show(dot26, 39.9, 0.2); draw(ringDot26, 40.0, 0.5);
+      // projection after the full-screen beat
+      tl.to(proj, { opacity: 1, duration: 1.0 }, 44.3);
+      show(hist, 44.4);
+      tl.fromTo(dot26, { attr: { r: 14 } }, { attr: { r: 20 }, duration: 0.4, yoyo: true, repeat: 3, ease: "sine.inOut" }, 44.8);
+      show(up26, 47.3);
+
+      // ---------- CTA: Instagram follow pill ----------
+      const NAME = "@TheCryptons_";
+      NAME.split("").forEach((ch) => { const sp = document.createElement("span"); sp.textContent = ch; $("#igName").appendChild(sp); });
+      tl.set("#caps", { y: -40 }, 49.4);
+      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 49.0);
+      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.22, ease: "back.out(3)" }, 49.25 + i * 0.03));
+      const BX = 750, BY = 1675, SX = 920;
+      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.45, ease: "power2.inOut" }, 49.6);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 50.1);
+      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 50.1);
+      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 50.12);
+      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 50.16);
+      tl.to("#tap", { x: SX - 6, duration: 0.3, ease: "power2.inOut" }, 50.6);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 51.0);
+      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 51.0);
+      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 51.02);
+      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 51.05);
+      tl.to("#tap", { opacity: 0, duration: 0.3 }, 51.5);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (["b", "bup", "bdn", "s", "g"].includes(w.st)) tl.fromTo(w.el, { scale: 0.7 }, { scale: 1, duration: 0.22, ease: "back.out(2.5)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, __DUR__);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
