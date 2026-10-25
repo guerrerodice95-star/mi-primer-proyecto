@@ -19,7 +19,7 @@
 
       #bg { background: radial-gradient(900px 600px at 50% 72%, rgba(201,165,76,0.14), transparent 70%), var(--bg); }
       #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px;
-        -webkit-mask-image: linear-gradient(180deg, transparent 50%, #000 60%, #000 85%, transparent 95%); mask-image: linear-gradient(180deg, transparent 50%, #000 60%, #000 85%, transparent 95%); }
+        -webkit-mask-image: linear-gradient(180deg, transparent 47%, #000 55%, #000 82%, transparent 90%); mask-image: linear-gradient(180deg, transparent 47%, #000 55%, #000 82%, transparent 90%); }
 
       /* source (cropped band 1728x1448) */
       #camwrap { position: absolute; left: 0; top: 0; width: 1728px; height: 1448px; transform-origin: 864px 0px; }
@@ -28,12 +28,11 @@
       #topfade { position: absolute; left: 0; top: 0; width: 1080px; height: 220px; pointer-events: none; background: linear-gradient(180deg, rgba(11,10,8,0.9) 0%, rgba(11,10,8,0.4) 50%, rgba(11,10,8,0) 100%); }
       /* below the face strip everything is clean background for the chart */
       #strip { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none;
-        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 900px, var(--bg) 990px, var(--bg) 1920px); }
+        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 790px, var(--bg) 875px, var(--bg) 1920px); }
       #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 30%, transparent 60%, rgba(0,0,0,0.4) 100%); }
 
       /* chart card */
-      #card { position: absolute; left: 30px; top: 1085px; width: 1020px; height: 560px; border-radius: 34px; opacity: 0;
-        background: rgba(18,15,10,0.95); border: 1.5px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(201,165,76,0.14); overflow: hidden; }
+      #card { position: absolute; left: 30px; top: 960px; width: 1020px; height: 690px; opacity: 0; }
       #card svg { position: absolute; inset: 0; }
       text { font-family: "Inter", sans-serif; }
       .yr { font-size: 30px; font-weight: 900; letter-spacing: 0.08em; fill: var(--gold-hi); }
@@ -85,7 +84,7 @@
       <div id="vignette" class="clip" data-start="0" data-duration="53.76" data-track-index="2"></div>
 
       <div id="pCard" class="clip" data-start="0" data-duration="48.9" data-track-index="3">
-        <div id="card"><svg id="chart" viewBox="0 0 1020 560" width="1020" height="560"></svg></div>
+        <div id="card"><svg id="chart" viewBox="0 0 1020 690" width="1020" height="690"></svg></div>
       </div>
 
       <div id="pCta" class="clip" data-start="48.6" data-duration="5.16" data-track-index="3">
@@ -119,16 +118,19 @@
       }
       const group = (id) => el("g", { id, opacity: 0 });
 
-      // Same weekly structure for both years (normalised: 0 = bottom, 1 = top of the 12-week rally)
-      // [open, close, high, low]
-      const BASE = [
-        [0.55, 0.42, 0.58, 0.38], [0.42, 0.24, 0.45, 0.20], [0.24, 0.04, 0.27, -0.03], [0.04, 0.08, 0.12, 0.0],
-        [0.08, 0.05, 0.11, 0.02], [0.05, 0.10, 0.13, 0.03], [0.10, 0.07, 0.12, 0.04], [0.07, 0.24, 0.27, 0.06],
-        [0.24, 0.44, 0.47, 0.22], [0.44, 0.60, 0.63, 0.40], [0.60, 0.76, 0.79, 0.57], [0.76, 0.90, 0.93, 0.72],
-        [0.90, 0.97, 1.02, 0.86], [0.97, 0.86, 0.99, 0.82], [0.86, 0.70, 0.88, 0.66], [0.70, 0.56, 0.72, 0.49],
-        [0.56, 0.66, 0.69, 0.52], [0.66, 0.82, 0.85, 0.63], [0.82, 0.98, 1.01, 0.79], [0.98, 1.14, 1.17, 0.95], [1.14, 1.28, 1.31, 1.10],
-      ];
-      const IB = 2, IT = 12, ITOUCH = 15; // bottom, top, touch of the 50%
+      // Candles copied from the reference chart, candle by candle (pixel y of open, close, high, low; blue -> green, white -> red).
+      const PX23 = [[362,322,300,375],[322,312,293,335],[312,482,310,508],[483,486,455,500],[486,480,465,510],[480,455,445,495],[453,456,445,465],
+        [455,468,408,475],[463,467,458,480],[464,472,460,482],[472,456,455,475],[456,315,305,457],[315,245,225,325],[243,205,195,250],[205,235,188,245],
+        [236,278,225,288],[278,185,155,292],[184,212,155,240],[212,253,200,260],[255,265,250,358]];
+      const PX26 = [[220,265,205,280],[265,405,262,462],[405,373,370,440],[373,405,360,420],[405,455,380,460],[455,402,398,480],[399,402,385,430],
+        [399,387,375,415],[386,377,355,395],[377,402,372,418],[402,384,380,420],[384,412,380,418],[412,209,185,414],[207,210,160,220],[209,173,148,222],
+        [173,220,165,222],[220,163,155,235],[163,118,80,170],[117,90,68,145],[90,128,80,165],[128,157,120,182],[156,158,154,160]];
+      // normalise so 0 = cycle low and 1 = cycle high (2023: 15.6K..25.1K, 2026: 57.7K..87.4K)
+      const norm = (px, lo, hi) => px.map((c) => c.map((y) => (lo - y) / (lo - hi)));
+      const D23 = norm(PX23, 510, 155).concat([[0.42, 0.55, 0.58, 0.40], [0.55, 0.51, 0.60, 0.47], [0.51, 0.74, 0.77, 0.50], [0.74, 0.70, 0.80, 0.66], [0.70, 0.92, 0.95, 0.68], [0.92, 1.08, 1.12, 0.90]]);
+      const D26 = norm(PX26, 480, 68);
+      const IB23 = 4, IT23 = 16, ITOUCH23 = 19, IB26 = 5, IT26 = 18;
+      const BASE = D23; // used by the hook
 
       // draws candles; returns per-candle groups (hidden) + mapping helpers
       function chart(parentId, x0, step, w, yBase, yScale, data) {
@@ -167,52 +169,53 @@
       const H = group("hook");
       el("text", { x: 255, y: 52, "text-anchor": "middle", class: "yr" }, H, "2023");
       el("text", { x: 765, y: 52, "text-anchor": "middle", class: "yr" }, H, "2026");
-      el("line", { x1: 510, x2: 510, y1: 30, y2: 530, stroke: "rgba(240,212,136,0.35)", "stroke-width": 2, "stroke-dasharray": "6 8" }, H);
-      const m23 = chart("#hook", 50, 21, 13, 470, 300, BASE);
-      const m26 = chart("#hook", 560, 21, 13, 470, 300, BASE.slice(0, 15));
+      el("line", { x1: 510, x2: 510, y1: 30, y2: 660, stroke: "rgba(240,212,136,0.35)", "stroke-width": 2, "stroke-dasharray": "6 8" }, H);
+      const m23 = chart("#hook", 40, 18.5, 12, 600, 420, D23);
+      const m26 = chart("#hook", 550, 18, 12, 600, 420, D26);
       // projection on 2026: down to the 50% and up again
-      const projH = el("path", { d: `M${m26.X(14)} ${m26.Y(0.70)} L${m26.X(16)} ${m26.Y(0.5)} L${m26.X(20)} ${m26.Y(1.25)}`, fill: "none", stroke: GOLD, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0 }, H);
+      const projH = el("path", { d: `M${m26.X(21)} ${m26.Y(0.78)} L${m26.X(23)} ${m26.Y(0.5)} L${m26.X(25.5)} ${m26.Y(1.3)}`, fill: "none", stroke: GOLD, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0 }, H);
       const midH = el("line", { x1: 560, x2: 990, y1: m26.Y(0.5), y2: m26.Y(0.5), stroke: GOLD, "stroke-width": 3, "stroke-dasharray": "10 8", opacity: 0 }, H);
-      const qH = el("text", { x: m26.X(16), y: m26.Y(0.5) + 60, "text-anchor": "middle", "font-size": 60, "font-weight": 900, fill: GOLD, opacity: 0 }, H, "?");
-      const dotH = el("circle", { cx: m26.X(16), cy: m26.Y(0.5), r: 12, fill: GOLD, opacity: 0 }, H);
-      const eqH = pill(H, 510, 290, "=", "#1d1910", GOLD, "middle");
+      const qH = el("text", { x: m26.X(23), y: m26.Y(0.5) + 70, "text-anchor": "middle", "font-size": 60, "font-weight": 900, fill: GOLD, opacity: 0 }, H, "?");
+      const dotH = el("circle", { cx: m26.X(23), cy: m26.Y(0.5), r: 12, fill: GOLD, opacity: 0 }, H);
+      const eqH = pill(H, 510, 360, "=", "#1d1910", GOLD, "middle");
 
       // ================= 2023 =================
       const C1 = group("y23");
       el("text", { x: 40, y: 56, class: "yr" }, C1, "2023");
-      const c23 = chart("#y23", 90, 41, 24, 425, 290, BASE);
-      const low23 = pill(C1, c23.X(IB) + 30, c23.Y(-0.03) + 36, "$15.500", "#1d1910", "#ff8d90");
-      const ringLow23 = ring(C1, c23.X(IB), c23.Y(0.0), 46, 34, RED);
-      const top23 = pill(C1, c23.X(IT), c23.Y(1.02) - 22, "$25.000", "#1d1910", "#7ff0b5", "middle");
+      const c23 = chart("#y23", 70, 38, 22, 560, 400, D23);
+      const low23 = pill(C1, c23.X(IB23) + 34, c23.Y(D23[IB23][3]) + 44, "$15.600", "#1d1910", "#ff8d90");
+      const ringLow23 = ring(C1, c23.X(IB23 - 0.5), c23.Y(0.02), 62, 36, RED);
+      const top23 = pill(C1, c23.X(IT23), c23.Y(1.0) - 26, "$25.100", "#1d1910", "#7ff0b5", "middle");
       const br23 = el("g", { opacity: 0 }, C1);
-      el("path", { d: `M${c23.X(IB)} ${c23.Y(-0.1) + 42} v12 H${c23.X(IT)} v-12`, fill: "none", stroke: CREAM, "stroke-width": 3 }, br23);
-      el("text", { x: (c23.X(IB) + c23.X(IT)) / 2, y: c23.Y(-0.1) + 86, "text-anchor": "middle", class: "sm", fill: CREAM }, br23, "12 SEMANAS");
-      const dropA = arrow(C1, c23.X(13) + 40, c23.Y(0.98), c23.X(15) + 40, c23.Y(0.58), RED);
-      const dropP = pill(C1, c23.X(15) + 60, c23.Y(0.80), "−22%", RED, "#fff");
-      const mid23 = el("line", { x1: c23.X(IB), x2: 990, y1: c23.Y(0.5), y2: c23.Y(0.5), stroke: GOLD, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0 }, C1);
-      const midL23 = pill(C1, 990, c23.Y(0.5) - 22, "50%", GOLD, "#1a1408", "end");
-      const ringTouch23 = ring(C1, c23.X(ITOUCH), c23.Y(0.49), 40, 36, GOLD);
-      const up23 = arrow(C1, c23.X(16) + 10, c23.Y(0.6), c23.X(20) + 6, c23.Y(1.3), GREEN);
+      el("path", { d: `M${c23.X(IB23)} ${c23.Y(-0.12) + 20} v12 H${c23.X(IT23)} v-12`, fill: "none", stroke: CREAM, "stroke-width": 3 }, br23);
+      el("text", { x: (c23.X(IB23) + c23.X(IT23)) / 2, y: c23.Y(-0.12) + 66, "text-anchor": "middle", class: "sm", fill: CREAM }, br23, "12 SEMANAS");
+      const dropA = arrow(C1, c23.X(18) + 40, c23.Y(0.98), c23.X(19) + 46, c23.Y(0.58), RED);
+      const dropP = pill(C1, c23.X(19) + 64, c23.Y(0.80), "−22%", RED, "#fff");
+      const mid23 = el("line", { x1: c23.X(IB23), x2: 1000, y1: c23.Y(0.5), y2: c23.Y(0.5), stroke: GOLD, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0 }, C1);
+      const midL23 = pill(C1, 1000, c23.Y(0.5) + 50, "50%", GOLD, "#1a1408", "end");
+      const ringTouch23 = ring(C1, c23.X(ITOUCH23), c23.Y(0.5), 34, 40, GOLD);
+      const up23 = arrow(C1, c23.X(20) - 4, c23.Y(0.62), c23.X(23) + 10, c23.Y(1.22), GREEN);
 
       // ================= 2026 =================
       const C2 = group("y26");
       el("text", { x: 40, y: 56, class: "yr" }, C2, "2026");
-      const N26 = 15; // candles printed so far (up to the current pullback)
-      const c26 = chart("#y26", 90, 41, 24, 425, 290, BASE.slice(0, N26));
-      const ghost = el("polyline", { points: BASE.map((c, i) => `${c26.X(i)},${c26.Y(c[1])}`).join(" "), fill: "none", stroke: "rgba(240,212,136,0.55)", "stroke-width": 4, "stroke-dasharray": "4 8", opacity: 0 }, C2);
-      const ghostL = pill(C2, c26.X(18), c26.Y(1.25) + 6, "= 2023", "#1d1910", GOLD, "middle");
-      const low26 = pill(C2, c26.X(IB) + 30, c26.Y(-0.03) + 36, "$57.000", "#1d1910", "#ff8d90");
-      const ringLow26 = ring(C2, c26.X(IB), c26.Y(0.0), 46, 34, RED);
-      const top26 = pill(C2, c26.X(IT), c26.Y(1.02) - 22, "$87.000", "#1d1910", "#7ff0b5", "middle");
+      const N26 = D26.length;
+      const c26 = chart("#y26", 70, 36, 22, 560, 400, D26);
+      // 2023 silhouette aligned on the cycle low
+      const ghost = el("polyline", { points: D23.map((c, i) => `${c26.X(i - IB23 + IB26)},${c26.Y(c[1])}`).filter((p, i) => i - IB23 + IB26 >= 0 && i - IB23 + IB26 <= 25).join(" "), fill: "none", stroke: "rgba(240,212,136,0.6)", "stroke-width": 4, "stroke-dasharray": "4 8", opacity: 0 }, C2);
+      const ghostL = pill(C2, c26.X(23), c26.Y(1.22), "= 2023", "#1d1910", GOLD, "middle");
+      const low26 = pill(C2, c26.X(IB26) + 34, c26.Y(D26[IB26][3]) + 44, "$57.700", "#1d1910", "#ff8d90");
+      const ringLow26 = ring(C2, c26.X(IB26 - 0.5), c26.Y(0.02), 62, 36, RED);
+      const top26 = pill(C2, c26.X(IT26), c26.Y(1.0) - 26, "$87.400", "#1d1910", "#7ff0b5", "middle");
       const br26 = el("g", { opacity: 0 }, C2);
-      el("path", { d: `M${c26.X(IB)} ${c26.Y(-0.1) + 42} v12 H${c26.X(IT)} v-12`, fill: "none", stroke: CREAM, "stroke-width": 3 }, br26);
-      el("text", { x: (c26.X(IB) + c26.X(IT)) / 2, y: c26.Y(-0.1) + 86, "text-anchor": "middle", class: "sm", fill: CREAM }, br26, "12 SEMANAS");
-      const mid26 = el("line", { x1: c26.X(IB), x2: 990, y1: c26.Y(0.5), y2: c26.Y(0.5), stroke: GOLD, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0 }, C2);
-      const midL26 = pill(C2, 990, c26.Y(0.5) + 50, "50% · $72.000", GOLD, "#1a1408", "end");
-      const proj = el("path", { d: `M${c26.X(14)} ${c26.Y(0.70)} L${c26.X(15)} ${c26.Y(0.5)} L${c26.X(16)} ${c26.Y(0.5)} L${c26.X(20)} ${c26.Y(1.3)}`, fill: "none", stroke: GOLD, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0 }, C2);
-      const dot26 = el("circle", { cx: c26.X(15.5), cy: c26.Y(0.5), r: 14, fill: GOLD, opacity: 0 }, C2);
-      const ringDot26 = ring(C2, c26.X(15.5), c26.Y(0.5), 44, 34, GOLD);
-      const up26 = arrow(C2, c26.X(16) + 10, c26.Y(0.62), c26.X(20), c26.Y(1.28), GREEN);
+      el("path", { d: `M${c26.X(IB26)} ${c26.Y(-0.12) + 20} v12 H${c26.X(IT26)} v-12`, fill: "none", stroke: CREAM, "stroke-width": 3 }, br26);
+      el("text", { x: (c26.X(IB26) + c26.X(IT26)) / 2, y: c26.Y(-0.12) + 66, "text-anchor": "middle", class: "sm", fill: CREAM }, br26, "12 SEMANAS");
+      const mid26 = el("line", { x1: c26.X(IB26), x2: 1000, y1: c26.Y(0.5), y2: c26.Y(0.5), stroke: GOLD, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0 }, C2);
+      const midL26 = pill(C2, c26.X(6), c26.Y(0.5) - 24, "50% · $72.500", GOLD, "#1a1408");
+      const proj = el("path", { d: `M${c26.X(21)} ${c26.Y(0.78)} L${c26.X(23)} ${c26.Y(0.5)} L${c26.X(25.5)} ${c26.Y(1.3)}`, fill: "none", stroke: GOLD, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0 }, C2);
+      const dot26 = el("circle", { cx: c26.X(23), cy: c26.Y(0.5), r: 14, fill: GOLD, opacity: 0 }, C2);
+      const ringDot26 = ring(C2, c26.X(23), c26.Y(0.5), 44, 34, GOLD);
+      const up26 = arrow(C2, c26.X(23.3), c26.Y(0.6), c26.X(25.5), c26.Y(1.25), GREEN);
       const hist = pill(C2, 150, 52, "SI LA HISTORIA SE REPITE", "#1d1910", GOLD);
 
       // ---------- captions ----------
@@ -239,8 +242,8 @@
 
       // ---------- camera / layout ----------
       // SPLIT: face strip on top, chart below; FULL: person fills the frame
-      const SPLIT = { x: -324, y: 140, scale: 0.75 }, FULL = { x: -324, y: 40, scale: 1.3 };
-      const CAP_SPLIT = -510; // captions between the face strip and the chart
+      const SPLIT = { x: -324, y: 25, scale: 0.75 }, FULL = { x: -324, y: 40, scale: 1.3 };
+      const CAP_SPLIT = -625; // captions between the face strip and the chart
       const toSplit = (t) => {
         tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale, duration: 0.6, ease: "power3.inOut" }, t);
         tl.to("#strip", { opacity: 1, duration: 0.4 }, t + 0.1);
@@ -263,8 +266,8 @@
 
       // ---------- HOOK (0 - 7.3) ----------
       tl.set("#hook", { opacity: 1 }, 0);
-      reveal(m23.cs, 0, BASE.length - 1, 0.1, 2.4);
-      reveal(m26.cs, 0, 14, 0.4, 2.7);
+      reveal(m23.cs, 0, D23.length - 1, 0.1, 2.4);
+      reveal(m26.cs, 0, D26.length - 1, 0.4, 2.7);
       show(eqH, 2.96);
       show(midH, 4.2, 0.3);
       tl.to(projH, { opacity: 1, duration: 0.8 }, 4.78);
@@ -275,30 +278,30 @@
 
       // ---------- 2023 (7.56 - 23.4) ----------
       tl.set("#y23", { opacity: 1 }, 7.5);
-      reveal(c23.cs, 0, IB + 1, 7.8, 9.6);
+      reveal(c23.cs, 0, IB23, 7.8, 9.6);
       show(low23, 9.66); draw(ringLow23, 9.8, 0.5);
-      reveal(c23.cs, IB + 2, IT, 11.0, 12.3);
+      reveal(c23.cs, IB23 + 1, IT23, 11.0, 12.3);
       show(top23, 12.22);
       show(br23, 13.7);
-      reveal(c23.cs, IT + 1, ITOUCH, 15.5, 17.2);
+      reveal(c23.cs, IT23 + 1, ITOUCH23, 15.5, 17.2);
       show(dropA, 15.7); show(dropP, 16.0);
       tl.to(mid23, { opacity: 1, duration: 0.4 }, 18.3);
       show(midL23, 19.9);
       draw(ringTouch23, 20.94, 0.55);
-      reveal(c23.cs, ITOUCH + 1, BASE.length - 1, 22.24, 23.0);
+      reveal(c23.cs, ITOUCH23 + 1, D23.length - 1, 22.24, 23.1);
       show(up23, 22.4);
       tl.to("#y23", { opacity: 0, duration: 0.3 }, 23.4);
 
       // ---------- 2026 (25.85 - 41.3) ----------
       tl.set("#y26", { opacity: 1 }, 25.8);
-      reveal(c26.cs, 0, IB + 1, 26.1, 27.5);
+      reveal(c26.cs, 0, IB26, 26.1, 27.5);
       show(low26, 27.6); draw(ringLow26, 27.75, 0.5);
-      reveal(c26.cs, IB + 2, IT, 29.0, 30.3);
+      reveal(c26.cs, IB26 + 1, IT26, 29.0, 30.3);
       show(top26, 30.34);
       show(br26, 32.74);
       tl.to(ghost, { opacity: 1, duration: 0.5 }, 33.8);
       show(ghostL, 34.0);
-      reveal(c26.cs, IT + 1, N26 - 1, 35.0, 35.6);
+      reveal(c26.cs, IT26 + 1, N26 - 1, 35.0, 35.8);
       tl.to(ghost, { opacity: 0.25, duration: 0.5 }, 36.2);
       tl.to(ghostL, { opacity: 0, duration: 0.3 }, 36.2);
       tl.to(mid26, { opacity: 1, duration: 0.4 }, 37.9);
