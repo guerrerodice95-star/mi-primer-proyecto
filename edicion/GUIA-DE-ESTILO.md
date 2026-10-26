@@ -27,6 +27,8 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Primer plano:** cara centrada y cabeza completa (sin cortar el pelo).
 - **La cabeza siempre en el centro horizontal.** Si se mueve en el plano, usar seguimiento de cara (`herramientas/seguir_cara.py`, 10 muestras/s, suavizado 0,5 s) en vez de un encuadre fijo.
 - Comprobar el encuadre con capturas en varios segundos antes de renderizar: la cara se mueve.
+- **Margen lateral:** Instagram recorta un poco los lados al subir; dejar todo el texto y los gráficos a ≥ 60 px de los bordes izquierdo y derecho.
+- Si el bruto viene con franjas negras, recortar la imagen útil (`ffmpeg cropdetect`) y pegar la cabeza arriba del todo (sin fondo encima).
 
 ## Subtítulos
 
