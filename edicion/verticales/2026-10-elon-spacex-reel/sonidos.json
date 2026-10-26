@@ -1,0 +1,207 @@
+[
+ {
+  "sonido": "pop",
+  "segundo": 0.35,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 6.3,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.4,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.49,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.58,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.67,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.76,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.85,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 7.94,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.03,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.12,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.21,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.3,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.39,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.3,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.4,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.5,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.6,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.7,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.8,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 11.9,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 12.0,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 12.1,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 12.2,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 12.3,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 12.4,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 12.5,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "ding",
+  "segundo": 12.7,
+  "volumen": 0.14
+ },
+ {
+  "sonido": "pop",
+  "segundo": 12.9,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "riser",
+  "segundo": 13.55,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 14.5,
+  "volumen": 0.3
+ },
+ {
+  "sonido": "ding",
+  "segundo": 14.56,
+  "volumen": 0.22
+ },
+ {
+  "sonido": "swish",
+  "segundo": 16.82,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "swish",
+  "segundo": 19.92,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 23.55,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 27.7,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 30.1,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 33.9,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "swish",
+  "segundo": 36.74,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "click",
+  "segundo": 39.62,
+  "volumen": 0.45
+ },
+ {
+  "sonido": "click",
+  "segundo": 40.36,
+  "volumen": 0.45
+ }
+]

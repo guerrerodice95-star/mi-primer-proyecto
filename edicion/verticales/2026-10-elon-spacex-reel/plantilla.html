@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --cream: #f3e3b5; --green: #3fbf7f; --red: #e5484d; --bg: #0b0a08; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      .goldtext { background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-lo) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      #bg { background: radial-gradient(900px 700px at 50% 70%, rgba(201,165,76,0.14), transparent 70%), var(--bg); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); }
+
+      /* source band 1728x1100 (head touches the top edge) */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1728px; height: 1100px; transform-origin: 864px 0px; }
+      #track { position: absolute; inset: 0; }
+      #cam { position: absolute; inset: 0; width: 1728px; height: 1100px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #strip { position: absolute; inset: 0; pointer-events: none; opacity: 1;
+        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 780px, var(--bg) 880px, var(--bg) 1920px); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 35%, transparent 60%, rgba(0,0,0,0.42) 100%); }
+      #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 22%, #fff7dc 0%, rgba(240,212,136,0.75) 30%, rgba(201,165,76,0) 70%); mix-blend-mode: screen; }
+
+      /* ---------- shared panels (60px safe margin each side) ---------- */
+      .panel { position: absolute; left: 60px; right: 60px; opacity: 0; }
+
+      /* tweet card */
+      #tweet { top: 1150px; padding: 34px 38px 30px; border-radius: 30px; background: #000; border: 1.5px solid #2f3336; box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 50px rgba(201,165,76,0.12); }
+      #tweet .hd { display: flex; align-items: center; gap: 20px; }
+      #tweet .av { width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(160deg, #3a3f47, #15181c); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; color: #cfd3d8; flex: none; }
+      #tweet .nm { font-weight: 800; font-size: 36px; display: flex; align-items: center; gap: 10px; }
+      #tweet .ck { width: 32px; height: 32px; border-radius: 50%; background: #1d9bf0; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; }
+      #tweet .hn { color: #71767b; font-size: 30px; font-weight: 500; margin-top: 2px; }
+      #tweet .x { margin-left: auto; font-weight: 900; font-size: 46px; color: #e7e9ea; }
+      #tweet .tx { margin-top: 26px; font-size: 42px; line-height: 1.32; font-weight: 500; color: #e7e9ea; }
+      #tweet .tx p + p { margin-top: 22px; }
+      .hl { position: relative; z-index: 0; display: inline-block; }
+      .hl i { position: absolute; left: -6px; right: -6px; bottom: 0px; height: 52%; border-radius: 6px; background: rgba(240,212,136,0.6); z-index: -1; transform-origin: 0 50%; }
+      #tweet .tr { margin-top: 18px; font-size: 30px; line-height: 1.3; color: var(--gold-hi); }
+      #tweet .mt { margin-top: 22px; padding-top: 18px; border-top: 1px solid #2f3336; color: #71767b; font-size: 26px; font-weight: 500; }
+      #tweet .mt b { color: #e7e9ea; font-weight: 800; }
+
+      /* hook data pill */
+      #hookPill { position: absolute; left: 50%; top: 1072px; padding: 14px 30px; border-radius: 999px; white-space: nowrap; opacity: 0;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408; font-weight: 900; font-size: 38px; letter-spacing: 0.02em;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+
+      /* numbers */
+      #nums { top: 1010px; height: 640px; }
+      .stat { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; }
+      .stat .big { font-weight: 900; font-size: 128px; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+      .stat .lbl { margin-top: 6px; font-size: 54px; color: var(--cream); }
+      #s1 { top: 0; }
+      #kids { position: absolute; left: 40px; right: 40px; top: 210px; height: 120px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; }
+      .kid { width: 32px; height: 50px; opacity: 0; }
+      #s2 { top: 360px; }
+      #s3 { top: 560px; }
+      #s3 span { display: inline-block; padding: 12px 30px; border-radius: 999px; border: 2px solid var(--gold); background: rgba(201,165,76,0.12); font-weight: 800; font-size: 42px; color: var(--cream); }
+      #s3 b { color: var(--gold-hi); font-weight: 900; }
+
+      /* boom */
+      #boom { position: absolute; inset: 0; pointer-events: none; }
+      .ringB { position: absolute; left: 540px; top: 230px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 10px solid var(--gold-hi); opacity: 0; box-shadow: 0 0 40px rgba(240,212,136,0.8); }
+      .spark { position: absolute; left: 540px; top: 230px; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 18px var(--gold); opacity: 0; }
+      .ray { position: absolute; left: 540px; top: 230px; width: 8px; height: 120px; margin-left: -4px; border-radius: 4px; background: linear-gradient(180deg, #fff, rgba(240,212,136,0)); transform-origin: 50% 0; opacity: 0; }
+
+      /* growth */
+      #grow { top: 1010px; height: 620px; }
+      #grow svg { position: absolute; inset: 0; }
+      #grow text { font-family: "Inter", sans-serif; }
+
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 70px; right: 70px; top: 1420px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 20px; opacity: 0; text-align: center; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 72px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 80px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 92px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.up { color: #6fe0a6; }
+      .w.dn { color: #ff7a7e; }
+      .w.b { padding: 0 20px; border-radius: 16px; text-shadow: none; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 11px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+
+      /* Instagram follow pill */
+      #ig { position: absolute; left: 90px; right: 90px; top: 1600px; height: 150px; border-radius: 34px; background: #ffffff; opacity: 0;
+        display: flex; align-items: center; padding: 0 26px; gap: 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+      #ig img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 4px #fff, 0 0 0 7px #d62976; }
+      #igName { flex: 1; font-weight: 800; font-size: 40px; color: #111; letter-spacing: -0.01em; white-space: nowrap; }
+      #igName span { display: inline-block; }
+      #igBtn { position: relative; flex: none; width: 220px; height: 88px; border-radius: 18px; background: #0095f6; color: #fff; font-weight: 800; font-size: 38px; display: flex; align-items: center; justify-content: center; }
+      #igBtn .on { position: absolute; inset: 0; border-radius: 18px; background: #efefef; color: #111; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #igSave { position: relative; flex: none; width: 88px; height: 88px; border-radius: 18px; background: #efefef; display: flex; align-items: center; justify-content: center; margin-left: -8px; }
+      #igSave svg { width: 46px; height: 46px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      #ripple { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(255,255,255,0.9); left: 0; top: 0; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="__DUR__" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="__DUR__" data-track-index="0"></div>
+      <div id="camwrap">
+        <div id="track">
+          <video id="cam" class="clip" data-start="0" data-duration="__DUR__" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        </div>
+      </div>
+      <div id="strip" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+
+      <div id="pTweet" class="clip" data-start="0" data-duration="34.2" data-track-index="3">
+        <div id="hookPill">UN REGALO DE ~10.500 M$</div>
+        <div class="panel" id="tweet">
+          <div class="hd">
+            <div class="av">EM</div>
+            <div><div class="nm">Elon Musk <span class="ck">✓</span></div><div class="hn">@elonmusk</div></div>
+            <div class="x">X</div>
+          </div>
+          <div class="tx">
+            <p><span class="hl" id="h1">Next year<i></i></span>, I will give <span class="hl" id="h2">one of my SpaceX<i></i></span> <span class="hl" id="h2b">shares<i></i></span> to <span class="hl" id="h3">every kid in America<i></i></span>.</p>
+            <p><span class="hl" id="h4">This will be the first of many.<i></i></span></p>
+          </div>
+          <div class="tr serif">«El año que viene regalaré una de mis acciones de SpaceX a cada niño de EE. UU. Será la primera de muchas.»</div>
+          <div class="mt">9:52 · 19 oct 2026 · <b>36,7 M</b> Reproducciones</div>
+        </div>
+      </div>
+
+      <div id="pNums" class="clip" data-start="6.4" data-duration="7.6" data-track-index="3">
+        <div class="panel" id="nums">
+          <div class="stat" id="s1"><div class="big goldtext" id="n1">0</div><div class="lbl serif">niños en EE. UU.</div></div>
+          <div id="kids"></div>
+          <div class="stat" id="s2"><div class="big" id="n2">0 $</div><div class="lbl serif">el regalo total</div></div>
+          <div class="stat" id="s3"><span>≈ <b>146 $</b> en acciones por niño</span></div>
+        </div>
+      </div>
+
+      <div id="boom" class="clip" data-start="14.3" data-duration="1.6" data-track-index="4"></div>
+
+      <div id="pGrow" class="clip" data-start="23.6" data-duration="6.6" data-track-index="3">
+        <div class="panel" id="grow"><svg id="gsvg" viewBox="0 0 960 620" width="960" height="620"></svg></div>
+      </div>
+
+      <div id="pCta" class="clip" data-start="38.6" data-duration="2.84" data-track-index="3">
+        <div id="ig">
+          <img src="assets/perfil.png" alt="" />
+          <div id="igName"></div>
+          <div id="igBtn">Seguir<div class="on">Siguiendo</div></div>
+          <div id="igSave"><svg viewBox="0 0 24 24"><path id="bmk" d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div id="ripple"></div>
+        <svg id="tap" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="__DUR__" data-track-index="5"></div>
+      <div id="flash" class="clip" data-start="0" data-duration="__DUR__" data-track-index="6"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const NS = "http://www.w3.org/2000/svg";
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      // ---------- captions ----------
+      const G = __G__;
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const e = document.createElement("div"); e.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          e.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(e); return { el: e, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+      gsap.set(".hl i", { scaleX: 0 });
+      gsap.set("#hookPill", { xPercent: -50 });
+
+      // ---------- face tracking ----------
+      const FACE = __FACE__;
+      FACE.forEach((f, i) => {
+        const v = Math.max(-300, Math.min(300, 864 - f.x));
+        if (i === 0) tl.set("#track", { x: v }, 0);
+        else tl.to("#track", { x: v, duration: f.t - FACE[i - 1].t, ease: "none" }, FACE[i - 1].t);
+      });
+
+      // ---------- layout ----------
+      // FULL: band fills the whole height (no space above the head); SPLIT: face on top, graphics below
+      const FULL = { x: -324, y: 0, scale: 1.75 }, SPLIT = { x: -324, y: 0, scale: 0.82 };
+      const CAP_SPLIT = -520;
+      const toSplit = (t) => {
+        tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 1, duration: 0.35 }, t + 0.1);
+        tl.to("#caps", { y: CAP_SPLIT, duration: 0.55, ease: "power3.inOut" }, t);
+      };
+      const toFull = (t, s = FULL.scale) => {
+        tl.to(cam, { x: FULL.x, y: FULL.y, scale: s, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 0, duration: 0.35 }, t);
+        tl.to("#caps", { y: 0, duration: 0.55, ease: "power3.inOut" }, t);
+      };
+      tl.set(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale }, 0);
+      tl.set("#caps", { y: CAP_SPLIT }, 0);
+      toFull(13.7);
+      tl.to(cam, { scale: 1.8, duration: 0.8, ease: "none" }, 15.0);
+      tl.set(cam, { scale: 1.95 }, 16.84);
+      tl.to(cam, { scale: 2.0, duration: 3.1, ease: "none" }, 16.84);
+      tl.set(cam, { scale: 1.75 }, 19.94);
+      tl.to(cam, { scale: 1.82, duration: 3.6, ease: "none" }, 19.94);
+      toSplit(23.6);
+      toFull(33.95);
+      tl.set(cam, { scale: 1.95 }, 36.76);
+      tl.to(cam, { scale: 1.98, duration: 2.0, ease: "none" }, 36.76);
+      tl.set(cam, { scale: 1.78 }, 38.82);
+
+      // ---------- tweet + hook data (0 - 6.4) ----------
+      tl.fromTo("#tweet", { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 0.05);
+      tl.fromTo("#hookPill", { opacity: 0, y: -14, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)" }, 0.35);
+      tl.to("#h2 i", { scaleX: 1, duration: 0.45, ease: "power2.out" }, 1.86);
+      tl.to("#h2b i", { scaleX: 1, duration: 0.2, ease: "power2.out" }, 2.3);
+      tl.to("#h3 i", { scaleX: 1, duration: 0.45, ease: "power2.out" }, 3.76);
+      tl.to("#h1 i", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 5.4);
+      tl.to(["#tweet", "#hookPill"], { opacity: 0, y: -30, duration: 0.3, ease: "power2.in" }, 6.3);
+
+      // ---------- numbers (6.6 - 13.8) ----------
+      const kids = $("#kids");
+      for (let i = 0; i < 42; i++) {
+        const k = document.createElementNS(NS, "svg"); k.setAttribute("viewBox", "0 0 32 50"); k.setAttribute("class", "kid");
+        k.innerHTML = '<circle cx="16" cy="10" r="8" fill="#f0d488"/><path d="M4 48 C4 28, 28 28, 28 48 Z" fill="#c9a54c"/>';
+        kids.appendChild(k);
+      }
+      tl.set("#nums", { opacity: 1 }, 6.6);
+      tl.fromTo("#s1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 7.3);
+      const n1 = { v: 0 };
+      tl.fromTo(n1, { v: 0 }, { v: 72000000, duration: 1.1, ease: "power2.out", onUpdate: () => { $("#n1").textContent = fmt(n1.v); } }, 7.4);
+      $$(".kid").forEach((k, i) => tl.fromTo(k, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.15 }, 7.5 + i * 0.03));
+      tl.fromTo("#s2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 10.3);
+      const n2 = { v: 0 };
+      tl.fromTo(n2, { v: 0 }, { v: 10500, duration: 1.4, ease: "power2.out", onUpdate: () => { $("#n2").textContent = fmt(n2.v) + " M$"; } }, 11.3);
+      tl.fromTo("#n2", { scale: 1 }, { scale: 1.08, duration: 0.15, yoyo: true, repeat: 1 }, 12.7);
+      tl.fromTo("#s3", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 12.9);
+      tl.to("#nums", { opacity: 0, y: 30, duration: 0.3, ease: "power2.in" }, 13.6);
+
+      // ---------- BOOM: head explodes (hands on head 14.0, arms out 14.55) ----------
+      const boom = $("#boom");
+      for (let i = 0; i < 3; i++) { const r = document.createElement("div"); r.className = "ringB"; boom.appendChild(r); }
+      for (let i = 0; i < 26; i++) { const s = document.createElement("div"); s.className = "spark"; boom.appendChild(s); }
+      for (let i = 0; i < 12; i++) { const r = document.createElement("div"); r.className = "ray"; boom.appendChild(r); }
+      const TB = 14.55;
+      tl.to(cam, { scale: 1.68, duration: 0.25, ease: "power2.in" }, 14.05);
+      tl.to(cam, { scale: 1.86, duration: 0.18, ease: "power3.out" }, TB);
+      tl.to(cam, { scale: 1.76, duration: 0.6, ease: "power2.out" }, TB + 0.18);
+      [10, -12, 8, -6, 3, 0].forEach((v, i) => tl.to("#camwrap", { rotation: v * 0.15, duration: 0.04, ease: "none" }, TB + i * 0.04));
+      tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.6, duration: 0.06 }, TB);
+      tl.to("#flash", { opacity: 0, duration: 0.45, ease: "power2.out" }, TB + 0.06);
+      $$(".ringB").forEach((r, i) => tl.fromTo(r, { opacity: 0.95, scale: 0.3 }, { opacity: 0, scale: 5 + i * 1.6, duration: 0.8, ease: "power2.out" }, TB + i * 0.08));
+      $$(".spark").forEach((s, i) => {
+        const a = (i / 26) * Math.PI * 2 + rnd(i) * 0.3, d = 280 + rnd(i + 3) * 380;
+        tl.fromTo(s, { opacity: 1, x: 0, y: 0, scale: 1 + rnd(i + 5) }, { opacity: 0, x: Math.cos(a) * d, y: Math.sin(a) * d * 0.9, scale: 0.3, duration: 0.85, ease: "power3.out" }, TB + 0.02);
+      });
+      $$(".ray").forEach((r, i) => tl.fromTo(r, { opacity: 0.9, rotation: i * 30, scaleY: 0.2 }, { opacity: 0, scaleY: 3.2, duration: 0.5, ease: "power2.out" }, TB));
+
+      // ---------- growth: patrimonio que crece con ellos (24 - 29.9) ----------
+      const gs = $("#gsvg");
+      gs.innerHTML = `
+        <text x="0" y="40" font-size="30" font-weight="900" letter-spacing="3" fill="#f0d488">TU ACCIÓN · CON LOS AÑOS</text>
+        <line x1="40" y1="540" x2="930" y2="540" stroke="rgba(243,227,181,0.35)" stroke-width="3"/>
+        <path id="gArea" d="M40 520 C 250 515, 380 480, 520 410 S 790 200, 920 110 L920 540 L40 540 Z" fill="rgba(63,191,127,0.16)" opacity="0"/>
+        <path id="gLine" d="M40 520 C 250 515, 380 480, 520 410 S 790 200, 920 110" fill="none" stroke="#3fbf7f" stroke-width="8" stroke-linecap="round" stroke-dasharray="1200" stroke-dashoffset="1200"/>
+        <circle id="gDot0" cx="40" cy="520" r="14" fill="#f0d488" opacity="0"/>
+        <circle id="gDot1" cx="920" cy="110" r="16" fill="#3fbf7f" opacity="0"/>
+        <text id="gT0" x="40" y="588" font-size="30" font-weight="800" fill="#f3e3b5" opacity="0">HOY · NIÑO</text>
+        <text id="gT1" x="930" y="588" text-anchor="end" font-size="30" font-weight="800" fill="#f3e3b5" opacity="0">ADULTO</text>
+        <g id="gTag" opacity="0"><rect x="600" y="70" width="270" height="56" rx="28" fill="#3fbf7f"/><text x="735" y="108" text-anchor="middle" font-size="30" font-weight="900" fill="#fff">PATRIMONIO ↑</text></g>`;
+      tl.set("#grow", { opacity: 1 }, 24.0);
+      tl.to(["#gDot0", "#gT0"], { opacity: 1, duration: 0.3 }, 24.3);
+      tl.to("#gLine", { attr: { "stroke-dashoffset": 0 }, duration: 3.2, ease: "power1.inOut" }, 25.1);
+      tl.to("#gArea", { opacity: 1, duration: 1.5 }, 25.6);
+      tl.to(["#gDot1", "#gT1"], { opacity: 1, duration: 0.3 }, 28.3);
+      tl.fromTo("#gTag", { opacity: 0, scale: 0.7, svgOrigin: "735 98" }, { opacity: 1, scale: 1, svgOrigin: "735 98", duration: 0.35, ease: "back.out(2)" }, 27.7);
+      tl.to("#grow", { opacity: 0, y: -30, duration: 0.3 }, 29.95);
+
+      // ---------- tweet again: "the first of many" (30.1 - 33.9) ----------
+      tl.fromTo("#tweet", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 30.15);
+      tl.to("#h4 i", { scaleX: 1, duration: 0.9, ease: "power1.inOut" }, 32.5);
+      tl.to("#tweet", { opacity: 0, y: -30, duration: 0.3 }, 33.8);
+
+      // ---------- CTA ----------
+      const NAME = "@TheCryptons_";
+      NAME.split("").forEach((ch) => { const sp = document.createElement("span"); sp.textContent = ch; $("#igName").appendChild(sp); });
+      tl.set("#caps", { y: -40 }, 38.8);
+      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 38.7);
+      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.2, ease: "back.out(3)" }, 38.9 + i * 0.025));
+      const BX = 750, BY = 1675, SX = 920;
+      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.4, ease: "power2.inOut" }, 39.2);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 39.62);
+      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 39.62);
+      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 39.64);
+      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 39.68);
+      tl.to("#tap", { x: SX - 6, duration: 0.28, ease: "power2.inOut" }, 40.0);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 40.36);
+      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 40.36);
+      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 40.38);
+      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 40.4);
+      tl.to("#tap", { opacity: 0, duration: 0.3 }, 40.8);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (["b", "s", "g", "up", "dn"].includes(w.st)) tl.fromTo(w.el, { scale: 0.7 }, { scale: 1, duration: 0.22, ease: "back.out(2.5)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, __DUR__);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
