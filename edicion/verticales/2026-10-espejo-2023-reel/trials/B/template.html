@@ -335,7 +335,7 @@
 
       // ---------- captions timeline ----------
       groups.forEach((g) => {
-        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: Math.max(0.04, Math.min(0.18, g.e - g.s - 0.02)), ease: "power2.out" }, g.s);
         tl.set(g.el, { opacity: 0 }, g.e);
         g.ws.forEach((w) => {
           tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);

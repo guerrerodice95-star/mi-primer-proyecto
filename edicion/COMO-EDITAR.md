@@ -55,6 +55,8 @@ npx hyperframes browser ensure
   `tl.set` de cámara ~1/2 fotograma ANTES del corte. Si va después, el plano nuevo sale 1–2 fotogramas con el
   encuadre del anterior y se nota un "salto raro".
 
+- Subtítulos: la animación de entrada de un grupo no puede durar más que el propio grupo (`min(0.18, e - s)`); si no, el
+  `tl.set(opacity 0)` llega antes de que acabe y la palabra se queda pegada en pantalla (pasó con grupos de 1 palabra corta).
 - `cdn.jsdelivr.net` está bloqueado: GSAP y las fuentes van en local (`herramientas/vendor/`, `marca/fonts/`).
 - `npx hyperframes init` intenta bajar "skills": usar `HYPERFRAMES_SKIP_SKILLS=1`.
 - faster-whisper falla abriendo archivos con algunas versiones de PyAV: `transcribir.py` ya lo evita.
