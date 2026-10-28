@@ -1,0 +1,142 @@
+[
+ {
+  "sonido": "pop",
+  "segundo": 0.2,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 1.32,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "pop",
+  "segundo": 2.14,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 2.36,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 3.9,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "swish",
+  "segundo": 5.0,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "ding",
+  "segundo": 6.18,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 9.7,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 12.8,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "tick",
+  "segundo": 15.52,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 19.2,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 20.15,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 21.84,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "pop",
+  "segundo": 22.6,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "pop",
+  "segundo": 27.66,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "swish",
+  "segundo": 29.5,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 32.38,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "pop",
+  "segundo": 34.46,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "pop",
+  "segundo": 37.9,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "pop",
+  "segundo": 40.18,
+  "volumen": 0.09
+ },
+ {
+  "sonido": "pop",
+  "segundo": 41.74,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "ding",
+  "segundo": 44.3,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "pop",
+  "segundo": 46.44,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "swish",
+  "segundo": 48.3,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 51.78,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 52.5,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "click",
+  "segundo": 53.52,
+  "volumen": 0.14
+ },
+ {
+  "sonido": "click",
+  "segundo": 54.26,
+  "volumen": 0.14
+ }
+]
