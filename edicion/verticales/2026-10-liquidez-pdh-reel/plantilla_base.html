@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --cream: #f3e3b5; --green: #3fbf7f; --red: #e5484d; --bg: #0b0a08; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      .goldtext { background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-lo) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      #bg { background: radial-gradient(900px 700px at 50% 70%, rgba(201,165,76,0.14), transparent 70%), var(--bg); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); }
+
+      /* source band 1728x1100 (head touches the top edge) */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1728px; height: 1100px; transform-origin: 864px 0px; }
+      #track { position: absolute; inset: 0; }
+      #cam { position: absolute; inset: 0; width: 1728px; height: 1100px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #strip { position: absolute; inset: 0; pointer-events: none; opacity: 1;
+        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 780px, var(--bg) 880px, var(--bg) 1920px); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 35%, transparent 60%, rgba(0,0,0,0.42) 100%); }
+      #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 22%, #fff7dc 0%, rgba(240,212,136,0.75) 30%, rgba(201,165,76,0) 70%); mix-blend-mode: screen; }
+
+      /* ---------- shared panels (60px safe margin each side) ---------- */
+      .panel { position: absolute; left: 60px; right: 60px; opacity: 0; }
+
+      /* tweet card */
+      #tweet { top: 1150px; padding: 34px 38px 30px; border-radius: 30px; background: #000; border: 1.5px solid #2f3336; box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 50px rgba(201,165,76,0.12); }
+      #tweet .hd { display: flex; align-items: center; gap: 20px; }
+      #tweet .av { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; object-position: 50% 50%; transform: scale(1.0); background: #15181c; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; color: #cfd3d8; flex: none; }
+      #tweet .nm { font-weight: 800; font-size: 36px; display: flex; align-items: center; gap: 10px; }
+      #tweet .ck { width: 32px; height: 32px; border-radius: 50%; background: #1d9bf0; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; }
+      #tweet .hn { color: #71767b; font-size: 30px; font-weight: 500; margin-top: 2px; }
+      #tweet .x { margin-left: auto; font-weight: 900; font-size: 46px; color: #e7e9ea; }
+      #tweet .tx { margin-top: 26px; font-size: 42px; line-height: 1.32; font-weight: 500; color: #e7e9ea; }
+      #tweet .tx p + p { margin-top: 22px; }
+      .hl { position: relative; z-index: 0; display: inline-block; }
+      .hl i { position: absolute; left: -6px; right: -6px; bottom: 0px; height: 52%; border-radius: 6px; background: rgba(240,212,136,0.6); z-index: -1; transform-origin: 0 50%; }
+      #tweet .tr { margin-top: 18px; font-size: 30px; line-height: 1.3; color: var(--gold-hi); }
+      #tweet .mt { margin-top: 22px; padding-top: 18px; border-top: 1px solid #2f3336; color: #71767b; font-size: 26px; font-weight: 500; }
+      #tweet .mt b { color: #e7e9ea; font-weight: 800; }
+
+      /* hook data pill */
+      #hookPill { position: absolute; left: 50%; top: 1072px; padding: 14px 30px; border-radius: 999px; white-space: nowrap; opacity: 0;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408; font-weight: 900; font-size: 38px; letter-spacing: 0.02em;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+
+      /* numbers */
+      #nums { top: 1010px; height: 640px; }
+      .stat { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; }
+      .stat .big { font-weight: 900; font-size: 128px; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+      .stat .lbl { margin-top: 6px; font-size: 54px; color: var(--cream); }
+      #s1 { top: 0; }
+      #kids { position: absolute; left: 40px; right: 40px; top: 210px; height: 120px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; }
+      .kid { width: 32px; height: 50px; opacity: 0; }
+      #s2 { top: 360px; }
+      #s3 { top: 560px; }
+      #s3 span { display: inline-block; padding: 12px 30px; border-radius: 999px; border: 2px solid var(--gold); background: rgba(201,165,76,0.12); font-weight: 800; font-size: 42px; color: var(--cream); }
+      #s3 b { color: var(--gold-hi); font-weight: 900; }
+
+      /* boom */
+      #boom { position: absolute; inset: 0; pointer-events: none; }
+      .ringB { position: absolute; left: 540px; top: 230px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 10px solid var(--gold-hi); opacity: 0; box-shadow: 0 0 40px rgba(240,212,136,0.8); }
+      .spark { position: absolute; left: 540px; top: 230px; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 18px var(--gold); opacity: 0; }
+      .ray { position: absolute; left: 540px; top: 230px; width: 8px; height: 120px; margin-left: -4px; border-radius: 4px; background: linear-gradient(180deg, #fff, rgba(240,212,136,0)); transform-origin: 50% 0; opacity: 0; }
+
+      /* growth */
+      #grow { top: 1010px; height: 620px; }
+      #grow svg { position: absolute; inset: 0; }
+      #grow text { font-family: "Inter", sans-serif; }
+
+
+      /* FVG/BAG chart (no frame) */
+      #chartWrap { position: absolute; left: 30px; top: 975px; width: 1020px; height: 720px; opacity: 0; }
+      #chartWrap svg { position: absolute; inset: 0; }
+      .w.fvg, .w.bag { padding: 0 18px; border-radius: 14px; font-weight: 900; text-shadow: none; }
+      .w.fvg { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 34px rgba(201,165,76,0.45); }
+      .w.bag { color: #fff; background: linear-gradient(180deg, #2fb57a, #1f8a5a); box-shadow: 0 0 34px rgba(63,191,127,0.45); }
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 70px; right: 70px; top: 1420px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 20px; opacity: 0; text-align: center; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 72px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 80px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 92px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.up { color: #6fe0a6; }
+      .w.dn { color: #ff7a7e; }
+      .w.b { padding: 0 20px; border-radius: 16px; text-shadow: none; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 11px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+
+      /* Instagram follow pill */
+      #ig { position: absolute; left: 90px; right: 90px; top: 1600px; height: 150px; border-radius: 34px; background: #ffffff; opacity: 0;
+        display: flex; align-items: center; padding: 0 26px; gap: 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+      #ig img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 4px #fff, 0 0 0 7px #d62976; }
+      #igName { flex: 1; font-weight: 800; font-size: 40px; color: #111; letter-spacing: -0.01em; white-space: nowrap; }
+      #igName span { display: inline-block; }
+      #igBtn { position: relative; flex: none; width: 220px; height: 88px; border-radius: 18px; background: #0095f6; color: #fff; font-weight: 800; font-size: 38px; display: flex; align-items: center; justify-content: center; }
+      #igBtn .on { position: absolute; inset: 0; border-radius: 18px; background: #efefef; color: #111; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #igSave { position: relative; flex: none; width: 88px; height: 88px; border-radius: 18px; background: #efefef; display: flex; align-items: center; justify-content: center; margin-left: -8px; }
+      #igSave svg { width: 46px; height: 46px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      #ripple { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(255,255,255,0.9); left: 0; top: 0; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="__DUR__" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="__DUR__" data-track-index="0"></div>
+      <div id="camwrap">
+        <div id="track">
+          <video id="cam" class="clip" data-start="0" data-duration="__DUR__" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        </div>
+      </div>
+      <div id="strip" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
+
+      <div id="pChart" class="clip" data-start="0" data-duration="52.6" data-track-index="3">
+        <div id="chartWrap"><svg id="chart" viewBox="0 0 1020 720" width="1020" height="720"></svg></div>
+      </div>
+
+      <div id="pCta" class="clip" data-start="52.5" data-duration="3.98" data-track-index="3">
+        <div id="ig">
+          <img src="assets/perfil.png" alt="" />
+          <div id="igName"></div>
+          <div id="igBtn">Seguir<div class="on">Siguiendo</div></div>
+          <div id="igSave"><svg viewBox="0 0 24 24"><path id="bmk" d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div id="ripple"></div>
+        <svg id="tap" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="__DUR__" data-track-index="5"></div>
+      <div id="flash" class="clip" data-start="0" data-duration="__DUR__" data-track-index="6"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const NS = "http://www.w3.org/2000/svg";
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      // ---------- captions ----------
+      const G = __G__;
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const e = document.createElement("div"); e.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          e.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(e); return { el: e, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+      gsap.set(".hl i", { scaleX: 0 });
+      gsap.set("#hookPill", { xPercent: -50 });
+
+      // ---------- face tracking ----------
+      const FACE = __FACE__;
+      FACE.forEach((f, i) => {
+        const v = Math.max(-300, Math.min(300, 864 - f.x));
+        if (i === 0) tl.set("#track", { x: v }, 0);
+        else tl.to("#track", { x: v, duration: f.t - FACE[i - 1].t, ease: "none" }, FACE[i - 1].t);
+      });
+
+      // ---------- layout ----------
+      // FULL: band fills the whole height (no space above the head); SPLIT: face on top, graphics below
+      const FULL = { x: -324, y: -40, scale: 1.72 }, SPLIT = { x: -324, y: -30, scale: 0.82 };
+      const CAP_SPLIT = -520;
+      const toSplit = (t) => {
+        tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 1, duration: 0.35 }, t + 0.1);
+        tl.to("#caps", { y: CAP_SPLIT, duration: 0.55, ease: "power3.inOut" }, t);
+      };
+      const toFull = (t, s = FULL.scale) => {
+        tl.to(cam, { x: FULL.x, y: FULL.y, scale: s, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 0, duration: 0.35 }, t);
+        tl.to("#caps", { y: 0, duration: 0.55, ease: "power3.inOut" }, t);
+      };
+      tl.set(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale }, 0);
+      tl.set("#caps", { y: CAP_SPLIT }, 0);
+      tl.to(cam, { scale: 0.86, duration: 17.5, ease: "none" }, 0.1);
+      // full-screen beat: "¿Cómo sabes si es ruptura o es trampa?"
+      tl.to("#chartWrap", { opacity: 0, duration: 0.25 }, 17.6);
+      toFull(17.7);
+      tl.set(cam, { scale: 1.9 }, 19.6);
+      toSplit(20.4);
+      tl.to("#chartWrap", { opacity: 1, duration: 0.35 }, 20.6);
+      tl.to(cam, { scale: 0.86, duration: 31.5, ease: "none" }, 21.0);
+      tl.to("#chartWrap", { opacity: 0, duration: 0.3 }, 52.3);
+      toFull(52.5);
+      tl.to(cam, { scale: 1.8, duration: 3.4, ease: "none" }, 53.1);
+
+__CHART__
+      // ---------- CTA ----------
+      const NAME = "@TheCryptons_";
+      NAME.split("").forEach((ch) => { const sp = document.createElement("span"); sp.textContent = ch; $("#igName").appendChild(sp); });
+      tl.set("#caps", { y: -40 }, 52.85);
+      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 52.60);
+      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.2, ease: "back.out(3)" }, 52.8 + i * 0.025));
+      const BX = 750, BY = 1675, SX = 920;
+      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.4, ease: "power2.inOut" }, 53.10);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 53.52);
+      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 53.52);
+      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 53.54);
+      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 53.58);
+      tl.to("#tap", { x: SX - 6, duration: 0.28, ease: "power2.inOut" }, 53.90);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 54.26);
+      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 54.26);
+      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 54.28);
+      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 54.30);
+      tl.to("#tap", { opacity: 0, duration: 0.3 }, 54.70);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (["b", "s", "g", "up", "dn"].includes(w.st)) tl.fromTo(w.el, { scale: 0.7 }, { scale: 1, duration: 0.22, ease: "back.out(2.5)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, __DUR__);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
