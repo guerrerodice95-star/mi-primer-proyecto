@@ -4,6 +4,9 @@ Vertical 1080x1920, 56,5 s. Bruto en Drive: `editar liquidez.mp4` (id `11BmJ-ic1
 `crop=1728:1208:0:932`. Referencia: reel de Asim Trading (https://www.instagram.com/p/DeQG_lEIlVO/), adaptado a nuestro estilo.
 Audio final: Unai mejoró la voz y la mandó aparte (`audio ok.mp4`, id `1kqdyhsY4sGoSrXE-SvW6N11XX5FQa5Wy`, misma duración y
 sincronía); se mezcla con `--original "audio ok.mp4"` sin volver a renderizar.
+OJO: ese archivo solo trae la voz mejorada hasta 39,9 s; desde 40,0 s es el audio del bruto. Para la v3 se midió
+la ecualización de la mejora en 0–39,8 s (es casi solo EQ + nivel, error medio 0,26 dB) y se aplicó a 40–56,5 s con
+un fundido de 0,15 s.
 Layout pedido por Unai: **cabeza arriba y gráfico abajo**.
 
 | Segundo | Contenido |
