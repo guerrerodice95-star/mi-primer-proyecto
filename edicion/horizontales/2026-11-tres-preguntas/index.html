@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --ink: #0b0a08; --line: rgba(201,165,76,0.38); --red: #e5484d; --red-hi: #ff7a7e; --green: #3fbf7f; --green-hi: #7ff0b5; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+
+      #bg { background: radial-gradient(900px 700px at 22% 45%, rgba(201,165,76,0.14), transparent 70%), radial-gradient(900px 700px at 78% 45%, rgba(201,165,76,0.10), transparent 70%), #0b0a08; }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48% 0%; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 760px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0b0a08 0%, rgba(11,10,8,0.85) 30%, rgba(11,10,8,0) 100%); }
+      #fadeR { position: absolute; right: -2px; top: 0; width: 760px; height: 1080px; opacity: 0; background: linear-gradient(270deg, #0b0a08 0%, rgba(11,10,8,0.85) 30%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%); }
+
+      /* ---------- checklist card (side) ---------- */
+      .card { position: absolute; top: 130px; width: 780px; height: 820px; border-radius: 40px; opacity: 0;
+        background: rgba(22,19,13,0.94); border: 1.5px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 70px rgba(201,165,76,0.16); }
+      #card1 { left: 80px; } #card3 { left: 1060px; }
+      .card .lbl { position: absolute; left: 50px; top: 46px; font-weight: 700; font-size: 28px; letter-spacing: 0.18em; color: var(--gold); }
+      .card .lbl .serif { letter-spacing: 0; font-size: 34px; color: #cfc3a6; margin-left: 10px; }
+      .rows { position: absolute; left: 34px; right: 34px; top: 112px; }
+      .row { position: relative; display: flex; align-items: center; gap: 22px; height: 112px; padding: 0 20px; margin-bottom: 12px; border-radius: 24px; border: 1.5px solid transparent; opacity: 0.38; }
+      .row.on { opacity: 1; border-color: var(--gold); background: rgba(201,165,76,0.09); box-shadow: 0 0 34px rgba(201,165,76,0.2); }
+      .row .n { flex: none; width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--gold); color: var(--gold-hi); font-weight: 900; font-size: 32px; display: flex; align-items: center; justify-content: center; }
+      .row .q { flex: 1; font-size: 33px; font-weight: 800; line-height: 1.15; }
+      .ans { flex: none; position: relative; width: 132px; height: 62px; }
+      .ans div { position: absolute; inset: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 30px; font-weight: 900; }
+      .ans .wait { background: rgba(255,255,255,0.08); color: #8d826a; border: 1.5px dashed rgba(255,255,255,0.25); }
+      .ans .ok { background: rgba(63,191,127,0.18); border: 2px solid var(--green); color: var(--green-hi); opacity: 0; }
+      .hint { position: absolute; right: 18px; bottom: -16px; font-size: 25px; font-weight: 800; color: #fff; opacity: 0; white-space: nowrap; background: #3a1416; border: 1.5px solid var(--red); border-radius: 999px; padding: 2px 14px; }
+      .hint b { color: var(--red-hi); font-weight: 900; }
+      .detail { position: absolute; left: 50px; right: 50px; top: 500px; }
+      .dl { display: flex; align-items: center; gap: 16px; font-size: 32px; font-weight: 700; margin-bottom: 18px; opacity: 0; }
+      .dl i { font-style: normal; flex: none; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 900; }
+      .dl.x i { background: rgba(229,72,77,0.18); color: var(--red-hi); border: 2px solid var(--red); }
+      .dl.x span { color: #c9bfa8; text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 4px; }
+      .dl.v i { background: rgba(63,191,127,0.18); color: var(--green-hi); border: 2px solid var(--green); }
+      .dl.g i { background: linear-gradient(180deg, #f7b04a, #e8891a); color: #fff; }
+      .dl.g span { color: var(--gold-hi); }
+      .sellbar { position: absolute; left: 50px; right: 50px; bottom: 44px; height: 84px; border-radius: 22px; display: flex; align-items: center; justify-content: center; gap: 16px;
+        background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.18); color: #8d826a; font-size: 30px; font-weight: 900; letter-spacing: 0.08em; opacity: 0; }
+      .sellbar svg { width: 34px; height: 34px; }
+
+      /* gauge (question 3) */
+      #gauge { position: absolute; left: 50px; right: 50px; top: 494px; height: 210px; opacity: 0; }
+      #gauge .t { font-size: 26px; font-weight: 700; color: #cfc3a6; letter-spacing: 0.04em; }
+      #gTrack { position: absolute; left: 0; right: 0; top: 52px; height: 58px; border-radius: 16px; background: rgba(255,255,255,0.07); overflow: hidden; }
+      #gFill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: linear-gradient(90deg, #2fb57a, #3fbf7f); transform-origin: 0 50%; }
+      #gLimit { position: absolute; left: 58%; top: 40px; height: 84px; border-left: 4px dashed var(--gold-hi); }
+      #gLimitT { position: absolute; left: 58%; top: 130px; transform: translateX(-50%); font-size: 22px; font-weight: 800; color: var(--gold-hi); white-space: nowrap; letter-spacing: 0.06em; }
+      #gOver { position: absolute; right: 0; top: -6px; padding: 6px 16px; border-radius: 999px; background: var(--red); font-size: 24px; font-weight: 900; letter-spacing: 0.08em; opacity: 0; }
+      #gSuf { position: absolute; left: 0; top: 146px; font-size: 32px; color: #f3e3b5; opacity: 0; }
+
+      /* ---------- glass (in front, camera still) ---------- */
+      .glass { position: absolute; opacity: 0; border-radius: 30px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.07));
+        -webkit-backdrop-filter: blur(22px) saturate(1.4) brightness(0.7); backdrop-filter: blur(22px) saturate(1.4) brightness(0.7);
+        border: 1.5px solid rgba(255,255,255,0.32); box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+      .chip { padding: 20px 34px; font-size: 46px; font-weight: 900; white-space: nowrap; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+      .chip span { margin-right: 14px; }
+      #track { left: 70px; top: 70px; padding: 18px 22px; display: flex; gap: 14px; }
+      .tk { display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 10px; border-radius: 999px; background: rgba(0,0,0,0.25); font-size: 26px; font-weight: 800; color: rgba(255,255,255,0.75); }
+      .tk i { position: relative; font-style: normal; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; background: rgba(255,255,255,0.18); }
+      .tk.done { color: #fff; } .tk.done i { background: var(--green); }
+      .tk.now { color: #fff; box-shadow: 0 0 0 2px var(--gold-hi) inset; } .tk.now i { background: var(--gold); color: #1a1408; }
+      .ck { position: absolute; inset: 0; border-radius: 50%; background: var(--green); color: #fff; font-style: normal; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #q2 { left: 330px; top: 760px; width: 1260px; padding: 26px 34px; display: flex; align-items: center; gap: 26px; }
+      #q2 .n { flex: none; width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408; font-weight: 900; font-size: 42px; display: flex; align-items: center; justify-content: center; }
+      #q2 .q { flex: 1; font-size: 50px; font-weight: 900; line-height: 1.1; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+      #q2 .ans { width: 170px; height: 80px; } #q2 .ans div { font-size: 38px; border-radius: 20px; }
+      #q2 .ans .wait { background: rgba(0,0,0,0.25); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.4); }
+      #q2 .ans .ok { background: rgba(63,191,127,0.35); }
+      #q2h { left: 1230px; top: 712px; padding: 8px 22px; font-size: 30px; font-weight: 800; border-radius: 999px; background: rgba(229,72,77,0.88); border-color: rgba(255,255,255,0.4); -webkit-backdrop-filter: none; backdrop-filter: none; }
+      #q2h b { color: #fff; font-weight: 900; }
+      #vault { left: 1360px; top: 300px; padding: 22px 30px; display: flex; align-items: center; gap: 18px; }
+      #vault .c { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(180deg, #f7b04a, #e8891a); font-weight: 900; font-size: 42px; display: flex; align-items: center; justify-content: center; }
+      #vault .ar { font-size: 40px; font-weight: 900; color: rgba(255,255,255,0.8); }
+      #vault b { display: block; font-size: 40px; font-weight: 900; }
+      #vault small { display: block; font-size: 26px; font-weight: 600; color: rgba(255,255,255,0.75); }
+      #lock2 { left: 150px; top: 330px; padding: 22px 34px; display: flex; align-items: center; gap: 16px; font-size: 40px; font-weight: 900; color: rgba(255,255,255,0.6); letter-spacing: 0.06em; }
+      #lock2 s { text-decoration-color: var(--red); text-decoration-thickness: 5px; }
+      #lock2 svg { width: 42px; height: 42px; }
+
+      /* final summary */
+      #fin { left: 220px; top: 820px; width: 1480px; padding: 22px 30px; }
+      #fin .hd { display: flex; align-items: center; height: 44px; font-size: 26px; font-weight: 800; letter-spacing: 0.16em; color: rgba(255,255,255,0.85); }
+      #fin .hd span { margin-left: auto; font-size: 36px; letter-spacing: 0; color: #fff; opacity: 0; }
+      #fin .its { margin-top: 12px; display: flex; gap: 16px; align-items: center; }
+      #fin .it { flex: 1; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px; background: rgba(0,0,0,0.25); font-size: 32px; font-weight: 800; }
+      #fin .it i { position: relative; font-style: normal; flex: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 28px; background: rgba(255,255,255,0.18); }
+      #fin .dec { flex: none; margin-left: 8px; }
+      #fin .dec b { font-size: 54px; font-weight: 900; padding: 4px 28px; border-radius: 18px; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 40px rgba(201,165,76,0.5); opacity: 0; }
+      #fin svg { margin-left: 16px; flex: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="82.12" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="82.12" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="82.12" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="82.12" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="fadeL"></div>
+        <div id="fadeR"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="82.12" data-track-index="2"></div>
+
+      <!-- intro chips (front) -->
+      <div id="pIntro" class="clip" data-start="4.2" data-duration="4.6" data-track-index="4">
+        <div class="glass chip" id="ch1" style="left:230px; top:250px;"><span>📉</span>Caída</div>
+        <div class="glass chip" id="ch2" style="left:1290px; top:210px;"><span>📰</span>Noticia negativa</div>
+        <div class="glass chip" id="ch3" style="left:200px; top:560px;"><span>😱</span>Pánico</div>
+      </div>
+
+      <!-- question 1 (side, card left) -->
+      <div id="pQ1" class="clip" data-start="9.2" data-duration="18.4" data-track-index="3">
+        <div class="card" id="card1">
+          <div class="lbl">ANTES DE VENDER <span class="serif">hazte 3 preguntas</span></div>
+          <div class="rows"></div>
+          <div class="detail">
+            <div class="dl x" id="d1"><i>✗</i><span>Han hackeado la red de Bitcoin</span></div>
+            <div class="dl v" id="d2"><i>✓</i><span>Han hackeado un exchange</span></div>
+            <div class="dl g" id="d3"><i>₿</i><span>Bitcoin sigue siendo el mismo</span></div>
+          </div>
+          <div class="sellbar" id="sell1"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>BOTÓN DE VENTA BLOQUEADO</div>
+        </div>
+      </div>
+
+      <!-- question 2 (front glass, camera still) -->
+      <div id="pQ2" class="clip" data-start="27.4" data-duration="13.5" data-track-index="4">
+        <div class="glass" id="track"><div class="tk done"><i>✓</i>Motivos</div><div class="tk now" id="tk2"><i>2<em class="ck">✓</em></i>Dinero</div><div class="tk" id="tk3"><i>3</i>Caída</div></div>
+        <div class="glass" id="q2"><div class="n">2</div><div class="q">¿Voy a necesitar el dinero pronto?</div><div class="ans"><div class="wait">?</div><div class="ok">✓ NO</div></div></div>
+        <div class="glass" id="q2h">si fuese <b>SÍ → vendo</b></div>
+        <div class="glass" id="vault"><div class="c">₿</div><div class="ar">→</div><div><b>Apartado</b><small>a largo plazo</small></div></div>
+        <div class="glass" id="lock2"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg><s>VENDER</s></div>
+      </div>
+
+      <!-- question 3 (side, card right) -->
+      <div id="pQ3" class="clip" data-start="40.6" data-duration="24.7" data-track-index="3">
+        <div class="card" id="card3">
+          <div class="lbl">ANTES DE VENDER <span class="serif">hazte 3 preguntas</span></div>
+          <div class="rows"></div>
+          <div id="gauge">
+            <div class="t">LO QUE INVIERTES</div>
+            <div id="gTrack"><div id="gFill"></div></div>
+            <div id="gLimit"></div>
+            <div id="gLimitT">TU LÍMITE</div>
+            <div id="gSuf" class="serif">vas a sufrir mucho</div>
+            <div id="gOver">SOBREINVERTIDO</div>
+          </div>
+          <div class="sellbar" id="sell3" style="opacity:1"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>BOTÓN DE VENTA BLOQUEADO</div>
+        </div>
+      </div>
+
+      <!-- final summary (front glass) -->
+      <div id="pFin" class="clip" data-start="72.3" data-duration="9.82" data-track-index="4">
+        <div class="glass" id="fin">
+          <div class="hd">SI SE CUMPLEN LAS 3<span class="serif">y a largo plazo…</span><svg width="200" height="56" viewBox="0 0 300 110"><path id="up" d="M6 96 L50 80 L82 88 L120 62 L150 70 L190 44 L222 50 L262 22 L292 10" fill="none" stroke="#3fbf7f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path id="upA" d="M272 6 L292 10 L288 30" fill="none" stroke="#3fbf7f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0"/></svg></div>
+          <div class="its"><div class="it"><i>1<em class="ck">✓</em></i>Motivos</div><div class="it"><i>2<em class="ck">✓</em></i>Dinero</div><div class="it"><i>3<em class="ck">✓</em></i>Caída</div><div class="dec"><b>MANTENGO</b></div></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const DUR = 82.12;
+
+      // ---------- checklist rows ----------
+      const QS = ["¿Han cambiado los motivos por los que compré?", "¿Voy a necesitar el dinero pronto?", "¿Puedo soportar la caída?"];
+      const OK = ["✓ NO", "✓ NO", "✓ SÍ"];
+      const HINT = ["si fuese <b>SÍ → vendo</b>", "si fuese <b>SÍ → vendo</b>", "si fuese <b>NO → algo haces mal</b>"];
+      function fill(card) {
+        const rows = card.querySelector(".rows");
+        return QS.map((q, i) => {
+          const r = document.createElement("div"); r.className = "row";
+          r.innerHTML = `<div class="n">${i + 1}</div><div class="q">${q}</div><div class="ans"><div class="wait">?</div><div class="ok">${OK[i]}</div></div><div class="hint">${HINT[i]}</div>`;
+          rows.appendChild(r); return r;
+        });
+      }
+      const R1 = fill($("#card1")), R3 = fill($("#card3"));
+      const answer = (row, t) => {
+        tl.set(row.querySelector(".wait"), { opacity: 0 }, t);
+        tl.fromTo(row.querySelector(".ok"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, t);
+      };
+      const activate = (row, t) => tl.to(row, { opacity: 1, borderColor: "#c9a54c", backgroundColor: "rgba(201,165,76,0.09)", boxShadow: "0 0 34px rgba(201,165,76,0.2)", duration: 0.35 }, t);
+      const settle = (row, t) => tl.to(row, { opacity: 0.85, borderColor: "rgba(201,165,76,0)", backgroundColor: "rgba(201,165,76,0)", boxShadow: "0 0 0px rgba(201,165,76,0)", duration: 0.35 }, t);
+      // card 3 starts with 1 and 2 already answered
+      [0, 1].forEach((i) => { gsap.set(R3[i], { opacity: 0.85 }); gsap.set(R3[i].querySelector(".wait"), { opacity: 0 }); gsap.set(R3[i].querySelector(".ok"), { opacity: 1 }); });
+      gsap.set("#gFill", { scaleX: 0 });
+
+      // ---------- camera ----------
+      const sideR = (t, s = 1.0) => { tl.to(cam, { x: 470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const sideL = (t, s = 1.0) => { tl.to(cam, { x: -470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeR", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const full = (t, s = 1.06) => { tl.to(cam, { x: 0, scale: s, duration: 0.55, ease: "power3.inOut" }, t); tl.to(["#fadeL", "#fadeR"], { opacity: 0, duration: 0.3 }, t + 0.05); };
+      tl.fromTo(cam, { scale: 1.04 }, { scale: 1.07, duration: 2.72, ease: "none" }, 0);
+      tl.set(cam, { scale: 1.14 }, 2.72);              // jump cut on "cada vez que veáis", then still under the chips
+      sideR(9.3, 1.0);
+      tl.to(cam, { scale: 1.03, duration: 17.3, ease: "none" }, 9.95);
+      full(27.35, 1.06);                               // Q2 in glass: camera still
+      sideL(40.8, 1.0);
+      tl.to(cam, { scale: 1.03, duration: 23.4, ease: "none" }, 41.45);
+      full(64.9, 1.05);
+      tl.to(cam, { scale: 1.08, duration: 3.3, ease: "none" }, 65.5);
+      tl.set(cam, { scale: 1.15 }, 68.86);             // jump cut on "hackeo"
+      tl.set(cam, { scale: 1.04 }, 72.4);              // wide again for the final glass (still)
+
+      // ---------- intro chips ----------
+      const pop = (sel, t, fx) => tl.fromTo(sel, { opacity: 0, x: fx || 0, y: 16, scale: 0.9 }, { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, t);
+      pop("#ch1", 4.45, -30); pop("#ch2", 5.3, 30); pop("#ch3", 6.9, -30);
+      // "me da igual": swept away
+      ["#ch1", "#ch2", "#ch3"].forEach((s, i) => tl.to(s, { opacity: 0, scale: 0.85, y: -20, duration: 0.25, ease: "power2.in" }, 7.62 + i * 0.05));
+
+      // ---------- Q1 ----------
+      tl.fromTo("#card1", { opacity: 0, x: -60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 9.5);
+      activate(R1[0], 10.2);
+      answer(R1[0], 13.24);
+      tl.fromTo("#d1", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 }, 14.1);
+      tl.fromTo("#d2", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 }, 17.36);
+      tl.fromTo("#d3", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 }, 18.26);
+      tl.fromTo(R1[0].querySelector(".ok"), { scale: 1 }, { scale: 1.15, duration: 0.15, yoyo: true, repeat: 1 }, 22.82);
+      tl.fromTo(R1[0].querySelector(".hint"), { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.3 }, 22.9);
+      tl.fromTo("#sell1", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(2)" }, 24.12);
+      settle(R1[0], 27.0);
+      activate(R1[1], 27.0);
+      tl.to("#card1", { opacity: 0, x: -50, duration: 0.3, ease: "power2.in" }, 27.3);
+
+      // ---------- Q2 (glass) ----------
+      pop("#track", 27.7, -20);
+      pop("#q2", 28.44);
+      pop("#vault", 32.9, 30);
+      tl.set("#q2 .wait", { opacity: 0 }, 35.12);
+      tl.fromTo("#q2 .ok", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 35.12);
+      pop("#q2h", 35.5, 20);
+      tl.to("#tk2", { boxShadow: "0 0 0 0px rgba(240,212,136,0) inset", duration: 0.2 }, 35.2);
+      tl.fromTo("#tk2 .ck", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 35.2);
+      pop("#lock2", 38.42, -30);
+      ["#vault", "#lock2", "#q2h", "#q2", "#track"].forEach((s, i) => tl.to(s, { opacity: 0, y: -16, duration: 0.25, ease: "power2.in" }, 40.5 + i * 0.03));
+
+      // ---------- Q3 ----------
+      tl.fromTo("#card3", { opacity: 0, x: 60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 41.1);
+      activate(R3[2], 41.44);
+      tl.fromTo("#gauge", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35 }, 47.2);
+      tl.to("#gFill", { scaleX: 0.45, duration: 0.8, ease: "power2.out" }, 53.12);
+      tl.to("#gFill", { scaleX: 0.92, duration: 0.9, ease: "power2.inOut" }, 54.6);
+      tl.to("#gFill", { background: "linear-gradient(90deg, #2fb57a 0%, #3fbf7f 55%, #e5484d 63%, #e5484d 100%)", duration: 0.01 }, 55.2);
+      tl.fromTo("#gOver", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 56.64);
+      tl.fromTo("#gSuf", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3 }, 58.76);
+      // the right way: inside what you can afford to lose
+      tl.to(["#gOver", "#gSuf"], { opacity: 0, duration: 0.25 }, 63.0);
+      tl.to("#gFill", { scaleX: 0.5, background: "linear-gradient(90deg, #2fb57a, #3fbf7f)", duration: 0.6, ease: "power2.inOut" }, 63.1);
+      answer(R3[2], 63.98);
+      tl.fromTo(R3[2].querySelector(".hint"), { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.3 }, 64.2);
+      tl.to("#card3", { opacity: 0, x: 50, duration: 0.3, ease: "power2.in" }, 64.85);
+
+      // ---------- final summary (glass) ----------
+      pop("#fin", 72.5);
+      const cks = $$("#fin .ck");
+      [74.5, 74.84, 75.12].forEach((t, i) => tl.fromTo(cks[i], { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, t));
+      tl.fromTo("#fin .dec b", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 76.54);
+      tl.fromTo("#fin .hd span", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3 }, 77.9);
+      const up = $("#up"); up.setAttribute("stroke-dasharray", 340); up.setAttribute("stroke-dashoffset", 340);
+      tl.to(up, { attr: { "stroke-dashoffset": 0 }, duration: 1.5, ease: "power1.inOut" }, 78.5);
+      tl.to("#upA", { opacity: 1, duration: 0.2 }, 79.9);
+
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
