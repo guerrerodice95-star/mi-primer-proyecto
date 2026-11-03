@@ -9,9 +9,8 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Tipografías** (en `marca/fonts/`): Inter 800/900 para lo fuerte; Instrument Serif *cursiva* para dar contraste ("*si te interesa…* **SÍGUEME**").
 - **Tono:** Bitcoin explicado fácil, cercano, sin humo ("sin pelotazos ni Lamborghinis alquilados").
 
-- **Tono de piel:** sin naranja/amarillo. En sus grabaciones de casa el filtro de cámara que le gusta es
-  `contrast(1.04) saturate(0.9) hue-rotate(6deg) brightness(1.17)` (piel ≈ Lab L48 a22 b24). El antiguo
-  `contrast(1.08) saturate(1.05) brightness(1.06)` deja la piel demasiado roja/amarilla.
+- **Color de cámara:** el de los reels, `contrast(1.08) saturate(1.05) brightness(1.06)`. Se probó un ajuste con menos
+  naranja (`saturate(0.9) hue-rotate(6deg) brightness(1.17)`, horizontal de las 3 preguntas) y **no le gustó**: no usarlo.
 
 ## Ritmo y cantidad de efectos
 
