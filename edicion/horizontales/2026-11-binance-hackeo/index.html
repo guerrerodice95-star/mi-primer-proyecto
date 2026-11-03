@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+      @font-face { font-family: "Mono"; font-weight: 700; src: url(assets/fonts/FreeMonoBold.ttf) format("truetype"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --ink: #0b0a08; --red: #e5484d; --red-hi: #ff6b70; --paper: #f4f1ea; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .mono { font-family: "Mono", "Courier New", monospace; font-weight: 700; }
+
+      #bg { background: radial-gradient(900px 700px at 25% 50%, rgba(120,140,150,0.12), transparent 70%), #0a0b0c; }
+      #grid { background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48.5% 0%; }
+      /* documentary grade: a bit colder, less saturated, more contrast */
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.14) saturate(0.72) brightness(1.0); }
+      #coolTint { position: absolute; inset: 0; background: rgba(40,70,90,0.16); mix-blend-mode: soft-light; }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 760px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0a0b0c 0%, rgba(10,11,12,0.85) 30%, rgba(10,11,12,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(110% 110% at 50% 42%, transparent 48%, rgba(0,0,0,0.62) 100%); }
+      #grain { position: absolute; left: -128px; top: -128px; width: 2176px; height: 1336px; background: url(assets/grano.png); opacity: 0.09; mix-blend-mode: overlay; pointer-events: none; }
+      .bar { position: absolute; left: 0; right: 0; height: 84px; background: #000; }
+      #barT { top: 0; } #barB { bottom: 0; }
+
+      /* typewriter date */
+      #date { position: absolute; left: 110px; top: 730px; }
+      #tag { display: inline-flex; align-items: center; gap: 12px; font-size: 26px; letter-spacing: 0.24em; color: #e9e4d6; opacity: 0; }
+      #tag i { width: 16px; height: 16px; border-radius: 50%; background: var(--red); box-shadow: 0 0 14px rgba(229,72,77,0.9); }
+      #type { margin-top: 14px; font-size: 76px; color: #fff; letter-spacing: 0.02em; text-shadow: 0 4px 24px rgba(0,0,0,0.85); white-space: nowrap; }
+      #type .c { display: none; }
+      #caret { display: inline-block; width: 30px; height: 6px; margin-left: 6px; background: #fff; vertical-align: 2px; opacity: 0; }
+      #year { margin-top: 10px; font-size: 32px; color: #d9d3c4; letter-spacing: 0.12em; opacity: 0; }
+
+      /* evidence: the article */
+      #doc { position: absolute; left: 130px; top: 148px; width: 690px; height: 843px; opacity: 0; transform-origin: 50% 50%; }
+      #doc img { position: absolute; inset: 0; width: 690px; height: 843px; border-radius: 6px; box-shadow: 0 40px 90px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.25); }
+      #doc svg { position: absolute; inset: 0; }
+      .hl { mix-blend-mode: multiply; }
+      #docTag { position: absolute; left: 130px; top: 104px; font-size: 22px; letter-spacing: 0.16em; color: #e9e4d6; opacity: 0; white-space: nowrap; }
+      #docTag b { color: var(--red-hi); }
+
+      /* the amount, in front of the person (camera still) */
+      #amt { position: absolute; left: 0; right: 0; top: 650px; text-align: center; opacity: 0; }
+      #amtBox { display: inline-block; padding: 26px 50px 22px; border-radius: 26px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.05));
+        -webkit-backdrop-filter: blur(20px) saturate(1.2) brightness(0.6); backdrop-filter: blur(20px) saturate(1.2) brightness(0.6);
+        border: 1.5px solid rgba(255,255,255,0.3); box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3); }
+      #num { font-size: 120px; letter-spacing: -0.01em; color: #fff; font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1; }
+      #sub { margin-top: 10px; font-size: 34px; letter-spacing: 0.2em; color: #d9d3c4; }
+      #sub b { color: var(--gold-hi); }
+      #stamp { position: absolute; left: 1210px; top: 500px; padding: 10px 28px; border: 7px solid var(--red); border-radius: 14px; color: var(--red); font-size: 70px; letter-spacing: 0.08em; opacity: 0;
+        background: rgba(10,10,10,0.35); text-shadow: 0 0 20px rgba(229,72,77,0.4); }
+      #redFlash { position: absolute; inset: 0; background: radial-gradient(120% 100% at 50% 50%, transparent 40%, rgba(150,10,15,0.55) 100%); opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="13.68" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="13.68" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="13.68" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="13.68" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="coolTint"></div>
+        <div id="fadeL"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="13.68" data-track-index="2"></div>
+      <div id="redFlash" class="clip" data-start="0" data-duration="13.68" data-track-index="2"></div>
+
+      <div id="pDate" class="clip" data-start="0" data-duration="3.6" data-track-index="3">
+        <div id="date" class="mono">
+          <div id="tag"><i></i>INVESTIGACIÓN</div>
+          <div id="type"></div>
+          <div id="year">2026 · CASO BINANCE</div>
+        </div>
+      </div>
+
+      <div id="pDoc" class="clip" data-start="3.0" data-duration="8.2" data-track-index="3">
+        <div id="docTag" class="mono">FUENTE: BBC NEWS MUNDO · <b>30/10/2026</b></div>
+        <div id="doc">
+          <img src="assets/noticia.png" alt="" />
+          <svg viewBox="0 0 690 843" width="690" height="843">
+            <rect class="hl" id="h4" x="18" y="198" width="370" height="46" rx="6" fill="#ffe14d"/>
+            <rect class="hl" id="h5" x="18" y="256" width="544" height="46" rx="6" fill="#ffe14d"/>
+            <rect class="hl" id="h2" x="380" y="80" width="220" height="46" rx="6" fill="#ffb3b5"/>
+            <rect class="hl" id="h3" x="18" y="138" width="180" height="46" rx="6" fill="#ffb3b5"/>
+            <path id="circ" d="M 20 104 C 18 70, 110 66, 190 72 C 236 76, 232 126, 180 130 C 110 136, 14 134, 18 100 C 20 84, 50 74, 100 70" fill="none" stroke="#e5484d" stroke-width="6" stroke-linecap="round"/>
+            <path id="ul" d="M 25 818 L 128 818" stroke="#e5484d" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div id="pAmt" class="clip" data-start="10.6" data-duration="3.08" data-track-index="4">
+        <div id="amt"><div id="amtBox"><div id="num" class="mono">0 $</div><div id="sub" class="mono">ROBADOS EN <b>BINANCE</b></div></div></div>
+        <div id="stamp" class="mono">HACKEADOS</div>
+      </div>
+
+      <div id="grainWrap" class="clip" data-start="0" data-duration="13.68" data-track-index="5"><div id="grain"></div></div>
+      <div id="bars" class="clip" data-start="0" data-duration="13.68" data-track-index="6"><div class="bar" id="barT"></div><div class="bar" id="barB"></div></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const DUR = 13.68;
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+      const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      // ---------- film grain: jump the noise texture every 2 frames ----------
+      for (let i = 0, t = 0; t < DUR; i++, t += 2 / 30) tl.set("#grain", { x: Math.round(rnd(i) * 128), y: Math.round(rnd(i + 500) * 128) }, t);
+
+      // ---------- cinematic bars ----------
+      tl.fromTo("#barT", { yPercent: -100 }, { yPercent: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo("#barB", { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: "power3.out" }, 0);
+
+      // ---------- camera ----------
+      const sideR = (t, s = 1.0) => { tl.to(cam, { x: 470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const full = (t, s = 1.06) => { tl.to(cam, { x: 0, scale: s, duration: 0.55, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 0, duration: 0.3 }, t + 0.05); };
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.05, duration: 3.15, ease: "none" }, 0);
+      sideR(3.15, 1.0);
+      tl.to(cam, { scale: 1.03, duration: 7.0, ease: "none" }, 3.8);
+      full(10.62, 1.08);                       // then still under the amount
+
+      // ---------- typewriter date (synced to "Jueves 29 de octubre") ----------
+      const TXT = "JUEVES, 29 DE OCTUBRE";
+      const type = $("#type");
+      const chars = TXT.split("").map((ch) => { const s = document.createElement("span"); s.className = "c"; s.textContent = ch; type.appendChild(s); return s; });
+      const caret = document.createElement("span"); caret.id = "caret"; type.appendChild(caret);
+      tl.fromTo("#tag", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }, 0.1);
+      tl.set(caret, { opacity: 1 }, 0.1);
+      // word start times: JUEVES 0.05 · 29 1.2 · DE 2.12 · OCTUBRE 2.48
+      const WT = [[0, 6, 0.05, 0.5], [6, 10, 1.15, 0.3], [10, 13, 2.08, 0.2], [13, 21, 2.42, 0.5]];
+      WT.forEach(([a, b, t, d]) => { for (let i = a; i < b; i++) tl.set(chars[i], { display: "inline" }, t + ((i - a) / (b - a)) * d); });
+      for (let t = 0.1, k = 0; t < 3.2; t += 0.27, k++) tl.set(caret, { opacity: k % 2 ? 1 : 0.15 }, t);
+      tl.fromTo("#year", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3 }, 2.95);
+      tl.to("#date", { opacity: 0, x: -30, duration: 0.3, ease: "power2.in" }, 3.2);
+
+      // ---------- the article as evidence ----------
+      gsap.set(["#h4", "#h5", "#h2", "#h3"], { scaleX: 0, transformOrigin: "0% 50%" });
+      const draw = (sel, len) => { const p = $(sel); p.setAttribute("stroke-dasharray", len); p.setAttribute("stroke-dashoffset", len); return p; };
+      const circ = draw("#circ", 640), ul = draw("#ul", 110);
+      tl.fromTo("#doc", { opacity: 0, x: -80, rotation: -5, scale: 0.92 }, { opacity: 1, x: 0, rotation: -1.5, scale: 1, duration: 0.6, ease: "expo.out" }, 3.4);
+      tl.fromTo("#docTag", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 3.7);
+      tl.to(ul, { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power2.out" }, 3.75);
+      // "el mayor hackeo de la historia" -> "el mayor robo de criptomonedas conocido"
+      tl.to("#h4", { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 3.94);
+      tl.to("#h5", { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, 4.6);
+      // "el exchange más importante del planeta" -> Binance
+      tl.to(circ, { attr: { "stroke-dashoffset": 0 }, duration: 0.6, ease: "power2.inOut" }, 6.02);
+      tl.to("#doc", { scale: 1.04, duration: 2.6, ease: "none" }, 6.0);
+      // "6,3 ... de dólares" -> US$6.300 millones
+      tl.to("#h2", { scaleX: 1, duration: 0.35, ease: "power2.inOut" }, 8.98);
+      tl.to("#h3", { scaleX: 1, duration: 0.35, ease: "power2.inOut" }, 9.35);
+      tl.to(["#doc", "#docTag"], { opacity: 0, x: -50, duration: 0.3, ease: "power2.in" }, 10.5);
+
+      // ---------- the amount + "hackeados" (front, camera still) ----------
+      tl.fromTo("#amt", { opacity: 0, y: 30, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.5)" }, 10.75);
+      const n = { v: 0 };
+      tl.to(n, { v: 6300000000, duration: 0.9, ease: "power2.out", onUpdate: () => { $("#num").textContent = fmt(n.v) + " $"; } }, 10.8);
+      tl.to("#redFlash", { opacity: 1, duration: 0.15 }, 11.42);
+      tl.to("#redFlash", { opacity: 0.45, duration: 0.6 }, 11.6);
+      tl.fromTo("#stamp", { opacity: 0, scale: 1.6, rotation: -14 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.28, ease: "power3.in" }, 11.42);
+      tl.fromTo("#sub b", { color: "#d9d3c4" }, { color: "#f0d488", duration: 0.2 }, 13.08);
+      tl.fromTo("#sub", { scale: 1 }, { scale: 1.06, duration: 0.18, yoyo: true, repeat: 1 }, 13.08);
+
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
