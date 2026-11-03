@@ -17,3 +17,10 @@ Color de los reels de siempre (`contrast(1.08) saturate(1.05) brightness(1.06)`)
 
 Montaje: `plantilla_base.html` + `grafico.js` (sustituye `__CHART__`) → `plantilla.html`;
 `python3 generar.py transcripcion.json index.html plantilla.html cara.json`.
+
+## v2 — gráficas reales
+Unai pidió las gráficas reales "tal cual" del video de referencia. `assets/card1-4.png` son las tarjetas del S&P 500
+recortadas de la referencia (fotogramas 3,7 / 7,9 / 12,9 / 17,7 s, recorte automático hasta el borde de la tarjeta).
+Igual que en la referencia: primero se ve solo la parte izquierda (la caída en rojo, que se va "dibujando" con un
+`clip-path`) y en "X meses después" la tarjeta se abre entera con la recuperación en azul. Luego las 4 en cuadrícula y,
+en "los que vendieron en lo peor del COVID", círculo "VENDISTE AQUÍ" en el mínimo y la recuperación oscurecida.

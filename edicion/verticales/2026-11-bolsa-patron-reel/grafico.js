@@ -48,94 +48,63 @@
       const show = (t, at, d = 0.3) => tl.to(t, { opacity: 1, duration: d }, at);
       const hide = (t, at, d = 0.3) => tl.to(t, { opacity: 0, duration: d }, at);
 
-      // ================= scenes: crash -> "X meses después" -> recovery =================
-      const hline = (P, x1, x2, y, col, dash, w) => el("line", { x1, x2, y1: y, y2: y, stroke: col, "stroke-width": w || 4, "stroke-dasharray": dash || "none", opacity: 0 }, P);
-      // deterministic OHLC path (svg y: smaller = higher), mixed colours
-      function path(n, y0, y1, noise, seed, curve) {
-        const out = []; let prev = y0;
-        for (let i = 0; i < n; i++) {
-          const k = (i + 1) / n, base = y0 + (y1 - y0) * Math.pow(k, curve || 1);
-          const c = i === n - 1 ? y1 : base + (rnd(seed + i) - 0.5) * noise;
-          const o = prev, hi = Math.min(o, c) - 4 - rnd(seed + i + 50) * noise * 0.4, lo = Math.max(o, c) + 4 + rnd(seed + i + 90) * noise * 0.4;
-          out.push([o, c, hi, lo]); prev = c;
-        }
-        return out;
-      }
-      const X0 = 70, X1 = 950, SPLITX = 0.4;          // crash phase compresses to the left 40 %
-      function event(cfg) {
-        const G = grp("ev" + cfg.id);
-        const crash = el("g", {}, G), rec = el("g", {}, G);
-        const C = path(cfg.nc, cfg.pre, cfg.low, cfg.noiseC, cfg.seed, 0.8);
-        const nr = cfg.nr, Rr = path(nr, cfg.low, cfg.end, cfg.noiseR, cfg.seed + 300, 1.15);
-        const stepC = (X1 - X0) / cfg.nc, wC = stepC * 0.56;
-        const cc = C.map((c, i) => candle(crash, X0 + stepC * (i + 0.5), c, wC));
-        const rx0 = X0 + (X1 - X0) * SPLITX + 18, stepR = (X1 - rx0) / nr, wR = Math.max(8, stepR * 0.6);
-        const rc = Rr.map((c, i) => candle(rec, rx0 + stepR * (i + 0.5), c, wR));
-        const preL = hline(G, 40, 990, cfg.pre, GOLD, "10 10", 3);
-        const preT = el("text", { x: 990, y: cfg.pre - 12, "text-anchor": "end", "font-size": 22, "font-weight": 800, fill: GOLD, "font-family": "Inter", opacity: 0 }, G, "ANTES DE LA CAÍDA");
-        const tag = pill(G, 40, 52, cfg.tag, "#1d1910", CREAM, "start", 28);
-        const sp = el("text", { x: 990, y: 50, "text-anchor": "end", "font-size": 24, "font-weight": 800, fill: "#8d826a", "font-family": "Inter", "letter-spacing": 2, opacity: 0 }, G, "S&P 500");
-        const lowI = C.length - 1, lowX = X0 + stepC * (lowI + 0.5);
-        const dropP = pill(G, Math.min(lowX, 900), cfg.low + 70, cfg.drop, RED, "#fff", "middle", 32);
-        const sepX = rx0 - 9;
-        const sep = el("line", { x1: sepX, x2: sepX, y1: 100, y2: 640, stroke: "rgba(240,212,136,0.5)", "stroke-width": 3, "stroke-dasharray": "6 8", opacity: 0 }, G);
-        const later = pill(G, (sepX + X1) / 2, 112, cfg.later, GOLD, "#1a1408", "middle", 28);
-        const recP = pill(G, 950, Math.min(cfg.end, cfg.pre) - 34, "RECUPERADO ✓", GREEN, "#fff", "end", 28);
-        const T = cfg.t;
-        tl.set(G, { opacity: 1 }, T.in);
-        if (cfg.first) tl.set([tag, sp, preL, preT], { opacity: 1 }, T.in);
-        else { show(tag, T.in, 0.25); show(sp, T.in, 0.25); show(preL, T.in + 0.1); show(preT, T.in + 0.1); }
-        const k0 = cfg.first || 0;   // candles already on screen at the first frame (hook)
-        cc.forEach((c, i) => i < k0 ? tl.set(c, { opacity: 1 }, T.in) : show(c, T.in + 0.15 + (i - k0) * (T.crashDur / (cc.length - k0)), 0.12));
-        show(dropP, T.in + 0.15 + T.crashDur + 0.05);
-        // "X meses después": zoom out the crash to the left and draw the recovery
-        tl.to(crash, { scaleX: SPLITX, svgOrigin: `${X0} 0`, duration: 0.45, ease: "power2.inOut" }, T.later);
-        tl.to(dropP, { x: -(lowX - (X0 + (lowX - X0) * SPLITX)), duration: 0.45, ease: "power2.inOut" }, T.later);
-        show(sep, T.later + 0.3); show(later, T.later + 0.3);
-        rc.forEach((c, i) => show(c, T.later + 0.45 + i * (T.recDur / rc.length), 0.1));
-        show(recP, T.later + 0.45 + T.recDur);
-        return { G, crash, rec, rc, dropP, recP, preL, preT, later, sep, tag, lowX, cfg };
-      }
-      const E = [
-        event({ id: 1, tag: "🦠 COVID · 2020", drop: "−34 %", later: "6 MESES DESPUÉS", pre: 230, low: 560, end: 200, nc: 12, nr: 26, noiseC: 40, noiseR: 34, seed: 11, first: 4,
-          t: { in: 0.0, crashDur: 1.9, later: 2.56, recDur: 1.7 } }),
-        event({ id: 2, tag: "🪖 RUSIA INVADE UCRANIA · 2022", drop: "−25 %", later: "14 MESES DESPUÉS", pre: 250, low: 500, end: 238, nc: 12, nr: 26, noiseC: 38, noiseR: 40, seed: 41,
-          t: { in: 5.0, crashDur: 2.2, later: 7.74, recDur: 1.8 } }),
-        event({ id: 3, tag: "🧾 ARANCELES DE TRUMP · 2025", drop: "−19 %", later: "5 MESES DESPUÉS", pre: 240, low: 450, end: 180, nc: 11, nr: 24, noiseC: 34, noiseR: 30, seed: 71,
-          t: { in: 10.46, crashDur: 2.6, later: 13.72, recDur: 1.8 } }),
-        event({ id: 4, tag: "🛢️ IRÁN Y PETRÓLEO · 2026", drop: "PÁNICO", later: "4 MESES DESPUÉS", pre: 250, low: 470, end: 205, nc: 12, nr: 24, noiseC: 36, noiseR: 32, seed: 97,
-          t: { in: 15.92, crashDur: 3.2, later: 19.7, recDur: 1.9 } }),
+      // ================= real S&P 500 charts (cropped from the reference reel, untouched) =================
+      // each card: narrow (crash only) -> "X meses después" -> opens to the full chart, like the reference
+      const wrap = $("#chartWrap"), CW = 960;
+      const CARDS = [
+        { src: "assets/card1.png", w: 830, h: 482, n0: 0.16, n1: 0.33, tin: 0.0, draw: 2.2, open: 2.56, out: 4.85 },
+        { src: "assets/card2.png", w: 870, h: 441, n0: 0.12, n1: 0.26, tin: 5.0, draw: 2.4, open: 7.74, out: 10.3 },
+        { src: "assets/card3.png", w: 732, h: 485, n0: 0.14, n1: 0.38, tin: 10.46, draw: 2.8, open: 13.72, out: 15.78 },
+        { src: "assets/card4.png", w: 752, h: 502, n0: 0.14, n1: 0.33, tin: 15.92, draw: 3.4, open: 19.7, out: null },
       ];
-      tl.set("#chartWrap", { opacity: 1 }, 0);
-      [[0, 4.85], [1, 10.3], [2, 15.78]].forEach(([i, t]) => tl.to(E[i].G, { opacity: 0, duration: 0.2 }, t));
-
-      // ---------- "¿Ves el patrón?": the four side by side ----------
-      const Q = [[0, 0], [510, 0], [0, 360], [510, 360]];
-      E.forEach((e, i) => {
-        tl.set(e.G, { opacity: 0, scale: 0.5, x: Q[i][0], y: Q[i][1], transformOrigin: "0 0" }, 22.0);
-        tl.to(e.G, { opacity: 1, duration: 0.3 }, 22.26 + i * 0.12);
+      const clip = (f) => `inset(0% ${((1 - f) * 100).toFixed(2)}% 0% 0% round 16px)`;
+      const cardEls = CARDS.map((c, i) => {
+        const H = (CW * c.h) / c.w;
+        const d = document.createElement("div");
+        d.className = "rc";
+        d.style.cssText = `position:absolute;left:30px;top:${30 + (590 - H) / 2}px;width:${CW}px;height:${H}px;opacity:0;`;
+        d.innerHTML = `<img src="${c.src}" style="position:absolute;inset:0;width:100%;height:100%;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,0.6)">`;
+        wrap.insertBefore(d, svg);
+        c.H = H; c.top = 30 + (590 - H) / 2;
+        return d;
       });
-      // "el mercado cae" / "se recupera" / "por encima de donde cayó"
-      E.forEach((e) => tl.fromTo(e.dropP, { scale: 1 }, { scale: 1.25, duration: 0.18, yoyo: true, repeat: 1, svgOrigin: `${e.lowX} ${e.cfg.low + 60}` }, 23.6));
-      E.forEach((e) => tl.fromTo(e.recP, { scale: 1 }, { scale: 1.2, duration: 0.18, yoyo: true, repeat: 1, svgOrigin: `900 ${e.cfg.pre - 40}` }, 24.6));
-      E.forEach((e) => tl.to(e.preL, { attr: { "stroke-width": 7 }, duration: 0.3 }, 26.4));
-      const above = pill(svg, 510, 708, "TERMINA MÁS ARRIBA DE DONDE CAYÓ", GOLD, "#1a1408", "middle", 30);
+      tl.set("#chartWrap", { opacity: 1 }, 0);
+      CARDS.forEach((c, i) => {
+        const d = cardEls[i];
+        const P = { f: c.n0 }, upd = () => { d.style.clipPath = clip(P.f); };
+        d.style.clipPath = clip(c.n0);
+        if (i === 0) tl.set(d, { opacity: 1 }, 0);             // first frame: chart already on screen (hook)
+        else tl.fromTo(d, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, c.tin);
+        tl.to(P, { f: c.n1, duration: c.draw, ease: "power1.inOut", onUpdate: upd }, c.tin + 0.05);   // the crash draws
+        tl.to(P, { f: 1, duration: 1.2, ease: "power2.inOut", onUpdate: upd }, c.open);              // "X meses después"
+        if (c.out) tl.to(d, { opacity: 0, duration: 0.2 }, c.out);
+      });
+
+      // ---------- "¿Ves el patrón?": the four together ----------
+      const GQ = [[30, 30], [520, 30], [30, 340], [520, 340]], GS = 470 / CW;
+      CARDS.forEach((c, i) => {
+        const d = cardEls[i];
+        tl.set(d, { opacity: 0, x: GQ[i][0] - 30, y: GQ[i][1] - c.top, scale: GS, transformOrigin: "0 0" }, 22.05);
+        tl.to(d, { opacity: 1, duration: 0.3 }, 22.26 + i * 0.12);
+      });
+      const above = pill(svg, 510, 700, "TERMINA MÁS ARRIBA DE DONDE CAYÓ", GOLD, "#1a1408", "middle", 30);
       show(above, 26.4);
 
       // ---------- "los que vendieron en lo peor del COVID…" ----------
-      E.slice(1).forEach((e) => tl.to(e.G, { opacity: 0, duration: 0.25 }, 29.3));
+      cardEls.slice(1).forEach((d) => tl.to(d, { opacity: 0, duration: 0.25 }, 29.3));
       hide(above, 29.3, 0.25);
-      tl.to(E[0].G, { scale: 1, x: 0, y: 0, duration: 0.5, ease: "power2.inOut" }, 29.45);
-      tl.to(E[0].preL, { attr: { "stroke-width": 3 }, duration: 0.2 }, 29.45);
-      const e0 = E[0], soldX = X0 + (e0.lowX - X0) * SPLITX;
-      const soldR = ring(e0.G, soldX, e0.cfg.low - 10, 30, 40, RED);
-      const soldP = pill(e0.G, soldX + 10, e0.cfg.low + 70, "VENDISTE AQUÍ", RED, "#fff", "start", 28);
+      const c0 = CARDS[0], k0 = CW / c0.w;
+      tl.to(cardEls[0], { x: 0, y: 0, scale: 1, duration: 0.5, ease: "power2.inOut" }, 29.45);
+      const LX = 30 + 227 * k0, LY = c0.top + 413 * k0;                      // the COVID low on the card
+      const dim = document.createElement("div");
+      dim.style.cssText = `position:absolute;top:0;bottom:0;left:${229 * k0}px;right:0;background:rgba(8,8,10,0.62);border-radius:0 16px 16px 0;opacity:0;`;
+      cardEls[0].appendChild(dim);
+      const soldR = ring(svg, LX, LY - 6, 30, 30, RED);
+      const soldP = pill(svg, LX + 14, LY + 62, "VENDISTE AQUÍ", RED, "#fff", "start", 28);
       drawRing(soldR, 30.4, 0.45);
-      tl.to(e0.dropP, { opacity: 0, duration: 0.2 }, 30.3);
       show(soldP, 30.6);
-      tl.to(e0.rec, { opacity: 0.22, duration: 0.5 }, 32.0);
-      tl.to(e0.recP, { opacity: 0, duration: 0.2 }, 32.0);
-      const missed = pill(e0.G, 690, 330, "TE PERDISTE LA RECUPERACIÓN", "#1d1910", "#ff8d90", "middle", 28);
+      tl.to(dim, { opacity: 1, duration: 0.5 }, 32.0);
+      const missed = pill(svg, 640, c0.top + 150, "TE PERDISTE LA RECUPERACIÓN", "#1d1910", "#ff8d90", "middle", 28);
       show(missed, 32.1);
-      const fortune = pill(e0.G, 690, 400, "Y UNA GRAN FORTUNA", RED, "#fff", "middle", 30);
+      const fortune = pill(svg, 640, c0.top + 220, "Y UNA GRAN FORTUNA", RED, "#fff", "middle", 30);
       show(fortune, 33.7);
