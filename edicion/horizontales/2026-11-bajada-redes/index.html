@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --ink: #0b0a08; --line: rgba(201,165,76,0.38); --red: #e5484d; --red-hi: #ff7a7e; --green: #3fbf7f; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+
+      #bg { background: radial-gradient(900px 700px at 22% 45%, rgba(201,165,76,0.14), transparent 70%), radial-gradient(900px 700px at 78% 45%, rgba(229,72,77,0.10), transparent 70%), #0b0a08; }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48.5% 0%; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 760px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0b0a08 0%, rgba(11,10,8,0.85) 30%, rgba(11,10,8,0) 100%); }
+      #fadeR { position: absolute; right: -2px; top: 0; width: 760px; height: 1080px; opacity: 0; background: linear-gradient(270deg, #0b0a08 0%, rgba(11,10,8,0.85) 30%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%); }
+      #redTint { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(120% 100% at 50% 50%, transparent 45%, rgba(120,10,14,0.45) 100%); }
+
+      /* ---------- side cards (solid, brand) ---------- */
+      .card { position: absolute; top: 150px; width: 760px; height: 780px; border-radius: 40px; opacity: 0;
+        background: rgba(22,19,13,0.94); border: 1.5px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 70px rgba(201,165,76,0.16); }
+      .card .lbl { position: absolute; left: 56px; top: 52px; font-weight: 700; font-size: 28px; letter-spacing: 0.18em; color: var(--gold); }
+      .card .lbl .serif { letter-spacing: 0; font-size: 34px; color: #cfc3a6; margin-left: 10px; }
+      .coin { position: absolute; left: 56px; top: 118px; display: flex; align-items: center; gap: 22px; }
+      .coin span { width: 78px; height: 78px; border-radius: 50%; background: linear-gradient(180deg, #f7b04a, #e8891a); color: #fff; font-weight: 900; font-size: 46px; display: flex; align-items: center; justify-content: center; }
+      .coin b { font-size: 44px; font-weight: 800; }
+      .coin i { font-style: normal; font-size: 30px; color: #9c8f73; font-weight: 700; margin-left: 4px; }
+      .price { position: absolute; left: 56px; top: 230px; font-size: 118px; font-weight: 900; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: #fff; }
+      .chg { position: absolute; left: 60px; top: 380px; padding: 10px 22px; border-radius: 999px; background: rgba(229,72,77,0.16); border: 1.5px solid rgba(229,72,77,0.7);
+        color: var(--red-hi); font-size: 34px; font-weight: 900; font-variant-numeric: tabular-nums; opacity: 0; }
+      .card svg { position: absolute; left: 40px; right: 40px; bottom: 50px; }
+      .tabs { position: absolute; right: 56px; top: 56px; display: flex; gap: 10px; }
+      .tabs b { font-size: 22px; font-weight: 800; color: #8d826a; padding: 6px 14px; border-radius: 10px; }
+      .tabs b.on { color: #1a1408; background: var(--gold-hi); }
+      #cardA { left: 90px; }
+      #cardB { left: 1070px; }
+      #was { position: absolute; left: 60px; top: 380px; font-size: 34px; color: #b9ad92; opacity: 0; }
+      #was s { color: #e7dcc0; text-decoration-color: var(--red); text-decoration-thickness: 4px; }
+      #cardB .chg { left: auto; right: 56px; top: 270px; font-size: 40px; }
+
+      /* ---------- glass overlays (in front of the person) ---------- */
+      .glass { position: absolute; opacity: 0; border-radius: 30px; padding: 26px 30px 26px 26px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.07));
+        -webkit-backdrop-filter: blur(22px) saturate(1.4) brightness(0.72); backdrop-filter: blur(22px) saturate(1.4) brightness(0.72);
+        border: 1.5px solid rgba(255,255,255,0.32); box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+      .post { width: 600px; display: flex; gap: 20px; }
+      .post .av { flex: none; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 30px; color: #fff; }
+      .post .bd { flex: 1; min-width: 0; }
+      .post .nm { font-size: 27px; font-weight: 800; color: #fff; white-space: nowrap; }
+      .post .nm i { font-style: normal; font-weight: 500; color: rgba(255,255,255,0.65); margin-left: 8px; }
+      .post .tx { margin-top: 6px; font-size: 33px; line-height: 1.25; font-weight: 700; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+      .post .tx b { color: var(--red-hi); font-weight: 900; }
+      .post .mt { margin-top: 12px; display: flex; gap: 26px; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.7); }
+      .news { width: 590px; }
+      .news .tg { display: inline-flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 900; letter-spacing: 0.14em; color: #fff; padding: 6px 14px; border-radius: 10px; background: var(--red); }
+      .news .tg i { width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+      .news .hd { margin-top: 14px; font-size: 40px; line-height: 1.15; font-weight: 900; letter-spacing: -0.01em; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.45); }
+      .news .hd b { color: var(--red-hi); }
+      .news .ft { margin-top: 10px; font-size: 22px; font-weight: 600; color: rgba(255,255,255,0.7); }
+
+      /* sell dialog */
+      #sell { left: 610px; top: 640px; width: 700px; padding: 30px 34px; }
+      #sell .row { display: flex; align-items: center; gap: 18px; }
+      #sell .row span { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(180deg, #f7b04a, #e8891a); font-weight: 900; font-size: 38px; display: flex; align-items: center; justify-content: center; }
+      #sell .row b { font-size: 36px; font-weight: 800; }
+      #sell .row i { margin-left: auto; font-style: normal; font-size: 30px; font-weight: 800; color: var(--red-hi); font-variant-numeric: tabular-nums; }
+      #sell .q { margin-top: 18px; font-size: 30px; font-weight: 600; color: rgba(255,255,255,0.85); }
+      #sell .q b { color: #fff; font-weight: 900; }
+      #sell .btns { margin-top: 22px; display: flex; gap: 18px; }
+      #sell .btns div { flex: 1; height: 84px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 900; }
+      #bNo { background: rgba(255,255,255,0.16); border: 1.5px solid rgba(255,255,255,0.35); }
+      #bSell { background: var(--red); box-shadow: 0 10px 30px rgba(229,72,77,0.5); }
+      #cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.2" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="18.2" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="18.2" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="18.2" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="fadeL"></div>
+        <div id="fadeR"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="18.2" data-track-index="2"></div>
+      <div id="redTint" class="clip" data-start="0" data-duration="18.2" data-track-index="2"></div>
+
+      <!-- A: phone / BTC falling (side) -->
+      <div id="pA" class="clip" data-start="0" data-duration="3.6" data-track-index="3">
+        <div class="card" id="cardA">
+          <div class="lbl">MERCADO <span class="serif">ahora mismo</span></div>
+          <div class="tabs"><b>1H</b><b class="on">24H</b><b>7D</b></div>
+          <div class="coin"><span>₿</span><b>Bitcoin</b><i>BTC</i></div>
+          <div class="price" id="priceA">96.480 $</div>
+          <div class="chg" id="chgA">▼ 0,0 %</div>
+          <svg width="680" height="300" viewBox="0 0 680 300"><defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5484d" stop-opacity="0.35"/><stop offset="1" stop-color="#e5484d" stop-opacity="0"/></linearGradient></defs>
+            <path id="areaA" fill="url(#gA)" d=""/><path id="lineA" fill="none" stroke="#e5484d" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" d=""/><circle id="dotA" r="11" fill="#ff7a7e" opacity="0"/></svg>
+        </div>
+      </div>
+
+      <!-- B: social / news glass overlays (in front, camera still) -->
+      <div id="pB" class="clip" data-start="3.4" data-duration="7.9" data-track-index="4">
+        <div class="glass news" id="n1" style="left:70px; top:90px;"><span class="tg"><i></i>ÚLTIMA HORA</span><div class="hd">Bitcoin <b>se desploma</b> y pierde un 15 % en 24 horas</div><div class="ft">Mercados · hace 12 min</div></div>
+        <div class="glass news" id="n2" style="left:1260px; top:120px;"><span class="tg"><i></i>CRIPTO</span><div class="hd"><b>Pánico</b> en el mercado: miles de millones liquidados</div><div class="ft">Economía · hace 40 min</div></div>
+        <div class="glass post" id="c1" style="left:90px; top:560px;"><div class="av" style="background:#6b5bd6">M</div><div class="bd"><div class="nm">marcos.inv <i>@marcos_inv · 2 min</i></div><div class="tx">Esto se acaba. Bitcoin <b>a cero</b> 💀</div><div class="mt"><span>💬 214</span><span>🔁 98</span><span>♥ 1,2 mil</span></div></div></div>
+        <div class="glass post" id="c2" style="left:1240px; top:520px;"><div class="av" style="background:#d6713b">L</div><div class="bd"><div class="nm">laura_trading <i>@laura_tr · 1 min</i></div><div class="tx">Lo he <b>vendido todo</b>. No aguanto más 😩</div><div class="mt"><span>💬 87</span><span>🔁 31</span><span>♥ 640</span></div></div></div>
+        <div class="glass post" id="c3" style="left:1210px; top:790px;"><div class="av" style="background:#2f8f6a">J</div><div class="bd"><div class="nm">javi.crypto <i>@javicrypto · ahora</i></div><div class="tx">Vendido. <b>Me salgo</b> de cripto para siempre.</div></div></div>
+      </div>
+
+      <!-- C: my account (side) -->
+      <div id="pC" class="clip" data-start="10.9" data-duration="3.8" data-track-index="3">
+        <div class="card" id="cardB">
+          <div class="lbl">MI CUENTA <span class="serif">saldo total</span></div>
+          <div class="price" id="priceB" style="top:140px">12.480 €</div>
+          <div class="chg" id="chgB">▼ 0,0 %</div>
+          <div id="was" style="top:300px">Hace 5 días: <s>12.480 €</s></div>
+          <svg width="680" height="330" viewBox="0 0 680 330"><defs><linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5484d" stop-opacity="0.35"/><stop offset="1" stop-color="#e5484d" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" x2="680" y1="60" y2="60" stroke="rgba(240,212,136,0.5)" stroke-width="3" stroke-dasharray="10 10"/>
+            <path id="areaB" fill="url(#gB)" d=""/><path id="lineB" fill="none" stroke="#e5484d" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" d=""/><circle id="dotB" r="11" fill="#ff7a7e" opacity="0"/></svg>
+        </div>
+      </div>
+
+      <!-- D: "¿y si vendo?" glass dialog (in front, camera still) -->
+      <div id="pD" class="clip" data-start="15.8" data-duration="2.4" data-track-index="4">
+        <div class="glass" id="sell">
+          <div class="row"><span>₿</span><b>Vender todo</b><i>−28,3 %</i></div>
+          <div class="q">¿Seguro que quieres <b>vender ahora</b>?</div>
+          <div class="btns"><div id="bNo">Esperar</div><div id="bSell">VENDER</div></div>
+        </div>
+        <svg id="cursor" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+
+      // ---------- falling line charts (deterministic) ----------
+      function series(n, y0, y1, noise, seed) {
+        return Array.from({ length: n }, (_, i) => {
+          const k = i / (n - 1), base = y0 + (y1 - y0) * Math.pow(k, 1.6);
+          return base + (rnd(i + seed) - 0.5) * noise * (i === 0 || i === n - 1 ? 0 : 1);
+        });
+      }
+      function drawSeries(line, area, dot, pts, W, H, t0, dur) {
+        const n = pts.length, X = (i) => (i / (n - 1)) * W;
+        // reveal point by point
+        const st = { k: 0 };
+        tl.set(dot, { opacity: 1 }, t0);
+        tl.to(st, { k: 1, duration: dur, ease: "none", onUpdate: () => {
+          const m = Math.max(1, Math.round(st.k * (n - 1)));
+          let d = `M0 ${pts[0]}`;
+          for (let i = 1; i <= m; i++) d += ` L${X(i)} ${pts[i]}`;
+          line.setAttribute("d", d);
+          area.setAttribute("d", d + ` L${X(m)} ${H} L0 ${H} Z`);
+          dot.setAttribute("cx", X(m)); dot.setAttribute("cy", pts[m]);
+        } }, t0);
+      }
+      const PA = series(36, 40, 270, 34, 3);
+      const PB = series(30, 60, 290, 30, 11);
+
+      // ---------- camera ----------
+      // side: person to the right (cards left) or to the left (cards right); full: centered
+      const sideR = (t, s = 1.0) => { tl.to(cam, { x: 470, scale: s, duration: 0.55, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 1, duration: 0.4 }, t + 0.1); };
+      const sideL = (t, s = 1.0) => { tl.to(cam, { x: -470, scale: s, duration: 0.55, ease: "power3.inOut" }, t); tl.to("#fadeR", { opacity: 1, duration: 0.4 }, t + 0.1); };
+      const full = (t, s = 1.06) => {
+        tl.to(cam, { x: 0, scale: s, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to(["#fadeL", "#fadeR"], { opacity: 0, duration: 0.3 }, t + 0.05);
+      };
+      tl.set(cam, { x: 470, scale: 1.0 }, 0);
+      tl.set("#fadeL", { opacity: 1 }, 0);
+      tl.to(cam, { scale: 1.04, duration: 3.0, ease: "none" }, 0.05);
+      full(3.12, 1.04);                       // social: camera stays still under the glass
+      sideL(10.9, 1.0);
+      tl.to(cam, { scale: 1.03, duration: 3.2, ease: "none" }, 11.5);
+      full(14.5, 1.06);
+      tl.set(cam, { scale: 1.12 }, 15.38);    // dry jump cut on "a preguntar", then still under the dialog
+
+      // ---------- A: BTC falling ----------
+      tl.fromTo("#cardA", { opacity: 0, x: -60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.4, ease: "expo.out" }, 0.0);
+      drawSeries($("#lineA"), $("#areaA"), $("#dotA"), PA, 680, 300, 0.75, 2.0);
+      const pa = { v: 96480 };
+      tl.to(pa, { v: 81970, duration: 2.0, ease: "power1.in", onUpdate: () => { $("#priceA").textContent = fmt(pa.v) + " $"; $("#chgA").textContent = "▼ " + ((1 - pa.v / 96480) * 100).toFixed(1).replace(".", ",") + " %"; } }, 0.75);
+      tl.fromTo("#chgA", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 1.4);
+      tl.to("#priceA", { color: "#ff7a7e", duration: 0.3 }, 2.1);
+      tl.to("#cardA", { opacity: 0, x: -50, duration: 0.3, ease: "power2.in" }, 3.0);
+
+      // ---------- B: glass news + posts ----------
+      const pop = (sel, t, fromX) => tl.fromTo(sel, { opacity: 0, x: fromX, y: 16, scale: 0.92 }, { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)" }, t);
+      tl.to("#redTint", { opacity: 1, duration: 0.6 }, 3.5);
+      pop("#n1", 3.54, -40);
+      pop("#n2", 4.76, 40);
+      pop("#c1", 6.95, -40);
+      pop("#c2", 8.4, 40);
+      pop("#c3", 10.1, 40);
+      ["#n1", "#n2", "#c1", "#c2", "#c3"].forEach((s, i) => tl.to(s, { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 10.75 + i * 0.03));
+      tl.to("#redTint", { opacity: 0, duration: 0.4 }, 10.8);
+
+      // ---------- C: my account ----------
+      tl.fromTo("#cardB", { opacity: 0, x: 60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.45, ease: "expo.out" }, 11.15);
+      drawSeries($("#lineB"), $("#areaB"), $("#dotB"), PB, 680, 330, 11.6, 2.3);
+      const pb = { v: 12480 };
+      tl.to(pb, { v: 8950, duration: 2.3, ease: "power1.in", onUpdate: () => { $("#priceB").textContent = fmt(pb.v) + " €"; $("#chgB").textContent = "▼ " + ((1 - pb.v / 12480) * 100).toFixed(1).replace(".", ",") + " %"; } }, 11.6);
+      tl.to("#priceB", { color: "#ff7a7e", duration: 0.3 }, 13.0);
+      tl.fromTo("#was", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 12.52);
+      tl.fromTo("#chgB", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 13.84);
+      tl.to("#cardB", { opacity: 0, x: 50, duration: 0.3, ease: "power2.in" }, 14.4);
+
+      // ---------- D: "¿y si vendo?" ----------
+      tl.fromTo("#sell", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)" }, 16.0);
+      const BX = 1150, BY = 920;
+      tl.fromTo("#cursor", { opacity: 0, x: BX + 260, y: BY + 140 }, { opacity: 1, x: BX - 40, y: BY - 20, duration: 0.6, ease: "power2.out" }, 16.45);
+      tl.to("#bSell", { scale: 1.05, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, 17.05);
+      tl.to("#cursor", { x: BX - 10, y: BY - 6, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 17.1);
+
+      tl.set({}, {}, 18.2);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

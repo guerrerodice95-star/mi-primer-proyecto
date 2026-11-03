@@ -59,4 +59,5 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Sin subtítulos.** Como mucho alguna palabra clave abajo ("NO LLEGAS *a fin de mes*").
 - Que sea **atractivo**: gráficos con datos (tarjeta con contador, barras) en el lado izquierdo, con la persona desplazada a la derecha, y vuelta a pantalla completa.
 - Mismos colores dorado/negro que los reels, para que el canal y los reels se vean iguales.
+- **Combinar dos tipos de motion** (no abusar de uno): *lateral* (persona desplazada, gráfico al lado) y *delante en cristal* (glass legible encima, cámara quieta, la persona se sigue viendo detrás; p. ej. comentarios de redes que saltan). Ejemplo: `horizontales/2026-11-bajada-redes/`.
 - Su grabación ya tiene la cabeza pegada arriba: los zooms crecen hacia abajo (origen arriba) para no cortar más pelo.
