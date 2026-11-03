@@ -102,7 +102,7 @@
           <div class="lbl">MERCADO <span class="serif">ahora mismo</span></div>
           <div class="tabs"><b>1H</b><b class="on">24H</b><b>7D</b></div>
           <div class="coin"><span>₿</span><b>Bitcoin</b><i>BTC</i></div>
-          <div class="price" id="priceA">96.480 $</div>
+          <div class="price" id="priceA">87.000 $</div>
           <div class="chg" id="chgA">▼ 0,0 %</div>
           <svg width="680" height="300" viewBox="0 0 680 300"><defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5484d" stop-opacity="0.35"/><stop offset="1" stop-color="#e5484d" stop-opacity="0"/></linearGradient></defs>
             <path id="areaA" fill="url(#gA)" d=""/><path id="lineA" fill="none" stroke="#e5484d" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" d=""/><circle id="dotA" r="11" fill="#ff7a7e" opacity="0"/></svg>
@@ -111,7 +111,7 @@
 
       <!-- B: social / news glass overlays (in front, camera still) -->
       <div id="pB" class="clip" data-start="3.4" data-duration="7.9" data-track-index="4">
-        <div class="glass news" id="n1" style="left:70px; top:90px;"><span class="tg"><i></i>ÚLTIMA HORA</span><div class="hd">Bitcoin <b>se desploma</b> y pierde un 15 % en 24 horas</div><div class="ft">Mercados · hace 12 min</div></div>
+        <div class="glass news" id="n1" style="left:70px; top:90px;"><span class="tg"><i></i>ÚLTIMA HORA</span><div class="hd">Bitcoin <b>se desploma</b> y pierde un 12 % en 24 horas</div><div class="ft">Mercados · hace 12 min</div></div>
         <div class="glass news" id="n2" style="left:1260px; top:120px;"><span class="tg"><i></i>CRIPTO</span><div class="hd"><b>Pánico</b> en el mercado: miles de millones liquidados</div><div class="ft">Economía · hace 40 min</div></div>
         <div class="glass post" id="c1" style="left:90px; top:560px;"><div class="av" style="background:#6b5bd6">M</div><div class="bd"><div class="nm">marcos.inv <i>@marcos_inv · 2 min</i></div><div class="tx">Esto se acaba. Bitcoin <b>a cero</b> 💀</div><div class="mt"><span>💬 214</span><span>🔁 98</span><span>♥ 1,2 mil</span></div></div></div>
         <div class="glass post" id="c2" style="left:1240px; top:520px;"><div class="av" style="background:#d6713b">L</div><div class="bd"><div class="nm">laura_trading <i>@laura_tr · 1 min</i></div><div class="tx">Lo he <b>vendido todo</b>. No aguanto más 😩</div><div class="mt"><span>💬 87</span><span>🔁 31</span><span>♥ 640</span></div></div></div>
@@ -194,8 +194,8 @@
       // ---------- A: BTC falling ----------
       tl.fromTo("#cardA", { opacity: 0, x: -60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.4, ease: "expo.out" }, 0.0);
       drawSeries($("#lineA"), $("#areaA"), $("#dotA"), PA, 680, 300, 0.75, 2.0);
-      const pa = { v: 96480 };
-      tl.to(pa, { v: 81970, duration: 2.0, ease: "power1.in", onUpdate: () => { $("#priceA").textContent = fmt(pa.v) + " $"; $("#chgA").textContent = "▼ " + ((1 - pa.v / 96480) * 100).toFixed(1).replace(".", ",") + " %"; } }, 0.75);
+      const pa = { v: 87000 };
+      tl.to(pa, { v: 76000, duration: 2.0, ease: "power1.in", onUpdate: () => { $("#priceA").textContent = fmt(pa.v) + " $"; $("#chgA").textContent = "▼ " + ((1 - pa.v / 87000) * 100).toFixed(1).replace(".", ",") + " %"; } }, 0.75);
       tl.fromTo("#chgA", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 1.4);
       tl.to("#priceA", { color: "#ff7a7e", duration: 0.3 }, 2.1);
       tl.to("#cardA", { opacity: 0, x: -50, duration: 0.3, ease: "power2.in" }, 3.0);
@@ -223,10 +223,16 @@
 
       // ---------- D: "¿y si vendo?" ----------
       tl.fromTo("#sell", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)" }, 16.0);
-      const BX = 1150, BY = 920;
-      tl.fromTo("#cursor", { opacity: 0, x: BX + 260, y: BY + 140 }, { opacity: 1, x: BX - 40, y: BY - 20, duration: 0.6, ease: "power2.out" }, 16.45);
-      tl.to("#bSell", { scale: 1.05, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, 17.05);
-      tl.to("#cursor", { x: BX - 10, y: BY - 6, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 17.1);
+      // the cursor hesitates: VENDER -> Esperar -> VENDER -> halfway back, never clicks
+      const SELL = [1105, 858], WAIT = [785, 862];
+      const hover = (b, t, d) => { tl.to(b, { scale: 1.07, duration: 0.15, ease: "power2.out" }, t); tl.to(b, { scale: 1, duration: 0.15, ease: "power2.in" }, t + d); };
+      tl.fromTo("#cursor", { opacity: 0, x: SELL[0] + 260, y: SELL[1] + 140 }, { opacity: 1, x: SELL[0], y: SELL[1], duration: 0.5, ease: "power2.out" }, 16.4);
+      hover("#bSell", 16.85, 0.2);
+      tl.to("#cursor", { x: WAIT[0], y: WAIT[1], duration: 0.38, ease: "sine.inOut" }, 17.0);
+      hover("#bNo", 17.33, 0.17);
+      tl.to("#cursor", { x: SELL[0], y: SELL[1] + 4, duration: 0.36, ease: "sine.inOut" }, 17.48);
+      hover("#bSell", 17.8, 0.12);
+      tl.to("#cursor", { x: 950, y: SELL[1] + 8, duration: 0.3, ease: "sine.inOut" }, 17.9);
 
       tl.set({}, {}, 18.2);
       window.__timelines = window.__timelines || {};
