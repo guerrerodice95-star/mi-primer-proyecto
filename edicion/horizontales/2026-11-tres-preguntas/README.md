@@ -16,3 +16,5 @@ Idea: un checklist "ANTES DE VENDER" que se va marcando. Cada respuesta lleva al
 | 72,4–82,1 | Cristal delante | "SI SE CUMPLEN LAS 3": ✓ Motivos ✓ Dinero ✓ Caída → MANTENGO, "y a largo plazo…" con línea verde al alza |
 
 Sonidos: pops fuertes (0,2) al aparecer cada cuadro, ding suave en cada respuesta, clic en el botón bloqueado, whoosh bajo en los cambios de plano.
+
+v2: color de piel corregido (menos amarillo/naranja) con `contrast(1.04) saturate(0.9) hue-rotate(6deg) brightness(1.17)`.
