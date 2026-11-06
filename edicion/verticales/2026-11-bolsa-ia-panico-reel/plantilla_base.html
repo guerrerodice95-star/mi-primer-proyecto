@@ -84,10 +84,10 @@
       /* FVG/BAG chart (no frame) */
       #chartWrap { position: absolute; left: 30px; top: 975px; width: 1020px; height: 720px; opacity: 0; }
       #chartWrap svg { position: absolute; inset: 0; }
-      #twBox { position: absolute; left: 40px; top: 1065px; width: 1000px; height: 563px; overflow: hidden; border-radius: 22px; opacity: 0;
+      #twBox { position: absolute; left: 30px; top: 1036px; width: 1020px; height: 695px; overflow: hidden; border-radius: 22px; opacity: 0;
         box-shadow: 0 30px 70px rgba(0,0,0,0.7), 0 0 0 1.5px rgba(255,255,255,0.12); }
-      #tweet { position: absolute; inset: auto; left: 0; top: 0; width: 1000px; height: 563px; }
-      #twSrc { position: absolute; left: 0; right: 0; top: 1643px; text-align: center; font-size: 24px; font-weight: 700; color: #8d826a; opacity: 0; }
+      #tweet { position: absolute; inset: auto; left: 0; top: 0; width: 1020px; height: 695px; }
+      #twSrc { position: absolute; left: 0; right: 0; top: 1745px; text-align: center; font-size: 24px; font-weight: 700; color: #8d826a; opacity: 0; }
       .w.fvg, .w.bag { padding: 0 18px; border-radius: 14px; font-weight: 900; text-shadow: none; }
       .w.fvg { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 34px rgba(201,165,76,0.45); }
       .w.bag { color: #fff; background: linear-gradient(180deg, #2fb57a, #1f8a5a); box-shadow: 0 0 34px rgba(63,191,127,0.45); }
@@ -134,7 +134,7 @@
         <div id="chartWrap"><svg id="chart" viewBox="0 0 1020 720" width="1020" height="720"></svg></div>
       </div>
 
-      <div id="twBox"><video id="tweet" class="clip" data-start="24.9" data-duration="6.9" data-track-index="4" src="assets/tweet.mp4" muted playsinline></video></div>
+      <div id="twBox"><video id="tweet" class="clip" data-start="26.1" data-duration="5.7" data-track-index="4" src="assets/tweet.mp4" muted playsinline></video></div>
       <div id="twSrc">Vídeo: @BullTheoryio en X</div>
       <div id="pCta" class="clip" data-start="39.8" data-duration="1.84" data-track-index="3">
         <div id="ig">
@@ -204,10 +204,12 @@
       // "Eso ha hecho generar pánico": person full screen, dry punch-in on "pánico"
       tl.to("#chartWrap", { opacity: 0, duration: 0.2 }, 18.85);
       toFull(18.9);
-      tl.set(cam, { scale: 1.62 }, 20.4);
-      toSplit(21.0);
-      tl.to("#chartWrap", { opacity: 1, duration: 0.3 }, 21.25);
-      tl.to(cam, { scale: 0.86, duration: 18.2, ease: "none" }, 21.6);
+      tl.set(cam, { scale: 1.56 }, 20.4);
+      tl.set(cam, { scale: 1.42 }, 21.2);            // dry cut back on "Y ese pánico"
+      tl.to(cam, { scale: 1.45, duration: 1.9, ease: "none" }, 21.22);
+      toSplit(23.2);
+      tl.to("#chartWrap", { opacity: 1, duration: 0.3 }, 23.4);
+      tl.to(cam, { scale: 0.86, duration: 16.0, ease: "none" }, 23.8);
       tl.to("#chartWrap", { opacity: 0, duration: 0.25 }, 39.6);
       toFull(39.75);
       tl.to(cam, { scale: 1.5, duration: 1.8, ease: "none" }, 40.3);

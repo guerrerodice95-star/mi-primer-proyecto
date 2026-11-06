@@ -85,38 +85,63 @@
   "volumen": 0.08
  },
  {
+  "sonido": "swish",
+  "segundo": 21.2,
+  "volumen": 0.06
+ },
+ {
   "sonido": "whoosh",
-  "segundo": 21.0,
+  "segundo": 23.2,
   "volumen": 0.08
  },
  {
   "sonido": "pop",
-  "segundo": 21.5,
+  "segundo": 23.45,
   "volumen": 0.2
  },
  {
-  "sonido": "swish",
-  "segundo": 23.4,
+  "sonido": "tick",
+  "segundo": 23.7,
   "volumen": 0.08
  },
  {
-  "sonido": "swish",
-  "segundo": 24.5,
+  "sonido": "tick",
+  "segundo": 24.0,
   "volumen": 0.08
  },
  {
-  "sonido": "whoosh",
+  "sonido": "tick",
+  "segundo": 24.3,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "tick",
+  "segundo": 24.6,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "tick",
   "segundo": 24.9,
   "volumen": 0.08
  },
  {
   "sonido": "pop",
-  "segundo": 25.3,
+  "segundo": 25.2,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 26.05,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 26.3,
   "volumen": 0.2
  },
  {
   "sonido": "swish",
-  "segundo": 27.9,
+  "segundo": 28.55,
   "volumen": 0.08
  },
  {

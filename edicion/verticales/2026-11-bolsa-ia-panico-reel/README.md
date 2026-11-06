@@ -18,3 +18,10 @@ Color de los reels de siempre. Cabeza arriba, gráficos abajo.
 
 Montaje: `plantilla_base.html` + `grafico.js` (sustituye `__CHART__`) → `plantilla.html`;
 `python3 generar.py transcripcion.json index.html plantilla.html cara.json`.
+
+## v2 (correcciones de Unai)
+- 18,9–23,2: más rato a pantalla completa ("eso ha hecho generar pánico… y ese pánico se ha visto traducido en los mercados"),
+  con cortes secos en 20,4 y 21,2 (las barras S&P/NASDAQ/BITCOIN pasaban demasiado rápido y no se entendían).
+- 23,4–26: ₿ BITCOIN de 81.000 $ a 75.500 $ (contador, velas y "−6,8 %").
+- 26,1–31,8: vídeo de X más grande: `tweet.mp4` sin la columna vacía del medio
+  (`crop` cabecera 0–545 + 880–1920, cuerpo 0–275 + 610–1920 → 1584x1080), a 1020x695 en pantalla; zoom al −$13,2T en "rodea a la IA".
