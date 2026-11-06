@@ -1,0 +1,152 @@
+[
+ {
+  "sonido": "swish",
+  "segundo": 1.6,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "pop",
+  "segundo": 2.04,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 3.6,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 4.5,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "swish",
+  "segundo": 7.0,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.56,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.74,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.92,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.1,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.28,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.46,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 11.0,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 11.9,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 15.78,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 16.0,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "swish",
+  "segundo": 19.4,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "pop",
+  "segundo": 19.8,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 20.14,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 21.95,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "swish",
+  "segundo": 25.34,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 28.55,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "swish",
+  "segundo": 28.9,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "pop",
+  "segundo": 29.68,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 32.72,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 34.84,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 35.72,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 36.9,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "ding",
+  "segundo": 40.14,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "click",
+  "segundo": 41.87,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "click",
+  "segundo": 42.47,
+  "volumen": 0.15
+ }
+]
