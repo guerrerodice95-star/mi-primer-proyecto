@@ -128,35 +128,39 @@
       tl.fromTo(stamp, { opacity: 0, scale: 1.5, svgOrigin: "720 612" }, { opacity: 1, scale: 1, svgOrigin: "720 612", duration: 0.25, ease: "power3.in" }, 17.46);
       tl.to(B, { opacity: 0, duration: 0.25 }, 18.75);
 
-      // ---------- S3 (21.2 - 24.8): panic in the markets and in Bitcoin ----------
-      const C = grp("mkts");
-      tl.set(C, { opacity: 1 }, 21.2);
-      const cHead = pill(C, 510, 70, "😱 PÁNICO", RED, "#fff", "middle", 40);
-      popIn(cHead, 21.5, "510 55");
-      const BARS = [["S&P 500", 0.62, 23.4], ["NASDAQ", 0.82, 23.55], ["BITCOIN", 0.72, 24.5]];
-      BARS.forEach(([lab, w, t], i) => {
-        const y = 170 + i * 150, g = el("g", { opacity: 0 }, C);
-        el("text", { x: 60, y: y + 6, "font-size": 34, "font-weight": 900, fill: lab === "BITCOIN" ? "#f7b04a" : "#fff", "font-family": "Inter" }, g, lab);
-        el("rect", { x: 60, y: y + 26, width: 900, height: 58, rx: 14, fill: "rgba(255,255,255,0.06)" }, g);
-        const bar = el("rect", { x: 60, y: y + 26, width: 900 * w, height: 58, rx: 14, fill: RED }, g);
-        const arr = el("text", { x: 60 + 900 * w + 14, y: y + 70, "font-size": 40, "font-weight": 900, fill: "#ff6b70", "font-family": "Inter", opacity: 0 }, g, "▼");
-        tl.set(bar, { scaleX: 0, svgOrigin: `60 ${y + 55}` }, 0);
-        show(g, t - 0.1, 0.2);
-        tl.to(bar, { scaleX: 1, svgOrigin: `60 ${y + 55}`, duration: 0.9, ease: "power3.out" }, t);
-        // jitter like a live feed
-        tl.to(bar, { scaleX: 0.93, svgOrigin: `60 ${y + 55}`, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, t + 0.9);
-        show(arr, t + 0.6, 0.2);
-      });
-      tl.to(C, { opacity: 0, duration: 0.2 }, 24.75);
+      // ---------- S3 (23.4 - 26.0): Bitcoin from 81.000 to 75.500 ----------
+      const C = grp("btc");
+      tl.set(C, { opacity: 1 }, 23.4);
+      const cTag = el("g", { opacity: 0 }, C);
+      el("circle", { cx: 70, cy: 52, r: 26, fill: "#f7931a" }, cTag);
+      el("text", { x: 70, y: 63, "text-anchor": "middle", "font-size": 32, "font-weight": 900, fill: "#fff", "font-family": "Inter" }, cTag, "₿");
+      el("text", { x: 110, y: 64, "font-size": 34, "font-weight": 900, fill: "#fff", "font-family": "Inter" }, cTag, "BITCOIN");
+      show(cTag, 23.45, 0.25);
+      const Y81 = 190, Y75 = 590, PY = (p) => Y81 + ((81000 - p) / 5500) * (Y75 - Y81);
+      const l81 = hline(C, 40, 800, Y81, GOLD, "10 10", 3), l75 = hline(C, 40, 800, Y75, "#ff6b70", "10 10", 3);
+      const t81 = txt(C, 990, Y81 + 12, "81.000 $", 34, GOLD, "end"), t75 = txt(C, 990, Y75 + 12, "75.500 $", 34, "#ff6b70", "end");
+      show(l81, 23.5); show(t81, 23.5);
+      const BC = path(18, Y81 + 6, Y75, 40, 21, 1.15);
+      const bc = BC.map((c, i) => candle(C, 70 + i * 40, c, 24));
+      bc.forEach((c, i) => show(c, 23.6 + i * 0.09, 0.1));
+      show(l75, 25.1); show(t75, 25.1);
+      const price = txt(C, 510, 135, "81.000 $", 64, "#fff");
+      show(price, 23.6, 0.2);
+      const pc = { v: 81000 };
+      tl.to(pc, { v: 75500, duration: 1.6, ease: "power1.in", onUpdate: () => { price.textContent = fmt(pc.v) + " $"; } }, 23.6);
+      tl.to(price, { attr: { fill: "#ff6b70" }, duration: 0.3 }, 24.6);
+      const chg = pill(C, 640, 690, "−6,8 %", RED, "#fff", "middle", 36);
+      popIn(chg, 25.2, "640 675");
+      tl.to(C, { opacity: 0, duration: 0.25 }, 25.95);
 
-      // ---------- S4 (24.9 - 31.8): the tweet video (AI stocks drawdown) ----------
-      const dTag = pill(svg, 510, 60, "🤖 PÁNICO CON LAS ACCIONES DE IA", "#1d1910", CREAM, "middle", 30);
-      tl.fromTo("#twBox", { opacity: 0, y: 30, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "expo.out" }, 24.9);
-      show(dTag, 25.3, 0.3);
-      tl.to("#twSrc", { opacity: 1, duration: 0.3 }, 25.4);
-      // zoom on "TOTAL VALUE WIPED OUT -$13.2T", then back to the table
-      tl.to("#tweet", { scale: 2.05, transformOrigin: "97% 6%", duration: 0.9, ease: "power2.inOut" }, 27.9);
-      tl.to("#tweet", { scale: 1, duration: 0.8, ease: "power2.inOut" }, 30.1);
+      // ---------- S4 (26.1 - 31.8): the tweet video (AI stocks drawdown) ----------
+      const dTag = pill(svg, 510, 36, "🤖 PÁNICO CON LAS ACCIONES DE IA", "#1d1910", CREAM, "middle", 26);
+      tl.fromTo("#twBox", { opacity: 0, y: 30, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "expo.out" }, 26.1);
+      show(dTag, 26.3, 0.3);
+      tl.to("#twSrc", { opacity: 1, duration: 0.3 }, 26.4);
+      // zoom on "TOTAL VALUE WIPED OUT -$13.2T" on "rodea a la IA", then back to the table
+      tl.to("#tweet", { scale: 1.9, transformOrigin: "97% 8%", duration: 0.8, ease: "power2.inOut" }, 28.55);
+      tl.to("#tweet", { scale: 1, duration: 0.7, ease: "power2.inOut" }, 30.5);
       tl.to(["#twBox", "#twSrc"], { opacity: 0, duration: 0.25 }, 31.7);
       hide(dTag, 31.7, 0.25);
 
