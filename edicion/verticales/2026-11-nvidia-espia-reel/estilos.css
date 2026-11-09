@@ -1,0 +1,58 @@
+      .ov { position: absolute; opacity: 0; }
+      .lbl { position: absolute; padding: 12px 24px; border-radius: 16px; font-weight: 900; font-size: 38px; white-space: nowrap; color: #fff;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.55); }
+      .lbl.gold { background: linear-gradient(180deg, #f0d488, #c9a54c); color: #1a1408; }
+      .lbl.red { background: #e5484d; }
+      .lbl.dark { background: rgba(22,19,13,0.94); border: 2px solid rgba(201,165,76,0.6); color: #f3e3b5; }
+      .lbl.green { background: #2fb57a; }
+      .lbl small { font-size: 26px; font-weight: 700; opacity: 0.85; margin-left: 8px; }
+      #montaje { left: 40px; top: 1840px; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+      /* windows-like error dialog (generic, no brand) */
+      #err { left: 70px; top: 250px; width: 700px; border-radius: 14px; overflow: hidden; background: #f3f3f3; color: #111;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(0,0,0,0.25); font-family: "Inter", sans-serif; }
+      #err .tb { height: 58px; background: #ffffff; display: flex; align-items: center; padding: 0 20px; font-size: 26px; font-weight: 700; color: #222; border-bottom: 1px solid #ddd; }
+      #err .tb span { margin-left: auto; width: 46px; height: 36px; display: flex; align-items: center; justify-content: center; background: #e81123; color: #fff; font-size: 24px; border-radius: 4px; }
+      #err .bd { display: flex; gap: 24px; padding: 28px 28px 10px; align-items: center; }
+      #err .ic { flex: none; width: 76px; height: 76px; border-radius: 50%; background: #e81123; color: #fff; font-size: 48px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+      #err .tx { font-size: 32px; line-height: 1.25; font-weight: 600; }
+      #err .tx b { font-weight: 900; }
+      #err .tx em { display: block; font-style: normal; font-size: 22px; color: #666; margin-top: 6px; }
+      #err .bt { display: flex; justify-content: flex-end; padding: 14px 28px 24px; }
+      #err .bt div { padding: 10px 40px; border: 2px solid #0067c0; border-radius: 6px; font-size: 26px; font-weight: 700; background: #fff; }
+      /* letterbox */
+      .bar { position: absolute; left: 0; right: 0; height: 170px; background: #000; }
+      /* lower cards (full screen moments) */
+      .card { position: absolute; left: 70px; right: 70px; top: 1560px; height: 205px; border-radius: 32px; background: rgba(22,19,13,0.95);
+        border: 1.5px solid rgba(201,165,76,0.45); box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+      /* NYT */
+      #nyt { left: 116px; top: 960px; width: 847px; height: 762px; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.7); }
+      #nyt img, #nyt svg { position: absolute; left: 0; top: 0; width: 847px; height: 762px; }
+      /* Jensen photo */
+      #jh { left: 70px; top: 975px; width: 430px; height: 560px; border-radius: 26px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.7); border: 2px solid rgba(201,165,76,0.6); }
+      #jh img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+      #jhCap { left: 70px; top: 1548px; width: 430px; text-align: center; font-size: 22px; font-weight: 700; color: #8d826a; }
+      .tagR { left: 540px; }
+      /* 3D scene */
+      #s3d { position: absolute; inset: 0; opacity: 0; overflow: hidden;
+        background: radial-gradient(900px 700px at 50% 42%, rgba(118,185,0,0.20), transparent 70%), #07090a; }
+      #floor { position: absolute; left: -540px; right: -540px; top: 880px; height: 1400px; transform-origin: 50% 0;
+        background-image: linear-gradient(rgba(118,185,0,0.28) 2px, transparent 2px), linear-gradient(90deg, rgba(118,185,0,0.28) 2px, transparent 2px);
+        background-size: 90px 90px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 75%); mask-image: linear-gradient(180deg, #000, transparent 75%); }
+      #stage { position: absolute; left: 540px; top: 760px; width: 0; height: 0; perspective: 1400px; }
+      #chip { position: absolute; left: -210px; top: -210px; width: 420px; height: 420px; transform-style: preserve-3d; }
+      #chip .face { position: absolute; inset: 0; border-radius: 34px; }
+      #chip .pcb { background: linear-gradient(135deg, #1b5e20, #0d3b12); border: 4px solid #2e7d32; transform: translateZ(0px); }
+      #chip .die { position: absolute; left: 70px; top: 70px; width: 280px; height: 280px; border-radius: 22px; transform: translateZ(26px);
+        background: linear-gradient(135deg, #2b2f33, #121416); border: 3px solid #c9a54c; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        box-shadow: 0 0 60px rgba(118,185,0,0.6); }
+      #chip .die b { font-size: 64px; font-weight: 900; color: #76b900; letter-spacing: 0.04em; }
+      #chip .die i { font-style: normal; font-size: 30px; font-weight: 800; color: #f0d488; letter-spacing: 0.3em; margin-top: 6px; }
+      #chip .pin { position: absolute; background: linear-gradient(180deg, #f0d488, #8a6d2a); border-radius: 3px; transform: translateZ(2px); }
+      #iaGlow { position: absolute; left: 0; right: 0; top: 340px; text-align: center; font-size: 150px; font-weight: 900; color: #fff; opacity: 0;
+        text-shadow: 0 0 40px rgba(118,185,0,0.9), 0 0 90px rgba(118,185,0,0.6); }
+      .flag { position: absolute; top: 1080px; width: 380px; height: 200px; border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: rgba(22,19,13,0.92); border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 24px 60px rgba(0,0,0,0.6); opacity: 0; }
+      .flag span { font-size: 80px; line-height: 1; }
+      .flag b { margin-top: 10px; font-size: 34px; font-weight: 900; letter-spacing: 0.06em; }
+      #fUS { left: 40px; } #fCN { right: 40px; }
+      #vs { position: absolute; left: 0; right: 0; top: 1150px; text-align: center; font-size: 64px; font-weight: 900; color: #f0d488; opacity: 0; }

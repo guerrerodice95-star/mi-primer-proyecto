@@ -33,6 +33,14 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Margen lateral:** Instagram recorta un poco los lados al subir; dejar todo el texto y los gráficos a ≥ 60 px de los bordes izquierdo y derecho.
 - Si el bruto viene con franjas negras, recortar la imagen útil (`ffmpeg cropdetect`) y pegar la cabeza arriba del todo (sin fondo encima).
 
+## Noticias e imágenes reales
+
+- Cuando hable de una noticia: **captura real** del medio (mejor estadounidense: NYT, CNBC…) y **subrayar** las frases mientras las dice.
+- Fotos reales de personas (Wikimedia Commons), no las mismas que la referencia. No inventar fotos ni titulares.
+- Si un dato es una sospecha (p. ej. "espía"), en pantalla poner "presunta" / "según…".
+- Le gustan los guiños de sonido tipo "inicio de sesión" y "error" de Windows en ganchos (versiones sintetizadas, `sonidos-extra/`).
+- Menos desplazamientos de cámara: la mayoría del vídeo a pantalla completa con tarjetas abajo; pantalla partida solo para capturas/fotos grandes; 3D a pantalla completa ocultándole cuando lo pida.
+
 ## Subtítulos
 
 - Palabra por palabra: la palabra que suena en blanco, las siguientes apagadas.
