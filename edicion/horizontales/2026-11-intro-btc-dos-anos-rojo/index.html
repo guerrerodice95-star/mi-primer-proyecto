@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --ink: #0b0a08; --line: rgba(201,165,76,0.38); --red: #e5484d; --red-hi: #ff7a7e; --green: #3fbf7f; --green-hi: #7ff0b5; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+
+      #bg { background: radial-gradient(900px 700px at 22% 45%, rgba(201,165,76,0.14), transparent 70%), #0b0a08; }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48.5% 0%; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%); }
+      #redTint { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(120% 100% at 50% 50%, transparent 45%, rgba(120,10,14,0.5) 100%); }
+
+      /* ---------- hook: the real CoinGlass table ---------- */
+      #hook { position: absolute; inset: 0; background: radial-gradient(1200px 800px at 50% 40%, #1a1712, #070605); opacity: 1; overflow: hidden; }
+      #tz { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+      #tabla { position: absolute; left: 282px; top: 40px; width: 1355px; height: 1000px; border-radius: 22px; box-shadow: 0 40px 100px rgba(0,0,0,0.7); }
+      #tsvg { position: absolute; left: 282px; top: 40px; width: 1355px; height: 1000px; overflow: visible; }
+      #src { position: absolute; right: 40px; bottom: 26px; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.55); }
+      #hookTag { position: absolute; left: 40px; top: 975px; opacity: 0; }
+      #hookTag span { display: inline-block; padding: 12px 28px; border-radius: 18px; font-size: 38px; font-weight: 900; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 50px rgba(201,165,76,0.45); }
+
+      /* ---------- year list (left) ---------- */
+      #list { position: absolute; left: 70px; top: 46px; width: 780px; }
+      .yr { position: relative; height: 57px; display: flex; align-items: center; opacity: 0; }
+      .yr .y { width: 96px; font-size: 27px; font-weight: 800; color: #cfc3a6; font-variant-numeric: tabular-nums; }
+      .yr .c { width: 168px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; }
+      .yr .c.g { background: rgba(63,191,127,0.18); color: var(--green-hi); border: 2px solid rgba(63,191,127,0.6); }
+      .yr .c.r { background: rgba(229,72,77,0.2); color: var(--red-hi); border: 2px solid rgba(229,72,77,0.75); }
+      .yr .b { position: absolute; left: 286px; height: 26px; border-radius: 8px; transform-origin: 0 50%; }
+      .yr .b.g { background: linear-gradient(90deg, #2fb57a, #3fbf7f); }
+      .yr .b.r { background: linear-gradient(90deg, #c23a3f, #e5484d); }
+      .yr .n { position: absolute; font-size: 22px; font-weight: 800; color: #8d826a; white-space: nowrap; opacity: 0; }
+      #listHead { position: absolute; left: 70px; top: 6px; font-size: 24px; font-weight: 800; letter-spacing: 0.16em; color: var(--gold); opacity: 0; }
+      #bracket { position: absolute; left: 50px; width: 800px; border: 4px solid var(--red); border-radius: 18px; opacity: 0; box-shadow: 0 0 40px rgba(229,72,77,0.5); }
+      #first { position: absolute; left: 470px; padding: 10px 22px; border-radius: 14px; background: var(--red); font-size: 30px; font-weight: 900; white-space: nowrap; opacity: 0;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
+      #big { position: absolute; left: 470px; top: 640px; font-size: 120px; font-weight: 900; color: var(--red-hi); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; opacity: 0;
+        text-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+      #bigSub { position: absolute; left: 476px; top: 780px; font-size: 32px; font-weight: 800; color: #cfc3a6; opacity: 0; }
+
+      /* ---------- keywords (front, bottom) ---------- */
+      .kw { position: absolute; left: 0; right: 0; top: 840px; text-align: center; opacity: 0; white-space: nowrap; text-shadow: 0 8px 30px rgba(0,0,0,0.85); }
+      #kw1 b { display: inline-block; font-size: 110px; font-weight: 900; color: #fff; letter-spacing: -0.01em; }
+      #kw1 b i { font-style: normal; color: var(--red-hi); }
+      #kw2 b { display: inline-block; font-size: 110px; font-weight: 900; color: var(--red-hi); }
+      #kw3 { top: 820px; }
+      #kw3 .serif { font-size: 80px; color: #f6e6b8; margin-right: 18px; }
+      #kw3 b { display: inline-block; padding: 4px 36px; border-radius: 24px; font-size: 104px; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+        box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 60px rgba(201,165,76,0.5); text-shadow: none; }
+      #bottomShade { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.7) 100%); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17.03" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="17.03" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="17.03" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="17.03" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="fadeL"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="17.03" data-track-index="2"></div>
+      <div id="redTint" class="clip" data-start="0" data-duration="17.03" data-track-index="2"></div>
+      <div id="bottomShade" class="clip" data-start="0" data-duration="17.03" data-track-index="2"></div>
+
+      <div id="pList" class="clip" data-start="3.4" data-duration="7.9" data-track-index="3">
+        <div id="listHead">BITCOIN · RENTABILIDAD ANUAL</div>
+        <div id="list"></div>
+        <div id="bracket"></div>
+        <div id="first">⚠️ PRIMERA VEZ: 2 AÑOS SEGUIDOS EN ROJO</div>
+        <div id="big">−0,00 %</div>
+        <div id="bigSub">2026 · en curso (9 nov)</div>
+      </div>
+
+      <div id="pKw" class="clip" data-start="11.0" data-duration="6.03" data-track-index="4">
+        <div class="kw" id="kw1"><b>¿EL FIN DE <i>BITCOIN</i>?</b></div>
+        <div class="kw" id="kw2"><b>MIEDO</b></div>
+        <div class="kw" id="kw3"><span class="serif">una nueva</span><b>OPORTUNIDAD</b></div>
+      </div>
+
+      <div id="pHook" class="clip" data-start="0" data-duration="3.9" data-track-index="5">
+        <div id="hook">
+          <div id="tz">
+            <img id="tabla" src="assets/tabla.png" alt="" />
+            <svg id="tsvg" viewBox="0 0 2304 1700" width="1355" height="1000"></svg>
+          </div>
+          <div id="hookTag"><span>DESPUÉS DE UN AÑO ROJO… SIEMPRE VERDE</span></div>
+          <div id="src">Datos: CoinGlass · rentabilidad anual de BTC</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const NS = "http://www.w3.org/2000/svg";
+      const el = (tag, a, p) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+      const DUR = 17.03;
+
+      // ---------- data (CoinGlass, BTC annual return, % — 2026 in progress) ----------
+      const Y = [[2010, 330.1], [2011, 1437], [2012, 193.4], [2013, 5473], [2014, -57.53], [2015, 34.47], [2016, 123.8], [2017, 1369], [2018, -73.56],
+        [2019, 92.20], [2020, 303.2], [2021, 59.67], [2022, -64.27], [2023, 155.4], [2024, 121.1], [2025, -6.34], [2026, -14.46]];
+      const pct = (v) => (v > 0 ? "+" : "−") + (Math.abs(v) >= 1000 ? Math.round(Math.abs(v)).toLocaleString("es-ES") : Math.abs(v).toFixed(2).replace(".", ",")) + " %";
+
+      // ---------- camera ----------
+      const sideR = (t, s = 1.0) => { tl.to(cam, { x: 470, scale: s, duration: 0.55, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 1, duration: 0.4 }, t + 0.1); };
+      const full = (t, s = 1.06) => { tl.to(cam, { x: 0, scale: s, duration: 0.55, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 0, duration: 0.3 }, t + 0.05); };
+      tl.set(cam, { x: 470, scale: 1.0 }, 0);
+      tl.set("#fadeL", { opacity: 1 }, 0);
+      tl.to(cam, { scale: 1.04, duration: 7.5, ease: "none" }, 3.6);
+      full(10.95, 1.06);
+      tl.set(cam, { scale: 1.16 }, 11.24);             // dry punch-in on "¿Estamos ante el fin…?"
+      tl.to(cam, { scale: 1.19, duration: 2.7, ease: "none" }, 11.26);
+      tl.set(cam, { scale: 1.05 }, 14.06);             // back wide on "o este miedo…"
+      tl.to(cam, { scale: 1.09, duration: 2.95, ease: "none" }, 14.08);
+
+      // ---------- HOOK (0 - 3.9): the real table, zoom into the "Año" column ----------
+      const TS = $("#tsvg");
+      const AX = 2181, RY = (i) => 153 + 91.9 * i;      // "Año" column x and row y (0 = 2026 … 16 = 2010) in the screenshot's pixels
+      const cellBox = (i, col, w) => el("rect", { x: AX - 92, y: RY(i) - 40, width: 184, height: 80, rx: 14, fill: "none", stroke: col, "stroke-width": w || 10, opacity: 0 }, TS);
+      const REDS = [4, 8, 12], AFTER = [3, 7, 11];       // 2022, 2018, 2014 → 2023, 2019, 2015
+      const rB = REDS.map((i) => cellBox(i, "#e5484d")), gB = AFTER.map((i) => cellBox(i, "#3fbf7f"));
+      tl.fromTo("#tabla", { scale: 1.06, transformOrigin: "50% 50%" }, { scale: 1.0, duration: 1.0, ease: "power2.out" }, 0);
+      // zoom: the "Año" column to the middle of the screen
+      const colX = 282 + AX * (1355 / 2304);
+      tl.to("#tz", { scale: 1.35, x: 1180 - colX * 1.35, y: -20, duration: 1.0, ease: "power2.inOut" }, 0.9);
+      rB.forEach((b, i) => tl.fromTo(b, { opacity: 0, scale: 1.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 2.0 + i * 0.15));
+      gB.forEach((b, i) => tl.fromTo(b, { opacity: 0, scale: 1.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 2.84 + i * 0.12));
+      // year labels next to the marked cells (the years column is out of the zoomed view)
+      [[4, "2022", "#ff8d90", 2.0], [8, "2018", "#ff8d90", 2.15], [12, "2014", "#ff8d90", 2.3], [3, "2023", "#7ff0b5", 2.84], [7, "2019", "#7ff0b5", 2.96], [11, "2015", "#7ff0b5", 3.08]].forEach(([i, y, c, t]) => {
+        const tx = el("text", { x: AX + 118, y: RY(i) + 18, "font-size": 52, "font-weight": 900, fill: c, "font-family": "Inter", opacity: 0 }, TS); tx.textContent = y;
+        tl.to(tx, { opacity: 1, duration: 0.2 }, t);
+      });
+      tl.fromTo("#hookTag", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, 2.95);
+      tl.to("#hook", { opacity: 0, duration: 0.35, ease: "power2.in" }, 3.5);
+
+      // ---------- year list (3.6 - 10.9) ----------
+      const list = $("#list"), maxL = Math.log10(1 + 5473 / 100);
+      const rows = Y.map(([y, v], i) => {
+        const r = document.createElement("div"); r.className = "yr";
+        const cls = v >= 0 ? "g" : "r", w = 40 + 440 * Math.log10(1 + Math.abs(v) / 100) / maxL;
+        r.innerHTML = `<div class="y">${y}</div><div class="c ${cls}">${pct(v)}</div><div class="b ${cls}" style="width:${w}px"></div>`;
+        list.appendChild(r); return r;
+      });
+      gsap.set(".yr .b", { scaleX: 0 });
+      tl.to("#listHead", { opacity: 1, duration: 0.3 }, 3.6);
+      rows.slice(0, 15).forEach((r, i) => {
+        tl.fromTo(r, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" }, 3.65 + i * 0.045);
+        tl.to(r.querySelector(".b"), { scaleX: 1, duration: 0.5, ease: "power3.out" }, 3.7 + i * 0.045);
+      });
+      // red years were always followed by a green one
+      [[4, 5], [8, 9], [12, 13]].forEach(([a, b], k) => {
+        tl.to(rows[a].querySelector(".c"), { boxShadow: "0 0 0 4px rgba(229,72,77,0.9)", duration: 0.2 }, 4.0 + k * 0.08);
+        tl.to(rows[b].querySelector(".c"), { boxShadow: "0 0 0 4px rgba(63,191,127,0.9)", duration: 0.2 }, 4.1 + k * 0.08);
+      });
+      // 2025 and 2026
+      const r25 = rows[15], r26 = rows[16];
+      tl.fromTo(r25, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "back.out(2)" }, 4.38);
+      tl.to(r25.querySelector(".b"), { scaleX: 1, duration: 0.5, ease: "power3.out" }, 4.45);
+      tl.fromTo(r25.querySelector(".c"), { scale: 1 }, { scale: 1.12, duration: 0.15, yoyo: true, repeat: 1 }, 5.94);
+      tl.fromTo(r26, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "back.out(2)" }, 7.04);
+      tl.to(r26.querySelector(".b"), { scaleX: 1, duration: 0.5, ease: "power3.out" }, 7.1);
+      // dim the past, keep the last two
+      tl.to(rows.slice(0, 15), { opacity: 0.32, duration: 0.4 }, 7.6);
+      // big counter "−14,46 %"
+      const bg = { v: 0 };
+      tl.to("#big", { opacity: 1, duration: 0.2 }, 8.48);
+      tl.to(bg, { v: 14.46, duration: 1.7, ease: "power2.out", onUpdate: () => { $("#big").textContent = "−" + bg.v.toFixed(2).replace(".", ",") + " %"; } }, 8.48);
+      tl.to("#bigSub", { opacity: 1, duration: 0.3 }, 8.9);
+      tl.to("#redTint", { opacity: 1, duration: 0.6 }, 8.5);
+      // bracket around 2025 + 2026 and "first time"
+      const top25 = 46 + 15 * 57 - 4;
+      gsap.set("#bracket", { top: top25, height: 2 * 57 + 8 });
+      gsap.set("#first", { top: top25 - 70 });
+      tl.fromTo("#bracket", { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 9.9);
+      tl.fromTo("#first", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 10.0);
+      tl.to("#pList > *", { opacity: 0, duration: 0.3 }, 10.85);
+      tl.to("#redTint", { opacity: 0, duration: 0.5 }, 10.85);
+
+      // ---------- keywords (11 - 17) ----------
+      tl.to("#bottomShade", { opacity: 1, duration: 0.3 }, 11.2);
+      tl.fromTo("#kw1", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 11.26);
+      // glitch on "fin de la era"
+      tl.to("#kw1", { x: -10, skewX: -8, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 12.16);
+      tl.to("#redTint", { opacity: 0.8, duration: 0.2, yoyo: true, repeat: 1 }, 12.16);
+      tl.to("#kw1", { opacity: 0, duration: 0.2 }, 13.95);
+      tl.fromTo("#kw2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, 14.6);
+      tl.to("#kw2", { opacity: 0, scale: 0.8, duration: 0.2 }, 15.9);
+      tl.fromTo("#kw3", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)" }, 16.0);
+
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
