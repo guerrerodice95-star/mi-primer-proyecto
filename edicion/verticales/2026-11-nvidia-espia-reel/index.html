@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --cream: #f3e3b5; --green: #3fbf7f; --red: #e5484d; --bg: #0b0a08; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      .goldtext { background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-lo) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      #bg { background: radial-gradient(900px 700px at 50% 70%, rgba(201,165,76,0.14), transparent 70%), var(--bg); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); }
+
+      /* source band 1728x1144 */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1728px; height: 1144px; transform-origin: 864px 0px; }
+      #track { position: absolute; inset: 0; }
+      #cam { position: absolute; inset: 0; width: 1728px; height: 1144px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #strip { position: absolute; inset: 0; pointer-events: none; opacity: 1;
+        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 780px, var(--bg) 880px, var(--bg) 1920px); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 35%, transparent 60%, rgba(0,0,0,0.42) 100%); }
+      #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 22%, #fff7dc 0%, rgba(240,212,136,0.75) 30%, rgba(201,165,76,0) 70%); mix-blend-mode: screen; }
+
+      /* ---------- shared panels (60px safe margin each side) ---------- */
+      .panel { position: absolute; left: 60px; right: 60px; opacity: 0; }
+
+      /* tweet card */
+      #tweet { top: 1150px; padding: 34px 38px 30px; border-radius: 30px; background: #000; border: 1.5px solid #2f3336; box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 50px rgba(201,165,76,0.12); }
+      #tweet .hd { display: flex; align-items: center; gap: 20px; }
+      #tweet .av { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; object-position: 50% 50%; transform: scale(1.0); background: #15181c; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; color: #cfd3d8; flex: none; }
+      #tweet .nm { font-weight: 800; font-size: 36px; display: flex; align-items: center; gap: 10px; }
+      #tweet .ck { width: 32px; height: 32px; border-radius: 50%; background: #1d9bf0; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; }
+      #tweet .hn { color: #71767b; font-size: 30px; font-weight: 500; margin-top: 2px; }
+      #tweet .x { margin-left: auto; font-weight: 900; font-size: 46px; color: #e7e9ea; }
+      #tweet .tx { margin-top: 26px; font-size: 42px; line-height: 1.32; font-weight: 500; color: #e7e9ea; }
+      #tweet .tx p + p { margin-top: 22px; }
+      .hl { position: relative; z-index: 0; display: inline-block; }
+      .hl i { position: absolute; left: -6px; right: -6px; bottom: 0px; height: 52%; border-radius: 6px; background: rgba(240,212,136,0.6); z-index: -1; transform-origin: 0 50%; }
+      #tweet .tr { margin-top: 18px; font-size: 30px; line-height: 1.3; color: var(--gold-hi); }
+      #tweet .mt { margin-top: 22px; padding-top: 18px; border-top: 1px solid #2f3336; color: #71767b; font-size: 26px; font-weight: 500; }
+      #tweet .mt b { color: #e7e9ea; font-weight: 800; }
+
+      /* hook data pill */
+      #hookPill { position: absolute; left: 50%; top: 1072px; padding: 14px 30px; border-radius: 999px; white-space: nowrap; opacity: 0;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408; font-weight: 900; font-size: 38px; letter-spacing: 0.02em;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+
+      /* numbers */
+      #nums { top: 1010px; height: 640px; }
+      .stat { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; }
+      .stat .big { font-weight: 900; font-size: 128px; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+      .stat .lbl { margin-top: 6px; font-size: 54px; color: var(--cream); }
+      #s1 { top: 0; }
+      #kids { position: absolute; left: 40px; right: 40px; top: 210px; height: 120px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; }
+      .kid { width: 32px; height: 50px; opacity: 0; }
+      #s2 { top: 360px; }
+      #s3 { top: 560px; }
+      #s3 span { display: inline-block; padding: 12px 30px; border-radius: 999px; border: 2px solid var(--gold); background: rgba(201,165,76,0.12); font-weight: 800; font-size: 42px; color: var(--cream); }
+      #s3 b { color: var(--gold-hi); font-weight: 900; }
+
+      /* boom */
+      #boom { position: absolute; inset: 0; pointer-events: none; }
+      .ringB { position: absolute; left: 540px; top: 230px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 10px solid var(--gold-hi); opacity: 0; box-shadow: 0 0 40px rgba(240,212,136,0.8); }
+      .spark { position: absolute; left: 540px; top: 230px; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 18px var(--gold); opacity: 0; }
+      .ray { position: absolute; left: 540px; top: 230px; width: 8px; height: 120px; margin-left: -4px; border-radius: 4px; background: linear-gradient(180deg, #fff, rgba(240,212,136,0)); transform-origin: 50% 0; opacity: 0; }
+
+      /* growth */
+      #grow { top: 1010px; height: 620px; }
+      #grow svg { position: absolute; inset: 0; }
+      #grow text { font-family: "Inter", sans-serif; }
+
+
+      /* FVG/BAG chart (no frame) */
+      #chartWrap { position: absolute; left: 30px; top: 975px; width: 1020px; height: 720px; opacity: 0; }
+      #chartWrap svg { position: absolute; inset: 0; }
+      #hook { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      #hookfx, #fx { position: absolute; inset: 0; pointer-events: none; }
+      .ov { position: absolute; opacity: 0; }
+      .lbl { position: absolute; padding: 12px 24px; border-radius: 16px; font-weight: 900; font-size: 38px; white-space: nowrap; color: #fff;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.55); }
+      .lbl.gold { background: linear-gradient(180deg, #f0d488, #c9a54c); color: #1a1408; }
+      .lbl.red { background: #e5484d; }
+      .lbl.dark { background: rgba(22,19,13,0.94); border: 2px solid rgba(201,165,76,0.6); color: #f3e3b5; }
+      .lbl.green { background: #2fb57a; }
+      .lbl small { font-size: 26px; font-weight: 700; opacity: 0.85; margin-left: 8px; }
+      #montaje { left: 40px; top: 1840px; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+      /* windows-like error dialog (generic, no brand) */
+      #err { left: 70px; top: 250px; width: 700px; border-radius: 14px; overflow: hidden; background: #f3f3f3; color: #111;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(0,0,0,0.25); font-family: "Inter", sans-serif; }
+      #err .tb { height: 58px; background: #ffffff; display: flex; align-items: center; padding: 0 20px; font-size: 26px; font-weight: 700; color: #222; border-bottom: 1px solid #ddd; }
+      #err .tb span { margin-left: auto; width: 46px; height: 36px; display: flex; align-items: center; justify-content: center; background: #e81123; color: #fff; font-size: 24px; border-radius: 4px; }
+      #err .bd { display: flex; gap: 24px; padding: 28px 28px 10px; align-items: center; }
+      #err .ic { flex: none; width: 76px; height: 76px; border-radius: 50%; background: #e81123; color: #fff; font-size: 48px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+      #err .tx { font-size: 32px; line-height: 1.25; font-weight: 600; }
+      #err .tx b { font-weight: 900; }
+      #err .tx em { display: block; font-style: normal; font-size: 22px; color: #666; margin-top: 6px; }
+      #err .bt { display: flex; justify-content: flex-end; padding: 14px 28px 24px; }
+      #err .bt div { padding: 10px 40px; border: 2px solid #0067c0; border-radius: 6px; font-size: 26px; font-weight: 700; background: #fff; }
+      /* letterbox */
+      .bar { position: absolute; left: 0; right: 0; height: 170px; background: #000; }
+      /* lower cards (full screen moments) */
+      .card { position: absolute; left: 70px; right: 70px; top: 1560px; height: 205px; border-radius: 32px; background: rgba(22,19,13,0.95);
+        border: 1.5px solid rgba(201,165,76,0.45); box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+      /* NYT */
+      #nyt { left: 116px; top: 960px; width: 847px; height: 762px; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.7); }
+      #nyt img, #nyt svg { position: absolute; left: 0; top: 0; width: 847px; height: 762px; }
+      /* Jensen photo */
+      #jh { left: 70px; top: 975px; width: 430px; height: 560px; border-radius: 26px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.7); border: 2px solid rgba(201,165,76,0.6); }
+      #jh img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+      #jhCap { left: 70px; top: 1548px; width: 430px; text-align: center; font-size: 22px; font-weight: 700; color: #8d826a; }
+      .tagR { left: 540px; }
+      /* 3D scene */
+      #s3d { position: absolute; inset: 0; opacity: 0; overflow: hidden;
+        background: radial-gradient(900px 700px at 50% 42%, rgba(118,185,0,0.20), transparent 70%), #07090a; }
+      #floor { position: absolute; left: -540px; right: -540px; top: 880px; height: 1400px; transform-origin: 50% 0;
+        background-image: linear-gradient(rgba(118,185,0,0.28) 2px, transparent 2px), linear-gradient(90deg, rgba(118,185,0,0.28) 2px, transparent 2px);
+        background-size: 90px 90px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 75%); mask-image: linear-gradient(180deg, #000, transparent 75%); }
+      #stage { position: absolute; left: 540px; top: 760px; width: 0; height: 0; perspective: 1400px; }
+      #chip { position: absolute; left: -210px; top: -210px; width: 420px; height: 420px; transform-style: preserve-3d; }
+      #chip .face { position: absolute; inset: 0; border-radius: 34px; }
+      #chip .pcb { background: linear-gradient(135deg, #1b5e20, #0d3b12); border: 4px solid #2e7d32; transform: translateZ(0px); }
+      #chip .die { position: absolute; left: 70px; top: 70px; width: 280px; height: 280px; border-radius: 22px; transform: translateZ(26px);
+        background: linear-gradient(135deg, #2b2f33, #121416); border: 3px solid #c9a54c; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        box-shadow: 0 0 60px rgba(118,185,0,0.6); }
+      #chip .die b { font-size: 64px; font-weight: 900; color: #76b900; letter-spacing: 0.04em; }
+      #chip .die i { font-style: normal; font-size: 30px; font-weight: 800; color: #f0d488; letter-spacing: 0.3em; margin-top: 6px; }
+      #chip .pin { position: absolute; background: linear-gradient(180deg, #f0d488, #8a6d2a); border-radius: 3px; transform: translateZ(2px); }
+      #iaGlow { position: absolute; left: 0; right: 0; top: 340px; text-align: center; font-size: 150px; font-weight: 900; color: #fff; opacity: 0;
+        text-shadow: 0 0 40px rgba(118,185,0,0.9), 0 0 90px rgba(118,185,0,0.6); }
+      .flag { position: absolute; top: 1080px; width: 380px; height: 200px; border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: rgba(22,19,13,0.92); border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 24px 60px rgba(0,0,0,0.6); opacity: 0; }
+      .flag span { font-size: 80px; line-height: 1; }
+      .flag b { margin-top: 10px; font-size: 34px; font-weight: 900; letter-spacing: 0.06em; }
+      #fUS { left: 40px; } #fCN { right: 40px; }
+      #vs { position: absolute; left: 0; right: 0; top: 1150px; text-align: center; font-size: 64px; font-weight: 900; color: #f0d488; opacity: 0; }
+
+      .w.fvg, .w.bag { padding: 0 18px; border-radius: 14px; font-weight: 900; text-shadow: none; }
+      .w.fvg { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 34px rgba(201,165,76,0.45); }
+      .w.bag { color: #fff; background: linear-gradient(180deg, #2fb57a, #1f8a5a); box-shadow: 0 0 34px rgba(63,191,127,0.45); }
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 70px; right: 70px; top: 1420px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 20px; opacity: 0; text-align: center; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 72px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 80px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 92px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.up { color: #6fe0a6; }
+      .w.dn { color: #ff7a7e; }
+      .w.b { padding: 0 20px; border-radius: 16px; text-shadow: none; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 11px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+
+      /* Instagram follow pill */
+      #ig { position: absolute; left: 90px; right: 90px; top: 1600px; height: 150px; border-radius: 34px; background: #ffffff; opacity: 0;
+        display: flex; align-items: center; padding: 0 26px; gap: 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+      #ig img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 4px #fff, 0 0 0 7px #d62976; }
+      #igName { flex: 1; font-weight: 800; font-size: 40px; color: #111; letter-spacing: -0.01em; white-space: nowrap; }
+      #igName span { display: inline-block; }
+      #igBtn { position: relative; flex: none; width: 220px; height: 88px; border-radius: 18px; background: #0095f6; color: #fff; font-weight: 800; font-size: 38px; display: flex; align-items: center; justify-content: center; }
+      #igBtn .on { position: absolute; inset: 0; border-radius: 18px; background: #efefef; color: #111; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #igSave { position: relative; flex: none; width: 88px; height: 88px; border-radius: 18px; background: #efefef; display: flex; align-items: center; justify-content: center; margin-left: -8px; }
+      #igSave svg { width: 46px; height: 46px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      #ripple { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(255,255,255,0.9); left: 0; top: 0; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="58.76" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="58.76" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="58.76" data-track-index="0"></div>
+      <div id="camwrap">
+        <div id="track">
+          <video id="cam" class="clip" data-start="0" data-duration="58.76" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        </div>
+      </div>
+      <div id="strip" class="clip" data-start="0" data-duration="58.76" data-track-index="2"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="58.76" data-track-index="2"></div>
+
+      <div id="pChart" class="clip" data-start="0" data-duration="56.9" data-track-index="3">
+        <div id="chartWrap"><svg id="chart" viewBox="0 0 1020 720" width="1020" height="720"></svg></div>
+      </div>
+
+      <div id="fx"></div>
+      <video id="hook" class="clip" data-start="0" data-duration="7.05" data-track-index="4" src="assets/hook.mp4" muted playsinline></video>
+      <div id="hookfx"></div>
+      <div id="pCta" class="clip" data-start="56.95" data-duration="1.81" data-track-index="3">
+        <div id="ig">
+          <img src="assets/perfil.png" alt="" />
+          <div id="igName"></div>
+          <div id="igBtn">Seguir<div class="on">Siguiendo</div></div>
+          <div id="igSave"><svg viewBox="0 0 24 24"><path id="bmk" d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div id="ripple"></div>
+        <svg id="tap" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="58.76" data-track-index="5"></div>
+      <div id="flash" class="clip" data-start="0" data-duration="58.76" data-track-index="6"></div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const NS = "http://www.w3.org/2000/svg";
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      // ---------- captions ----------
+      const G = [{"e": 0.66, "hook": 1, "w": [["El", 0.0, ""], ["CEO", 0.32, ""], ["de", 0.5, ""]]}, {"e": 1.28, "hook": 1, "w": [["NVIDIA", 0.66, "g"], ["le", 0.9, ""], ["ha", 1.22, ""]]}, {"e": 1.82, "hook": 0, "w": [["sido", 1.28, ""], ["infiel", 1.5, "dn"], ["a", 1.72, ""]]}, {"e": 2.76, "hook": 0, "w": [["su", 1.82, ""], ["esposa", 1.92, "u"], ["con", 2.38, ""]]}, {"e": 3.46, "hook": 0, "w": [["una", 2.76, ""], ["mujer", 2.9, ""], ["china", 3.18, "dn"]]}, {"e": 4.52, "hook": 0, "w": [["y", 3.46, ""], ["resulta", 3.84, ""], ["que", 4.34, ""]]}, {"e": 5.26, "hook": 0, "w": [["esa", 4.52, ""], ["mujer", 4.68, ""], ["es", 5.0, ""]]}, {"e": 6.52, "hook": 0, "w": [["espía", 5.26, "b"], ["del", 5.76, ""], ["gobierno", 6.04, ""]]}, {"e": 7.0, "hook": 0, "w": [["chino.", 6.52, ""]]}, {"e": 7.8, "hook": 0, "w": [["Parece", 7.0, ""], ["una", 7.28, ""], ["película", 7.46, ""]]}, {"e": 8.6, "hook": 0, "w": [["de", 7.8, ""], ["Netflix", 7.96, "s"], ["pero", 8.24, ""]]}, {"e": 9.4, "hook": 0, "w": [["está", 8.6, ""], ["pasando", 8.78, ""], ["y", 9.14, ""]]}, {"e": 9.86, "hook": 0, "w": [["la", 9.4, ""], ["acción", 9.56, ""], ["de", 9.72, ""]]}, {"e": 10.76, "hook": 0, "w": [["NVIDIA", 9.86, "g"], ["se", 10.28, ""], ["está", 10.6, ""]]}, {"e": 11.6, "hook": 0, "w": [["desplomando.", 10.76, "dn"]]}, {"e": 12.22, "hook": 0, "w": [["Pero", 11.6, ""], ["lo", 11.84, ""], ["que", 12.04, ""]]}, {"e": 13.08, "hook": 0, "w": [["realmente", 12.22, ""], ["preocupa", 12.66, ""], ["a", 12.98, ""]]}, {"e": 14.0, "hook": 0, "w": [["los", 13.08, ""], ["inversores", 13.2, "g"], ["es", 13.7, ""]]}, {"e": 14.84, "hook": 0, "w": [["saber", 14.0, ""], ["si", 14.26, ""], ["con", 14.6, ""]]}, {"e": 16.04, "hook": 0, "w": [["esa", 14.84, ""], ["relación", 15.06, ""], ["han", 15.44, ""]]}, {"e": 18.06, "hook": 0, "w": [["podido", 16.04, ""], ["recopilar", 16.44, ""], ["información", 17.16, ""]]}, {"e": 19.18, "hook": 0, "w": [["confidencial.", 18.06, "dn"]]}, {"e": 19.72, "hook": 0, "w": [["La", 19.18, ""], ["mujer", 19.36, ""], ["en", 19.58, ""]]}, {"e": 20.64, "hook": 0, "w": [["cuestión", 19.72, ""], ["se", 19.98, ""], ["llama", 20.38, ""]]}, {"e": 21.52, "hook": 0, "w": [["Alice", 20.64, "b"], ["Huang,", 20.98, "b"]]}, {"e": 22.0, "hook": 0, "w": [["de", 21.52, ""], ["New", 21.64, ""], ["York", 21.84, ""]]}, {"e": 22.84, "hook": 0, "w": [["Times", 22.0, ""], ["y", 22.2, ""], ["las", 22.52, ""]]}, {"e": 24.12, "hook": 0, "w": [["autoridades", 22.84, ""], ["estadounidenses", 23.42, ""]]}, {"e": 25.16, "hook": 0, "w": [["han", 24.12, ""], ["confirmado", 24.52, ""], ["que", 25.02, ""]]}, {"e": 25.94, "hook": 0, "w": [["es", 25.16, ""], ["una", 25.3, ""], ["espía", 25.5, "b"]]}, {"e": 27.24, "hook": 0, "w": [["y", 25.94, ""], ["trabaja", 26.32, ""], ["para", 26.88, ""]]}, {"e": 27.9, "hook": 0, "w": [["la", 27.24, ""], ["inteligencia", 27.4, "g"]]}, {"e": 28.14, "hook": 0, "w": [["china.", 27.9, "dn"]]}, {"e": 28.82, "hook": 0, "w": [["¿Y", 28.14, ""], ["por", 28.54, ""], ["qué", 28.72, ""]]}, {"e": 29.48, "hook": 0, "w": [["importa", 28.82, ""], ["tanto?", 29.08, ""]]}, {"e": 30.56, "hook": 0, "w": [["Porque", 29.48, ""], ["NVIDIA", 29.82, "g"], ["diseña", 30.12, ""]]}, {"e": 31.38, "hook": 0, "w": [["los", 30.56, ""], ["chips", 30.88, "up"], ["que", 31.18, ""]]}, {"e": 32.64, "hook": 0, "w": [["impulsan", 31.38, ""], ["la", 31.84, ""], ["inteligencia", 32.14, "g"]]}, {"e": 33.54, "hook": 0, "w": [["artificial,", 32.64, "g"]]}, {"e": 34.42, "hook": 0, "w": [["un", 33.54, ""], ["pulso", 33.68, ""], ["de", 34.18, ""]]}, {"e": 34.76, "hook": 0, "w": [["tú", 34.42, ""], ["a", 34.56, ""], ["tú", 34.74, ""]]}, {"e": 35.66, "hook": 0, "w": [["entre", 34.76, ""], ["Estados", 34.98, ""], ["Unidos", 35.3, "g"]]}, {"e": 36.62, "hook": 0, "w": [["y", 35.66, ""], ["China.", 35.96, "dn"]]}, {"e": 37.16, "hook": 0, "w": [["El", 36.62, ""], ["consejo", 36.76, ""], ["de", 37.1, ""]]}, {"e": 38.02, "hook": 0, "w": [["NVIDIA", 37.16, "g"], ["ha", 37.58, ""], ["abierto", 37.76, ""]]}, {"e": 38.7, "hook": 0, "w": [["una", 38.02, ""], ["investigación", 38.26, "u"]]}, {"e": 39.64, "hook": 0, "w": [["y", 38.7, ""], ["por", 39.14, ""], ["ahora", 39.4, ""]]}, {"e": 40.74, "hook": 0, "w": [["dicen", 39.64, ""], ["que", 39.98, ""], ["no", 40.48, ""]]}, {"e": 41.72, "hook": 0, "w": [["hay", 40.74, ""], ["motivos", 40.92, ""], ["para", 41.32, ""]]}, {"e": 42.22, "hook": 0, "w": [["creer", 41.72, ""], ["que", 41.96, ""], ["se", 42.1, ""]]}, {"e": 43.18, "hook": 0, "w": [["haya", 42.22, ""], ["dado", 42.34, ""], ["información", 42.52, ""]]}, {"e": 44.06, "hook": 0, "w": [["confidencial.", 43.18, "dn"]]}, {"e": 44.6, "hook": 0, "w": [["Con", 44.06, ""], ["la", 44.28, ""], ["acción", 44.46, ""]]}, {"e": 45.5, "hook": 0, "w": [["ya", 44.6, ""], ["bajo", 44.76, ""], ["presión,", 44.9, "dn"]]}, {"e": 46.2, "hook": 0, "w": [["esto", 45.5, ""], ["añade", 45.72, ""], ["una", 46.0, ""]]}, {"e": 47.5, "hook": 0, "w": [["incertidumbre", 46.2, ""], ["extra", 46.74, ""], ["sobre", 47.06, ""]]}, {"e": 48.24, "hook": 0, "w": [["la", 47.5, ""], ["seguridad", 47.74, "g"], ["y", 48.08, ""]]}, {"e": 49.16, "hook": 0, "w": [["el", 48.24, ""], ["liderazgo", 48.36, "g"], ["de", 48.92, ""]]}, {"e": 49.82, "hook": 0, "w": [["la", 49.16, ""], ["empresa.", 49.36, ""]]}, {"e": 50.44, "hook": 0, "w": [["La", 49.82, ""], ["pregunta", 50.06, ""], ["que", 50.3, ""]]}, {"e": 51.32, "hook": 0, "w": [["tienen", 50.44, ""], ["que", 50.66, ""], ["resolver", 51.0, ""]]}, {"e": 52.28, "hook": 0, "w": [["ahora", 51.32, ""], ["es", 51.6, ""], ["hasta", 52.0, ""]]}, {"e": 52.9, "hook": 0, "w": [["dónde", 52.28, ""], ["llegó", 52.52, ""], ["esa", 52.72, ""]]}, {"e": 54.0, "hook": 0, "w": [["relación", 52.9, ""], ["y", 53.32, ""], ["si", 53.74, ""]]}, {"e": 56.18, "hook": 0, "w": [["pusieron", 54.0, ""], ["información", 54.46, ""], ["privilegiada", 55.38, "dn"]]}, {"e": 57.06, "hook": 0, "w": [["en", 56.18, ""], ["riesgo.", 56.48, "dn"]]}, {"e": 57.9, "hook": 0, "w": [["¿Tú", 57.06, ""], ["qué", 57.14, ""], ["crees?", 57.3, "s"]]}, {"e": 58.44, "hook": 0, "w": [["Te", 57.9, ""], ["leo", 58.08, ""], ["en", 58.24, ""]]}, {"e": 58.76, "hook": 0, "w": [["comentarios.", 58.44, "b"]]}];
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const e = document.createElement("div"); e.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          e.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(e); return { el: e, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+      gsap.set(".hl i", { scaleX: 0 });
+      gsap.set("#hookPill", { xPercent: -50 });
+
+      // ---------- face tracking ----------
+      const FACE = [{"t": 0.0, "x": 825.5, "y": 438.8, "h": 507.6}, {"t": 0.1, "x": 826.9, "y": 442.4, "h": 513.4}, {"t": 0.2, "x": 827.3, "y": 445.7, "h": 521.3}, {"t": 0.3, "x": 826.9, "y": 450.4, "h": 530.6}, {"t": 0.4, "x": 826.2, "y": 453.2, "h": 537.8}, {"t": 0.5, "x": 821.5, "y": 454.3, "h": 547.2}, {"t": 0.6, "x": 817.6, "y": 453.2, "h": 553.7}, {"t": 0.7, "x": 814.0, "y": 451.8, "h": 558.0}, {"t": 0.8, "x": 810.7, "y": 447.8, "h": 557.3}, {"t": 0.9, "x": 807.5, "y": 444.6, "h": 558.0}, {"t": 1.0, "x": 805.7, "y": 442.1, "h": 551.5}, {"t": 1.1, "x": 802.8, "y": 440.6, "h": 544.3}, {"t": 1.2, "x": 801.7, "y": 441.7, "h": 540.7}, {"t": 1.3, "x": 802.1, "y": 445.0, "h": 544.3}, {"t": 1.4, "x": 804.2, "y": 448.6, "h": 547.2}, {"t": 1.5, "x": 806.8, "y": 453.2, "h": 553.7}, {"t": 1.6, "x": 810.4, "y": 458.3, "h": 559.4}, {"t": 1.7, "x": 813.2, "y": 460.4, "h": 563.8}, {"t": 1.8, "x": 813.6, "y": 462.2, "h": 564.5}, {"t": 1.9, "x": 812.9, "y": 463.7, "h": 564.5}, {"t": 2.0, "x": 811.4, "y": 463.0, "h": 561.6}, {"t": 2.1, "x": 810.0, "y": 460.8, "h": 558.7}, {"t": 2.2, "x": 807.1, "y": 457.9, "h": 553.0}, {"t": 2.3, "x": 806.0, "y": 455.4, "h": 547.9}, {"t": 2.4, "x": 805.7, "y": 454.3, "h": 547.2}, {"t": 2.5, "x": 806.0, "y": 455.4, "h": 547.9}, {"t": 2.6, "x": 805.7, "y": 458.6, "h": 553.0}, {"t": 2.7, "x": 807.1, "y": 463.7, "h": 557.3}, {"t": 2.8, "x": 807.8, "y": 469.4, "h": 564.5}, {"t": 2.9, "x": 808.6, "y": 474.5, "h": 571.7}, {"t": 3.0, "x": 809.3, "y": 478.1, "h": 578.9}, {"t": 3.1, "x": 810.0, "y": 480.2, "h": 581.8}, {"t": 3.2, "x": 810.0, "y": 481.0, "h": 587.5}, {"t": 3.3, "x": 809.6, "y": 477.0, "h": 591.1}, {"t": 3.4, "x": 808.9, "y": 472.7, "h": 585.4}, {"t": 3.5, "x": 807.5, "y": 467.6, "h": 579.6}, {"t": 3.6, "x": 806.4, "y": 463.7, "h": 576.0}, {"t": 3.7, "x": 805.3, "y": 462.6, "h": 569.5}, {"t": 3.8, "x": 804.2, "y": 463.7, "h": 557.3}, {"t": 3.9, "x": 801.7, "y": 465.5, "h": 555.1}, {"t": 4.0, "x": 801.0, "y": 465.5, "h": 552.2}, {"t": 4.1, "x": 799.6, "y": 463.3, "h": 550.8}, {"t": 4.2, "x": 799.6, "y": 461.2, "h": 553.7}, {"t": 4.3, "x": 799.9, "y": 459.4, "h": 561.6}, {"t": 4.4, "x": 801.7, "y": 457.6, "h": 563.8}, {"t": 4.5, "x": 801.4, "y": 457.2, "h": 564.5}, {"t": 4.6, "x": 800.3, "y": 456.8, "h": 568.1}, {"t": 4.7, "x": 798.1, "y": 455.4, "h": 568.1}, {"t": 4.8, "x": 796.7, "y": 454.7, "h": 569.5}, {"t": 4.9, "x": 797.0, "y": 455.8, "h": 571.7}, {"t": 5.0, "x": 798.8, "y": 458.3, "h": 572.4}, {"t": 5.1, "x": 803.2, "y": 461.9, "h": 568.1}, {"t": 5.2, "x": 807.8, "y": 462.2, "h": 560.2}, {"t": 5.3, "x": 811.8, "y": 461.2, "h": 552.2}, {"t": 5.4, "x": 815.8, "y": 457.9, "h": 545.8}, {"t": 5.5, "x": 817.9, "y": 454.3, "h": 540.0}, {"t": 5.6, "x": 820.1, "y": 452.2, "h": 538.6}, {"t": 5.7, "x": 820.8, "y": 453.6, "h": 541.4}, {"t": 5.8, "x": 821.2, "y": 457.6, "h": 540.7}, {"t": 5.9, "x": 820.4, "y": 462.6, "h": 546.5}, {"t": 6.0, "x": 820.4, "y": 472.0, "h": 558.0}, {"t": 6.1, "x": 819.4, "y": 480.2, "h": 565.9}, {"t": 6.2, "x": 818.3, "y": 488.5, "h": 571.0}, {"t": 6.3, "x": 818.6, "y": 495.4, "h": 580.3}, {"t": 6.4, "x": 817.2, "y": 501.1, "h": 580.3}, {"t": 6.5, "x": 816.5, "y": 501.8, "h": 576.0}, {"t": 6.6, "x": 811.8, "y": 488.5, "h": 563.8}, {"t": 6.7, "x": 808.2, "y": 474.1, "h": 553.7}, {"t": 6.8, "x": 805.7, "y": 462.2, "h": 544.3}, {"t": 6.9, "x": 804.6, "y": 451.8, "h": 536.4}, {"t": 7.0, "x": 803.2, "y": 442.4, "h": 530.6}, {"t": 7.1, "x": 805.0, "y": 448.6, "h": 532.8}, {"t": 7.2, "x": 806.8, "y": 456.8, "h": 536.4}, {"t": 7.3, "x": 806.8, "y": 463.3, "h": 540.7}, {"t": 7.4, "x": 806.8, "y": 469.1, "h": 550.8}, {"t": 7.5, "x": 806.4, "y": 475.2, "h": 557.3}, {"t": 7.6, "x": 806.0, "y": 480.6, "h": 563.8}, {"t": 7.7, "x": 805.0, "y": 483.1, "h": 568.8}, {"t": 7.8, "x": 803.2, "y": 481.3, "h": 572.4}, {"t": 7.9, "x": 801.0, "y": 477.0, "h": 569.5}, {"t": 8.0, "x": 799.2, "y": 468.7, "h": 565.9}, {"t": 8.1, "x": 798.8, "y": 459.0, "h": 563.8}, {"t": 8.2, "x": 798.1, "y": 448.9, "h": 560.9}, {"t": 8.3, "x": 799.2, "y": 442.8, "h": 555.8}, {"t": 8.4, "x": 800.3, "y": 439.6, "h": 553.7}, {"t": 8.5, "x": 801.0, "y": 441.0, "h": 555.1}, {"t": 8.6, "x": 801.4, "y": 445.0, "h": 554.4}, {"t": 8.7, "x": 802.8, "y": 450.0, "h": 553.0}, {"t": 8.8, "x": 802.8, "y": 454.3, "h": 553.0}, {"t": 8.9, "x": 802.8, "y": 457.2, "h": 547.2}, {"t": 9.0, "x": 803.2, "y": 458.3, "h": 546.5}, {"t": 9.1, "x": 802.8, "y": 458.6, "h": 545.8}, {"t": 9.2, "x": 801.7, "y": 459.7, "h": 549.4}, {"t": 9.3, "x": 801.4, "y": 461.5, "h": 548.6}, {"t": 9.4, "x": 801.4, "y": 464.4, "h": 554.4}, {"t": 9.5, "x": 802.8, "y": 468.7, "h": 557.3}, {"t": 9.6, "x": 803.9, "y": 472.0, "h": 559.4}, {"t": 9.7, "x": 805.0, "y": 474.5, "h": 560.2}, {"t": 9.8, "x": 805.7, "y": 475.2, "h": 564.5}, {"t": 9.9, "x": 805.7, "y": 474.5, "h": 570.2}, {"t": 10.0, "x": 805.0, "y": 474.5, "h": 571.7}, {"t": 10.1, "x": 805.7, "y": 475.2, "h": 573.1}, {"t": 10.2, "x": 805.7, "y": 477.4, "h": 574.6}, {"t": 10.3, "x": 806.4, "y": 481.7, "h": 576.0}, {"t": 10.4, "x": 807.1, "y": 486.0, "h": 574.6}, {"t": 10.5, "x": 807.1, "y": 488.9, "h": 574.6}, {"t": 10.6, "x": 806.0, "y": 490.7, "h": 576.7}, {"t": 10.7, "x": 807.5, "y": 490.7, "h": 575.3}, {"t": 10.8, "x": 808.2, "y": 490.7, "h": 575.3}, {"t": 10.9, "x": 810.0, "y": 491.0, "h": 578.9}, {"t": 11.0, "x": 811.1, "y": 490.7, "h": 579.6}, {"t": 11.1, "x": 812.5, "y": 490.0, "h": 579.6}, {"t": 11.2, "x": 810.4, "y": 479.9, "h": 575.3}, {"t": 11.3, "x": 808.6, "y": 468.0, "h": 567.4}, {"t": 11.4, "x": 806.8, "y": 457.6, "h": 555.1}, {"t": 11.5, "x": 805.7, "y": 448.6, "h": 545.8}, {"t": 11.6, "x": 804.2, "y": 442.1, "h": 535.7}, {"t": 11.7, "x": 805.0, "y": 447.1, "h": 534.2}, {"t": 11.8, "x": 805.0, "y": 452.9, "h": 537.1}, {"t": 11.9, "x": 804.2, "y": 456.5, "h": 544.3}, {"t": 12.0, "x": 803.5, "y": 457.9, "h": 560.2}, {"t": 12.1, "x": 802.8, "y": 457.9, "h": 571.7}, {"t": 12.2, "x": 802.1, "y": 460.1, "h": 586.1}, {"t": 12.3, "x": 801.4, "y": 464.4, "h": 594.7}, {"t": 12.4, "x": 801.0, "y": 469.1, "h": 601.2}, {"t": 12.5, "x": 800.3, "y": 472.7, "h": 594.0}, {"t": 12.6, "x": 799.2, "y": 473.0, "h": 591.8}, {"t": 12.7, "x": 799.2, "y": 469.4, "h": 584.6}, {"t": 12.8, "x": 800.6, "y": 467.3, "h": 578.9}, {"t": 12.9, "x": 801.7, "y": 464.0, "h": 572.4}, {"t": 13.0, "x": 802.8, "y": 463.0, "h": 568.8}, {"t": 13.1, "x": 803.5, "y": 465.1, "h": 567.4}, {"t": 13.2, "x": 803.2, "y": 465.5, "h": 563.8}, {"t": 13.3, "x": 800.6, "y": 462.2, "h": 561.6}, {"t": 13.4, "x": 798.8, "y": 460.4, "h": 559.4}, {"t": 13.5, "x": 797.4, "y": 458.3, "h": 559.4}, {"t": 13.6, "x": 797.0, "y": 455.0, "h": 560.2}, {"t": 13.7, "x": 796.3, "y": 454.3, "h": 561.6}, {"t": 13.8, "x": 795.2, "y": 456.8, "h": 562.3}, {"t": 13.9, "x": 794.2, "y": 462.2, "h": 561.6}, {"t": 14.0, "x": 793.1, "y": 467.6, "h": 563.8}, {"t": 14.1, "x": 791.3, "y": 472.3, "h": 561.6}, {"t": 14.2, "x": 790.6, "y": 475.2, "h": 563.0}, {"t": 14.3, "x": 791.3, "y": 473.8, "h": 563.0}, {"t": 14.4, "x": 791.3, "y": 468.7, "h": 564.5}, {"t": 14.5, "x": 790.9, "y": 464.0, "h": 563.8}, {"t": 14.6, "x": 792.7, "y": 462.2, "h": 571.7}, {"t": 14.7, "x": 793.4, "y": 463.0, "h": 578.9}, {"t": 14.8, "x": 794.5, "y": 464.0, "h": 583.9}, {"t": 14.9, "x": 795.2, "y": 461.9, "h": 585.4}, {"t": 15.0, "x": 796.0, "y": 458.3, "h": 581.0}, {"t": 15.1, "x": 795.2, "y": 450.4, "h": 569.5}, {"t": 15.2, "x": 795.2, "y": 439.6, "h": 559.4}, {"t": 15.3, "x": 795.6, "y": 429.1, "h": 554.4}, {"t": 15.4, "x": 797.0, "y": 426.2, "h": 553.0}, {"t": 15.5, "x": 799.2, "y": 427.7, "h": 555.8}, {"t": 15.6, "x": 802.4, "y": 433.8, "h": 560.9}, {"t": 15.7, "x": 804.6, "y": 442.4, "h": 558.0}, {"t": 15.8, "x": 805.7, "y": 452.2, "h": 557.3}, {"t": 15.9, "x": 805.7, "y": 459.4, "h": 555.8}, {"t": 16.0, "x": 806.0, "y": 464.8, "h": 555.1}, {"t": 16.1, "x": 805.7, "y": 469.4, "h": 554.4}, {"t": 16.2, "x": 805.7, "y": 474.5, "h": 563.0}, {"t": 16.3, "x": 806.4, "y": 478.8, "h": 567.4}, {"t": 16.4, "x": 807.5, "y": 480.6, "h": 569.5}, {"t": 16.5, "x": 807.8, "y": 480.2, "h": 571.7}, {"t": 16.6, "x": 807.1, "y": 475.9, "h": 576.0}, {"t": 16.7, "x": 806.8, "y": 470.5, "h": 576.7}, {"t": 16.8, "x": 805.7, "y": 465.1, "h": 578.9}, {"t": 16.9, "x": 804.6, "y": 461.9, "h": 581.0}, {"t": 17.0, "x": 804.6, "y": 461.2, "h": 583.9}, {"t": 17.1, "x": 805.0, "y": 464.4, "h": 580.3}, {"t": 17.2, "x": 805.3, "y": 468.4, "h": 576.7}, {"t": 17.3, "x": 806.0, "y": 472.0, "h": 569.5}, {"t": 17.4, "x": 807.1, "y": 474.5, "h": 567.4}, {"t": 17.5, "x": 806.8, "y": 473.4, "h": 562.3}, {"t": 17.6, "x": 805.7, "y": 468.0, "h": 560.2}, {"t": 17.7, "x": 805.3, "y": 460.4, "h": 559.4}, {"t": 17.8, "x": 804.6, "y": 454.7, "h": 562.3}, {"t": 17.9, "x": 802.8, "y": 451.4, "h": 564.5}, {"t": 18.0, "x": 801.0, "y": 453.2, "h": 569.5}, {"t": 18.1, "x": 800.6, "y": 460.8, "h": 576.0}, {"t": 18.2, "x": 800.6, "y": 471.6, "h": 584.6}, {"t": 18.3, "x": 800.3, "y": 483.5, "h": 592.6}, {"t": 18.4, "x": 801.4, "y": 494.6, "h": 597.6}, {"t": 18.5, "x": 804.2, "y": 502.6, "h": 601.9}, {"t": 18.6, "x": 807.1, "y": 507.6, "h": 603.4}, {"t": 18.7, "x": 809.6, "y": 510.8, "h": 601.2}, {"t": 18.8, "x": 812.5, "y": 509.4, "h": 596.9}, {"t": 18.9, "x": 811.1, "y": 495.7, "h": 585.4}, {"t": 19.0, "x": 807.8, "y": 481.0, "h": 576.0}, {"t": 19.1, "x": 803.5, "y": 466.6, "h": 568.8}, {"t": 19.2, "x": 797.8, "y": 454.3, "h": 564.5}, {"t": 19.3, "x": 792.0, "y": 447.1, "h": 564.5}, {"t": 19.4, "x": 789.8, "y": 453.6, "h": 570.2}, {"t": 19.5, "x": 788.4, "y": 460.8, "h": 571.7}, {"t": 19.6, "x": 788.8, "y": 466.2, "h": 573.8}, {"t": 19.7, "x": 790.9, "y": 468.4, "h": 571.0}, {"t": 19.8, "x": 793.1, "y": 465.5, "h": 569.5}, {"t": 19.9, "x": 796.3, "y": 460.1, "h": 568.8}, {"t": 20.0, "x": 798.5, "y": 456.5, "h": 570.2}, {"t": 20.1, "x": 799.2, "y": 456.5, "h": 570.2}, {"t": 20.2, "x": 798.5, "y": 457.9, "h": 571.7}, {"t": 20.3, "x": 798.1, "y": 462.6, "h": 569.5}, {"t": 20.4, "x": 796.0, "y": 467.6, "h": 569.5}, {"t": 20.5, "x": 795.2, "y": 470.5, "h": 568.1}, {"t": 20.6, "x": 794.2, "y": 471.6, "h": 567.4}, {"t": 20.7, "x": 794.2, "y": 470.2, "h": 571.7}, {"t": 20.8, "x": 793.8, "y": 463.3, "h": 568.1}, {"t": 20.9, "x": 795.2, "y": 454.7, "h": 565.2}, {"t": 21.0, "x": 797.0, "y": 447.1, "h": 565.9}, {"t": 21.1, "x": 800.3, "y": 441.0, "h": 562.3}, {"t": 21.2, "x": 804.2, "y": 439.2, "h": 557.3}, {"t": 21.3, "x": 809.6, "y": 443.2, "h": 562.3}, {"t": 21.4, "x": 815.8, "y": 445.7, "h": 563.0}, {"t": 21.5, "x": 821.2, "y": 448.2, "h": 562.3}, {"t": 21.6, "x": 824.8, "y": 454.0, "h": 565.2}, {"t": 21.7, "x": 825.8, "y": 459.4, "h": 568.8}, {"t": 21.8, "x": 822.6, "y": 464.0, "h": 568.1}, {"t": 21.9, "x": 816.1, "y": 470.5, "h": 572.4}, {"t": 22.0, "x": 807.5, "y": 474.1, "h": 576.7}, {"t": 22.1, "x": 799.2, "y": 470.2, "h": 578.9}, {"t": 22.2, "x": 793.8, "y": 464.0, "h": 581.0}, {"t": 22.3, "x": 792.4, "y": 456.8, "h": 582.5}, {"t": 22.4, "x": 793.4, "y": 454.3, "h": 584.6}, {"t": 22.5, "x": 796.7, "y": 456.1, "h": 585.4}, {"t": 22.6, "x": 800.3, "y": 463.3, "h": 589.7}, {"t": 22.7, "x": 802.8, "y": 472.3, "h": 587.5}, {"t": 22.8, "x": 803.9, "y": 482.0, "h": 589.7}, {"t": 22.9, "x": 804.2, "y": 486.7, "h": 590.4}, {"t": 23.0, "x": 804.6, "y": 490.0, "h": 589.7}, {"t": 23.1, "x": 806.0, "y": 492.1, "h": 588.2}, {"t": 23.2, "x": 806.8, "y": 492.8, "h": 585.4}, {"t": 23.3, "x": 809.3, "y": 493.2, "h": 574.6}, {"t": 23.4, "x": 812.5, "y": 493.6, "h": 566.6}, {"t": 23.5, "x": 816.1, "y": 492.1, "h": 562.3}, {"t": 23.6, "x": 816.8, "y": 485.6, "h": 558.0}, {"t": 23.7, "x": 816.8, "y": 474.1, "h": 556.6}, {"t": 23.8, "x": 814.7, "y": 459.7, "h": 556.6}, {"t": 23.9, "x": 810.7, "y": 445.7, "h": 553.0}, {"t": 24.0, "x": 805.7, "y": 432.0, "h": 551.5}, {"t": 24.1, "x": 802.4, "y": 423.7, "h": 550.8}, {"t": 24.2, "x": 799.6, "y": 424.4, "h": 549.4}, {"t": 24.3, "x": 798.5, "y": 429.8, "h": 554.4}, {"t": 24.4, "x": 797.4, "y": 438.1, "h": 559.4}, {"t": 24.5, "x": 796.3, "y": 447.1, "h": 563.0}, {"t": 24.6, "x": 796.7, "y": 454.0, "h": 563.8}, {"t": 24.7, "x": 797.8, "y": 454.3, "h": 563.0}, {"t": 24.8, "x": 799.6, "y": 455.4, "h": 563.8}, {"t": 24.9, "x": 802.4, "y": 455.4, "h": 569.5}, {"t": 25.0, "x": 805.0, "y": 457.2, "h": 567.4}, {"t": 25.1, "x": 808.2, "y": 460.4, "h": 565.2}, {"t": 25.2, "x": 811.1, "y": 465.5, "h": 566.6}, {"t": 25.3, "x": 812.2, "y": 464.4, "h": 564.5}, {"t": 25.4, "x": 814.0, "y": 455.4, "h": 558.0}, {"t": 25.5, "x": 816.1, "y": 442.4, "h": 553.7}, {"t": 25.6, "x": 815.4, "y": 430.2, "h": 549.4}, {"t": 25.7, "x": 814.3, "y": 420.5, "h": 547.2}, {"t": 25.8, "x": 812.9, "y": 417.6, "h": 547.2}, {"t": 25.9, "x": 810.0, "y": 423.4, "h": 547.2}, {"t": 26.0, "x": 807.1, "y": 434.9, "h": 550.1}, {"t": 26.1, "x": 804.2, "y": 447.1, "h": 557.3}, {"t": 26.2, "x": 802.4, "y": 458.3, "h": 560.9}, {"t": 26.3, "x": 800.3, "y": 465.5, "h": 565.2}, {"t": 26.4, "x": 799.9, "y": 469.4, "h": 565.9}, {"t": 26.5, "x": 798.8, "y": 469.8, "h": 568.1}, {"t": 26.6, "x": 798.1, "y": 469.1, "h": 565.2}, {"t": 26.7, "x": 797.0, "y": 468.0, "h": 564.5}, {"t": 26.8, "x": 796.7, "y": 466.2, "h": 560.9}, {"t": 26.9, "x": 795.6, "y": 467.3, "h": 564.5}, {"t": 27.0, "x": 797.0, "y": 468.7, "h": 565.9}, {"t": 27.1, "x": 800.6, "y": 470.2, "h": 573.1}, {"t": 27.2, "x": 805.7, "y": 470.9, "h": 577.4}, {"t": 27.3, "x": 811.4, "y": 476.6, "h": 583.2}, {"t": 27.4, "x": 817.2, "y": 483.1, "h": 586.1}, {"t": 27.5, "x": 820.4, "y": 490.0, "h": 591.1}, {"t": 27.6, "x": 821.5, "y": 494.6, "h": 591.8}, {"t": 27.7, "x": 820.8, "y": 499.0, "h": 591.8}, {"t": 27.8, "x": 820.4, "y": 498.6, "h": 591.1}, {"t": 27.9, "x": 819.0, "y": 495.7, "h": 589.7}, {"t": 28.0, "x": 818.6, "y": 490.3, "h": 586.1}, {"t": 28.1, "x": 815.0, "y": 476.6, "h": 570.2}, {"t": 28.2, "x": 811.4, "y": 463.7, "h": 564.5}, {"t": 28.3, "x": 808.2, "y": 452.5, "h": 556.6}, {"t": 28.4, "x": 803.5, "y": 447.1, "h": 555.8}, {"t": 28.5, "x": 797.4, "y": 446.0, "h": 556.6}, {"t": 28.6, "x": 795.2, "y": 456.8, "h": 571.0}, {"t": 28.7, "x": 793.1, "y": 469.1, "h": 581.0}, {"t": 28.8, "x": 790.6, "y": 479.5, "h": 590.4}, {"t": 28.9, "x": 790.9, "y": 484.2, "h": 591.1}, {"t": 29.0, "x": 793.4, "y": 483.8, "h": 590.4}, {"t": 29.1, "x": 796.3, "y": 477.4, "h": 586.1}, {"t": 29.2, "x": 799.9, "y": 465.1, "h": 573.1}, {"t": 29.3, "x": 802.4, "y": 451.1, "h": 562.3}, {"t": 29.4, "x": 804.2, "y": 440.6, "h": 550.1}, {"t": 29.5, "x": 805.7, "y": 434.9, "h": 541.4}, {"t": 29.6, "x": 806.8, "y": 433.1, "h": 533.5}, {"t": 29.7, "x": 807.1, "y": 435.6, "h": 529.9}, {"t": 29.8, "x": 807.5, "y": 439.6, "h": 529.2}, {"t": 29.9, "x": 807.8, "y": 438.5, "h": 531.4}, {"t": 30.0, "x": 808.2, "y": 434.5, "h": 529.2}, {"t": 30.1, "x": 808.6, "y": 430.6, "h": 527.0}, {"t": 30.2, "x": 808.9, "y": 425.9, "h": 526.3}, {"t": 30.3, "x": 808.9, "y": 423.0, "h": 524.9}, {"t": 30.4, "x": 808.2, "y": 423.7, "h": 524.9}, {"t": 30.5, "x": 808.2, "y": 428.0, "h": 533.5}, {"t": 30.6, "x": 808.6, "y": 434.9, "h": 544.3}, {"t": 30.7, "x": 808.6, "y": 444.2, "h": 553.0}, {"t": 30.8, "x": 808.9, "y": 454.7, "h": 562.3}, {"t": 30.9, "x": 809.6, "y": 464.8, "h": 565.2}, {"t": 31.0, "x": 810.4, "y": 472.0, "h": 562.3}, {"t": 31.1, "x": 811.1, "y": 474.1, "h": 555.1}, {"t": 31.2, "x": 811.4, "y": 472.3, "h": 547.2}, {"t": 31.3, "x": 812.5, "y": 466.9, "h": 536.4}, {"t": 31.4, "x": 814.0, "y": 456.1, "h": 533.5}, {"t": 31.5, "x": 814.7, "y": 442.4, "h": 524.9}, {"t": 31.6, "x": 814.0, "y": 430.9, "h": 522.0}, {"t": 31.7, "x": 814.0, "y": 423.7, "h": 524.9}, {"t": 31.8, "x": 815.4, "y": 422.3, "h": 529.2}, {"t": 31.9, "x": 815.8, "y": 427.0, "h": 534.2}, {"t": 32.0, "x": 815.0, "y": 437.8, "h": 544.3}, {"t": 32.1, "x": 815.0, "y": 450.0, "h": 554.4}, {"t": 32.2, "x": 814.0, "y": 461.9, "h": 562.3}, {"t": 32.3, "x": 811.1, "y": 470.5, "h": 573.8}, {"t": 32.4, "x": 808.9, "y": 479.9, "h": 581.0}, {"t": 32.5, "x": 806.8, "y": 488.5, "h": 586.8}, {"t": 32.6, "x": 804.6, "y": 495.7, "h": 589.7}, {"t": 32.7, "x": 803.9, "y": 500.0, "h": 588.2}, {"t": 32.8, "x": 803.5, "y": 498.2, "h": 580.3}, {"t": 32.9, "x": 802.8, "y": 490.3, "h": 573.1}, {"t": 33.0, "x": 803.9, "y": 479.9, "h": 569.5}, {"t": 33.1, "x": 805.3, "y": 467.6, "h": 562.3}, {"t": 33.2, "x": 808.9, "y": 454.0, "h": 559.4}, {"t": 33.3, "x": 812.9, "y": 446.4, "h": 557.3}, {"t": 33.4, "x": 816.8, "y": 443.2, "h": 558.0}, {"t": 33.5, "x": 819.4, "y": 439.9, "h": 555.8}, {"t": 33.6, "x": 821.2, "y": 438.8, "h": 556.6}, {"t": 33.7, "x": 819.0, "y": 438.8, "h": 559.4}, {"t": 33.8, "x": 815.0, "y": 435.6, "h": 560.2}, {"t": 33.9, "x": 811.8, "y": 431.6, "h": 558.0}, {"t": 34.0, "x": 809.3, "y": 430.6, "h": 557.3}, {"t": 34.1, "x": 808.2, "y": 429.5, "h": 553.7}, {"t": 34.2, "x": 808.6, "y": 431.3, "h": 551.5}, {"t": 34.3, "x": 811.4, "y": 438.5, "h": 550.1}, {"t": 34.4, "x": 814.0, "y": 448.2, "h": 550.8}, {"t": 34.5, "x": 815.0, "y": 456.5, "h": 554.4}, {"t": 34.6, "x": 815.4, "y": 464.0, "h": 563.8}, {"t": 34.7, "x": 816.1, "y": 470.5, "h": 568.1}, {"t": 34.8, "x": 814.7, "y": 474.1, "h": 575.3}, {"t": 34.9, "x": 812.9, "y": 474.5, "h": 577.4}, {"t": 35.0, "x": 813.6, "y": 475.2, "h": 577.4}, {"t": 35.1, "x": 815.4, "y": 475.6, "h": 576.7}, {"t": 35.2, "x": 818.3, "y": 477.0, "h": 578.2}, {"t": 35.3, "x": 822.2, "y": 480.2, "h": 578.9}, {"t": 35.4, "x": 826.2, "y": 485.6, "h": 581.0}, {"t": 35.5, "x": 829.1, "y": 490.0, "h": 585.4}, {"t": 35.6, "x": 831.6, "y": 495.4, "h": 589.0}, {"t": 35.7, "x": 832.3, "y": 499.0, "h": 590.4}, {"t": 35.8, "x": 831.6, "y": 501.8, "h": 593.3}, {"t": 35.9, "x": 832.0, "y": 502.2, "h": 596.9}, {"t": 36.0, "x": 831.2, "y": 502.2, "h": 595.4}, {"t": 36.1, "x": 824.8, "y": 492.1, "h": 582.5}, {"t": 36.2, "x": 818.3, "y": 480.6, "h": 568.1}, {"t": 36.3, "x": 812.9, "y": 467.3, "h": 554.4}, {"t": 36.4, "x": 806.4, "y": 456.5, "h": 544.3}, {"t": 36.5, "x": 799.9, "y": 446.4, "h": 538.6}, {"t": 36.6, "x": 797.0, "y": 450.0, "h": 545.8}, {"t": 36.7, "x": 794.2, "y": 456.5, "h": 555.8}, {"t": 36.8, "x": 791.6, "y": 463.3, "h": 565.2}, {"t": 36.9, "x": 790.6, "y": 468.0, "h": 573.1}, {"t": 37.0, "x": 789.8, "y": 473.0, "h": 578.9}, {"t": 37.1, "x": 790.9, "y": 473.4, "h": 581.0}, {"t": 37.2, "x": 792.0, "y": 468.7, "h": 578.9}, {"t": 37.3, "x": 793.1, "y": 463.3, "h": 572.4}, {"t": 37.4, "x": 793.4, "y": 458.6, "h": 564.5}, {"t": 37.5, "x": 794.2, "y": 454.3, "h": 554.4}, {"t": 37.6, "x": 793.4, "y": 452.2, "h": 545.8}, {"t": 37.7, "x": 793.1, "y": 454.0, "h": 539.3}, {"t": 37.8, "x": 792.0, "y": 457.9, "h": 535.7}, {"t": 37.9, "x": 790.6, "y": 461.5, "h": 531.4}, {"t": 38.0, "x": 790.6, "y": 466.6, "h": 529.9}, {"t": 38.1, "x": 791.6, "y": 470.5, "h": 530.6}, {"t": 38.2, "x": 790.9, "y": 474.1, "h": 530.6}, {"t": 38.3, "x": 791.3, "y": 476.6, "h": 532.8}, {"t": 38.4, "x": 791.3, "y": 477.4, "h": 537.1}, {"t": 38.5, "x": 789.1, "y": 473.0, "h": 537.1}, {"t": 38.6, "x": 787.7, "y": 463.7, "h": 535.7}, {"t": 38.7, "x": 788.0, "y": 453.2, "h": 539.3}, {"t": 38.8, "x": 789.1, "y": 445.0, "h": 544.3}, {"t": 38.9, "x": 790.2, "y": 439.6, "h": 546.5}, {"t": 39.0, "x": 792.0, "y": 438.5, "h": 554.4}, {"t": 39.1, "x": 792.7, "y": 445.7, "h": 564.5}, {"t": 39.2, "x": 793.4, "y": 454.3, "h": 571.7}, {"t": 39.3, "x": 792.4, "y": 462.6, "h": 576.7}, {"t": 39.4, "x": 792.0, "y": 473.0, "h": 584.6}, {"t": 39.5, "x": 792.7, "y": 481.0, "h": 589.0}, {"t": 39.6, "x": 793.4, "y": 484.6, "h": 589.0}, {"t": 39.7, "x": 794.2, "y": 487.4, "h": 586.1}, {"t": 39.8, "x": 795.6, "y": 487.4, "h": 578.9}, {"t": 39.9, "x": 797.0, "y": 482.4, "h": 568.8}, {"t": 40.0, "x": 798.8, "y": 477.0, "h": 560.9}, {"t": 40.1, "x": 801.0, "y": 472.0, "h": 552.2}, {"t": 40.2, "x": 804.2, "y": 468.0, "h": 544.3}, {"t": 40.3, "x": 806.4, "y": 466.6, "h": 538.6}, {"t": 40.4, "x": 806.4, "y": 466.6, "h": 535.7}, {"t": 40.5, "x": 805.0, "y": 467.3, "h": 534.2}, {"t": 40.6, "x": 803.9, "y": 464.0, "h": 533.5}, {"t": 40.7, "x": 801.0, "y": 458.3, "h": 535.0}, {"t": 40.8, "x": 799.9, "y": 450.7, "h": 541.4}, {"t": 40.9, "x": 801.0, "y": 442.4, "h": 543.6}, {"t": 41.0, "x": 801.7, "y": 435.2, "h": 547.9}, {"t": 41.1, "x": 802.8, "y": 434.2, "h": 554.4}, {"t": 41.2, "x": 803.9, "y": 438.1, "h": 563.8}, {"t": 41.3, "x": 803.2, "y": 443.9, "h": 571.0}, {"t": 41.4, "x": 799.2, "y": 451.4, "h": 578.9}, {"t": 41.5, "x": 794.9, "y": 457.9, "h": 586.1}, {"t": 41.6, "x": 789.1, "y": 460.8, "h": 589.0}, {"t": 41.7, "x": 783.7, "y": 459.7, "h": 588.2}, {"t": 41.8, "x": 779.8, "y": 456.5, "h": 583.2}, {"t": 41.9, "x": 779.8, "y": 452.2, "h": 578.9}, {"t": 42.0, "x": 782.3, "y": 448.9, "h": 568.1}, {"t": 42.1, "x": 786.6, "y": 449.6, "h": 562.3}, {"t": 42.2, "x": 794.9, "y": 450.7, "h": 554.4}, {"t": 42.3, "x": 803.2, "y": 453.2, "h": 549.4}, {"t": 42.4, "x": 811.1, "y": 455.4, "h": 543.6}, {"t": 42.5, "x": 816.1, "y": 459.7, "h": 542.2}, {"t": 42.6, "x": 819.0, "y": 463.3, "h": 545.0}, {"t": 42.7, "x": 817.2, "y": 468.7, "h": 553.0}, {"t": 42.8, "x": 815.0, "y": 474.5, "h": 561.6}, {"t": 42.9, "x": 811.8, "y": 479.9, "h": 572.4}, {"t": 43.0, "x": 809.6, "y": 479.9, "h": 585.4}, {"t": 43.1, "x": 810.0, "y": 481.7, "h": 589.0}, {"t": 43.2, "x": 812.2, "y": 486.0, "h": 596.2}, {"t": 43.3, "x": 813.6, "y": 491.8, "h": 599.0}, {"t": 43.4, "x": 814.7, "y": 500.8, "h": 604.1}, {"t": 43.5, "x": 816.1, "y": 511.6, "h": 604.1}, {"t": 43.6, "x": 815.0, "y": 517.0, "h": 606.2}, {"t": 43.7, "x": 808.2, "y": 502.2, "h": 585.4}, {"t": 43.8, "x": 802.8, "y": 485.3, "h": 573.1}, {"t": 43.9, "x": 796.7, "y": 466.2, "h": 558.0}, {"t": 44.0, "x": 790.6, "y": 451.4, "h": 548.6}, {"t": 44.1, "x": 787.0, "y": 442.8, "h": 544.3}, {"t": 44.2, "x": 787.7, "y": 455.8, "h": 560.2}, {"t": 44.3, "x": 787.3, "y": 469.8, "h": 572.4}, {"t": 44.4, "x": 790.2, "y": 485.6, "h": 585.4}, {"t": 44.5, "x": 792.7, "y": 499.0, "h": 597.6}, {"t": 44.6, "x": 794.2, "y": 507.6, "h": 604.8}, {"t": 44.7, "x": 796.3, "y": 510.5, "h": 606.2}, {"t": 44.8, "x": 797.8, "y": 509.8, "h": 604.8}, {"t": 44.9, "x": 797.0, "y": 504.0, "h": 599.0}, {"t": 45.0, "x": 795.6, "y": 492.5, "h": 584.6}, {"t": 45.1, "x": 792.7, "y": 478.1, "h": 571.7}, {"t": 45.2, "x": 789.5, "y": 463.3, "h": 563.8}, {"t": 45.3, "x": 787.3, "y": 452.5, "h": 556.6}, {"t": 45.4, "x": 785.5, "y": 445.7, "h": 550.1}, {"t": 45.5, "x": 784.1, "y": 445.0, "h": 547.2}, {"t": 45.6, "x": 783.7, "y": 448.2, "h": 543.6}, {"t": 45.7, "x": 784.1, "y": 453.6, "h": 540.0}, {"t": 45.8, "x": 783.7, "y": 454.0, "h": 533.5}, {"t": 45.9, "x": 783.4, "y": 452.9, "h": 529.9}, {"t": 46.0, "x": 784.8, "y": 450.7, "h": 527.0}, {"t": 46.1, "x": 785.9, "y": 450.4, "h": 529.2}, {"t": 46.2, "x": 787.0, "y": 450.7, "h": 532.8}, {"t": 46.3, "x": 788.4, "y": 453.6, "h": 540.0}, {"t": 46.4, "x": 791.3, "y": 457.9, "h": 547.2}, {"t": 46.5, "x": 793.4, "y": 463.7, "h": 555.8}, {"t": 46.6, "x": 795.2, "y": 469.8, "h": 562.3}, {"t": 46.7, "x": 797.4, "y": 474.1, "h": 566.6}, {"t": 46.8, "x": 799.2, "y": 475.9, "h": 570.2}, {"t": 46.9, "x": 799.2, "y": 473.8, "h": 568.8}, {"t": 47.0, "x": 798.1, "y": 465.5, "h": 563.8}, {"t": 47.1, "x": 798.1, "y": 454.7, "h": 559.4}, {"t": 47.2, "x": 797.8, "y": 444.2, "h": 551.5}, {"t": 47.3, "x": 797.8, "y": 437.8, "h": 542.9}, {"t": 47.4, "x": 798.8, "y": 436.7, "h": 537.8}, {"t": 47.5, "x": 800.6, "y": 442.1, "h": 535.7}, {"t": 47.6, "x": 802.1, "y": 449.3, "h": 532.8}, {"t": 47.7, "x": 803.2, "y": 454.7, "h": 533.5}, {"t": 47.8, "x": 805.3, "y": 460.4, "h": 537.8}, {"t": 47.9, "x": 807.1, "y": 464.4, "h": 544.3}, {"t": 48.0, "x": 808.9, "y": 467.6, "h": 555.1}, {"t": 48.1, "x": 811.4, "y": 469.4, "h": 563.0}, {"t": 48.2, "x": 813.2, "y": 472.7, "h": 568.1}, {"t": 48.3, "x": 813.2, "y": 475.6, "h": 572.4}, {"t": 48.4, "x": 812.5, "y": 470.5, "h": 569.5}, {"t": 48.5, "x": 810.4, "y": 459.7, "h": 559.4}, {"t": 48.6, "x": 809.3, "y": 446.4, "h": 553.0}, {"t": 48.7, "x": 807.8, "y": 433.4, "h": 544.3}, {"t": 48.8, "x": 806.8, "y": 425.2, "h": 537.8}, {"t": 48.9, "x": 805.7, "y": 427.7, "h": 538.6}, {"t": 49.0, "x": 804.6, "y": 438.1, "h": 542.2}, {"t": 49.1, "x": 801.7, "y": 453.2, "h": 549.4}, {"t": 49.2, "x": 799.9, "y": 469.4, "h": 564.5}, {"t": 49.3, "x": 798.8, "y": 481.3, "h": 573.8}, {"t": 49.4, "x": 794.9, "y": 481.0, "h": 568.8}, {"t": 49.5, "x": 792.0, "y": 475.9, "h": 563.0}, {"t": 49.6, "x": 788.0, "y": 468.4, "h": 553.7}, {"t": 49.7, "x": 784.4, "y": 458.3, "h": 545.0}, {"t": 49.8, "x": 781.9, "y": 449.3, "h": 544.3}, {"t": 49.9, "x": 783.0, "y": 448.9, "h": 555.1}, {"t": 50.0, "x": 785.2, "y": 451.8, "h": 572.4}, {"t": 50.1, "x": 788.4, "y": 455.0, "h": 587.5}, {"t": 50.2, "x": 792.0, "y": 462.2, "h": 597.6}, {"t": 50.3, "x": 793.8, "y": 469.8, "h": 599.8}, {"t": 50.4, "x": 793.4, "y": 475.9, "h": 600.5}, {"t": 50.5, "x": 793.1, "y": 477.7, "h": 594.0}, {"t": 50.6, "x": 792.4, "y": 476.3, "h": 586.8}, {"t": 50.7, "x": 792.7, "y": 471.6, "h": 580.3}, {"t": 50.8, "x": 793.8, "y": 464.8, "h": 572.4}, {"t": 50.9, "x": 797.8, "y": 460.8, "h": 567.4}, {"t": 51.0, "x": 800.6, "y": 457.2, "h": 564.5}, {"t": 51.1, "x": 803.9, "y": 456.1, "h": 559.4}, {"t": 51.2, "x": 805.0, "y": 456.5, "h": 551.5}, {"t": 51.3, "x": 805.3, "y": 459.0, "h": 547.9}, {"t": 51.4, "x": 805.0, "y": 462.2, "h": 545.8}, {"t": 51.5, "x": 805.0, "y": 468.0, "h": 544.3}, {"t": 51.6, "x": 805.3, "y": 474.1, "h": 545.0}, {"t": 51.7, "x": 805.0, "y": 476.6, "h": 551.5}, {"t": 51.8, "x": 806.0, "y": 477.7, "h": 563.8}, {"t": 51.9, "x": 806.0, "y": 475.6, "h": 576.7}, {"t": 52.0, "x": 803.9, "y": 474.8, "h": 586.8}, {"t": 52.1, "x": 802.4, "y": 475.6, "h": 598.3}, {"t": 52.2, "x": 803.2, "y": 479.9, "h": 611.3}, {"t": 52.3, "x": 802.8, "y": 484.6, "h": 613.4}, {"t": 52.4, "x": 803.2, "y": 490.7, "h": 615.6}, {"t": 52.5, "x": 804.6, "y": 494.3, "h": 619.9}, {"t": 52.6, "x": 802.8, "y": 496.1, "h": 620.6}, {"t": 52.7, "x": 801.0, "y": 496.4, "h": 615.6}, {"t": 52.8, "x": 798.8, "y": 495.0, "h": 615.6}, {"t": 52.9, "x": 796.7, "y": 492.8, "h": 611.3}, {"t": 53.0, "x": 796.0, "y": 486.4, "h": 601.2}, {"t": 53.1, "x": 797.0, "y": 474.5, "h": 596.2}, {"t": 53.2, "x": 798.8, "y": 459.7, "h": 591.1}, {"t": 53.3, "x": 802.1, "y": 444.2, "h": 586.1}, {"t": 53.4, "x": 805.0, "y": 429.1, "h": 580.3}, {"t": 53.5, "x": 806.8, "y": 418.7, "h": 579.6}, {"t": 53.6, "x": 807.8, "y": 419.0, "h": 581.8}, {"t": 53.7, "x": 806.4, "y": 422.6, "h": 574.6}, {"t": 53.8, "x": 803.5, "y": 429.8, "h": 565.9}, {"t": 53.9, "x": 801.0, "y": 437.4, "h": 563.8}, {"t": 54.0, "x": 798.8, "y": 444.6, "h": 559.4}, {"t": 54.1, "x": 797.0, "y": 445.7, "h": 548.6}, {"t": 54.2, "x": 796.3, "y": 444.2, "h": 550.1}, {"t": 54.3, "x": 794.5, "y": 441.0, "h": 555.1}, {"t": 54.4, "x": 793.4, "y": 439.9, "h": 560.2}, {"t": 54.5, "x": 790.6, "y": 439.2, "h": 568.8}, {"t": 54.6, "x": 787.3, "y": 443.2, "h": 582.5}, {"t": 54.7, "x": 784.8, "y": 452.9, "h": 591.8}, {"t": 54.8, "x": 783.7, "y": 464.0, "h": 601.2}, {"t": 54.9, "x": 783.0, "y": 474.8, "h": 608.4}, {"t": 55.0, "x": 785.2, "y": 486.4, "h": 612.7}, {"t": 55.1, "x": 787.7, "y": 495.4, "h": 609.1}, {"t": 55.2, "x": 790.2, "y": 500.8, "h": 608.4}, {"t": 55.3, "x": 792.4, "y": 504.4, "h": 607.0}, {"t": 55.4, "x": 794.2, "y": 501.8, "h": 603.4}, {"t": 55.5, "x": 795.2, "y": 495.0, "h": 601.2}, {"t": 55.6, "x": 797.8, "y": 481.7, "h": 600.5}, {"t": 55.7, "x": 799.6, "y": 466.9, "h": 599.8}, {"t": 55.8, "x": 800.6, "y": 455.8, "h": 596.2}, {"t": 55.9, "x": 801.7, "y": 451.1, "h": 596.9}, {"t": 56.0, "x": 801.7, "y": 451.8, "h": 594.0}, {"t": 56.1, "x": 801.7, "y": 459.0, "h": 596.9}, {"t": 56.2, "x": 801.4, "y": 468.7, "h": 596.2}, {"t": 56.3, "x": 802.8, "y": 473.8, "h": 591.8}, {"t": 56.4, "x": 803.5, "y": 476.6, "h": 580.3}, {"t": 56.5, "x": 803.9, "y": 476.3, "h": 572.4}, {"t": 56.6, "x": 805.0, "y": 473.0, "h": 558.7}, {"t": 56.7, "x": 806.0, "y": 469.1, "h": 546.5}, {"t": 56.8, "x": 807.5, "y": 468.4, "h": 539.3}, {"t": 56.9, "x": 808.9, "y": 469.1, "h": 536.4}, {"t": 57.0, "x": 811.1, "y": 471.2, "h": 536.4}, {"t": 57.1, "x": 811.4, "y": 473.8, "h": 540.0}, {"t": 57.2, "x": 811.4, "y": 476.6, "h": 547.2}, {"t": 57.3, "x": 809.6, "y": 476.3, "h": 550.8}, {"t": 57.4, "x": 808.6, "y": 473.8, "h": 554.4}, {"t": 57.5, "x": 807.5, "y": 472.0, "h": 556.6}, {"t": 57.6, "x": 806.4, "y": 471.6, "h": 555.8}, {"t": 57.7, "x": 805.0, "y": 471.6, "h": 554.4}, {"t": 57.8, "x": 802.8, "y": 473.8, "h": 553.0}, {"t": 57.9, "x": 800.6, "y": 477.4, "h": 551.5}, {"t": 58.0, "x": 798.5, "y": 481.0, "h": 551.5}, {"t": 58.1, "x": 796.0, "y": 484.2, "h": 555.1}, {"t": 58.2, "x": 795.2, "y": 487.8, "h": 558.0}, {"t": 58.3, "x": 795.6, "y": 491.0, "h": 564.5}, {"t": 58.4, "x": 796.0, "y": 492.1, "h": 569.5}, {"t": 58.5, "x": 797.4, "y": 491.4, "h": 572.4}, {"t": 58.6, "x": 799.6, "y": 490.7, "h": 573.8}, {"t": 58.7, "x": 800.6, "y": 488.9, "h": 574.6}];
+      FACE.forEach((f, i) => {
+        const v = Math.max(-300, Math.min(300, 864 - f.x));
+        if (i === 0) tl.set("#track", { x: v }, 0);
+        else tl.to("#track", { x: v, duration: f.t - FACE[i - 1].t, ease: "none" }, FACE[i - 1].t);
+      });
+
+      // ---------- layout ----------
+      // FULL: band fills the whole height (no space above the head); SPLIT: face on top, graphics below
+      const FULL = { x: -324, y: -6, scale: 1.69 }, SPLIT = { x: -324, y: -6, scale: 0.80 };
+      const CAP_SPLIT = -545;
+      const toSplit = (t) => {
+        tl.to(cam, { x: SPLIT.x, y: SPLIT.y, scale: SPLIT.scale, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 1, duration: 0.35 }, t + 0.1);
+        tl.to("#caps", { y: CAP_SPLIT, duration: 0.55, ease: "power3.inOut" }, t);
+      };
+      const toFull = (t, s = FULL.scale) => {
+        tl.to(cam, { x: FULL.x, y: FULL.y, scale: s, duration: 0.55, ease: "power3.inOut" }, t);
+        tl.to("#strip", { opacity: 0, duration: 0.35 }, t);
+        tl.to("#caps", { y: 0, duration: 0.55, ease: "power3.inOut" }, t);
+      };
+      tl.set(cam, { x: FULL.x, y: FULL.y, scale: FULL.scale }, 0);
+      tl.set("#strip", { opacity: 0 }, 0);
+      tl.set("#caps", { y: 0 }, 0);
+      // ================= FVG vs BAG chart =================
+      const svg = $("#chart");
+      const GREEN = "#3fbf7f", RED = "#e5484d", GOLD = "#f0d488", CREAM = "#f3e3b5";
+      function el(tag, attrs, parent, text) {
+        const e = document.createElementNS(NS, tag);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        if (text !== undefined) e.textContent = text;
+        (parent || svg).appendChild(e); return e;
+      }
+      const grp = (id, parent) => el("g", { id, opacity: 0 }, parent);
+      const V = (y) => y;
+      // candle from [open, close, high, low] in svg y pixels (smaller = higher)
+      function candle(P, x, c, w) {
+        const [o, cl, h, l] = c.map(V), col = cl < o ? GREEN : RED;
+        const g = el("g", { opacity: 0 }, P);
+        el("line", { x1: x, x2: x, y1: h, y2: l, stroke: col, "stroke-width": Math.max(3, w / 9), "stroke-linecap": "round" }, g);
+        el("rect", { x: x - w / 2, y: Math.min(o, cl), width: w, height: Math.max(4, Math.abs(cl - o)), rx: 4, fill: col }, g);
+        return g;
+      }
+      function ring(P, cx, cy, rx, ry, col) { return el("ellipse", { cx, cy: V(cy), rx, ry, fill: "none", stroke: col || GOLD, "stroke-width": 5, "stroke-dasharray": 1000, "stroke-dashoffset": 1000 }, P); }
+      const drawRing = (r, t, d = 0.5) => tl.to(r, { attr: { "stroke-dashoffset": 0 }, duration: d, ease: "power2.out" }, t);
+      function arrow(P, x1, y1, x2, y2, col, curve) {
+        y1 = V(y1); y2 = V(y2);
+        const g = el("g", { opacity: 0 }, P);
+        const mx = curve ? (x1 + x2) / 2 + curve : (x1 + x2) / 2, my = curve ? (y1 + y2) / 2 : (y1 + y2) / 2;
+        el("path", { d: `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`, fill: "none", stroke: col, "stroke-width": 7, "stroke-linecap": "round" }, g);
+        const a = Math.atan2(y2 - my, x2 - mx), L = 24;
+        el("path", { d: `M${x2 - L * Math.cos(a - 0.5)} ${y2 - L * Math.sin(a - 0.5)} L${x2} ${y2} L${x2 - L * Math.cos(a + 0.5)} ${y2 - L * Math.sin(a + 0.5)}`, fill: "none", stroke: col, "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round" }, g);
+        return g;
+      }
+      function pill(P, x, y, txt, bg, fg, anchor, size) {
+        const fs = size || 30, g = el("g", { opacity: 0 }, P), w = txt.length * fs * 0.62 + 40; y = V(y);
+        const xx = anchor === "end" ? x - w : anchor === "middle" ? x - w / 2 : x;
+        el("rect", { x: xx, y: y - fs - 6, width: w, height: fs + 22, rx: (fs + 22) / 2, fill: bg }, g);
+        el("text", { x: xx + w / 2, y: y + 2, "text-anchor": "middle", "font-size": fs, "font-weight": 900, fill: fg, "font-family": "Inter" }, g, txt);
+        return g;
+      }
+      function zone(P, x1, x2, y1, y2, label, col) {
+        y1 = V(y1); y2 = V(y2);
+        const g = el("g", { opacity: 0 }, P);
+        el("rect", { x: x1, y: y1, width: x2 - x1, height: y2 - y1, rx: 8, fill: col.fill, stroke: col.line, "stroke-width": 3 }, g);
+        el("text", { x: x2 - 24, y: (y1 + y2) / 2 + 13, "text-anchor": "end", "font-size": 38, "font-weight": 900, fill: col.text, "font-family": "Inter" }, g, label);
+        return g;
+      }
+      const ZF = { fill: "rgba(240,212,136,0.20)", line: "rgba(240,212,136,0.75)", text: GOLD };
+      const ZR = { fill: "rgba(229,72,77,0.20)", line: "rgba(229,72,77,0.8)", text: "#ff8d90" };
+      const ZB = { fill: "rgba(63,191,127,0.18)", line: "rgba(63,191,127,0.75)", text: "#7ff0b5" };
+      const show = (t, at, d = 0.3) => tl.to(t, { opacity: 1, duration: d }, at);
+      const hide = (t, at, d = 0.3) => tl.to(t, { opacity: 0, duration: d }, at);
+
+      // ================= overlays =================
+      const mk = (parent, html, cls, style) => { const d = document.createElement("div"); if (cls) d.className = cls; if (style) d.style.cssText = style; d.innerHTML = html || ""; $(parent).appendChild(d); return d; };
+      const inOut = (e, tIn, tOut, from) => {
+        tl.fromTo(e, Object.assign({ opacity: 0, y: 20, scale: 0.92 }, from || {}), { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, tIn);
+        if (tOut != null) tl.to(e, { opacity: 0, duration: 0.25 }, tOut);
+      };
+      const SVGNS = "http://www.w3.org/2000/svg";
+      const svgLayer = (parent) => { const s = document.createElementNS(SVGNS, "svg"); s.setAttribute("viewBox", "0 0 1080 1920"); s.setAttribute("width", 1080); s.setAttribute("height", 1920); s.style.cssText = "position:absolute;inset:0;overflow:visible"; $(parent).appendChild(s); return s; };
+      const curveArrow = (S, x1, y1, x2, y2, col, bend) => {
+        const g = el("g", { opacity: 0 }, S);
+        const mx = (x1 + x2) / 2 + (bend || 0), my = (y1 + y2) / 2;
+        const p = el("path", { d: `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`, fill: "none", stroke: col, "stroke-width": 10, "stroke-linecap": "round", "stroke-dasharray": 900, "stroke-dashoffset": 900 }, g);
+        const a = Math.atan2(y2 - my, x2 - mx), L = 34;
+        const h = el("path", { d: `M${x2 - L * Math.cos(a - 0.5)} ${y2 - L * Math.sin(a - 0.5)} L${x2} ${y2} L${x2 - L * Math.cos(a + 0.5)} ${y2 - L * Math.sin(a + 0.5)}`, fill: "none", stroke: col, "stroke-width": 10, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 }, g);
+        g.draw = (t) => { tl.set(g, { opacity: 1 }, t); tl.to(p, { attr: { "stroke-dashoffset": 0 }, duration: 0.35, ease: "power2.out" }, t); tl.to(h, { opacity: 1, duration: 0.1 }, t + 0.3); };
+        return g;
+      };
+
+      // ---------- HOOK (0 - 7.05): the phone, arrows, the "error" on Alice ----------
+      const HS = svgLayer("#hookfx");
+      const mont = mk("#hookfx", "IMAGEN: MONTAJE", "ov", ""); mont.id = "montaje";
+      tl.to(mont, { opacity: 1, duration: 0.3 }, 0.2);
+      // phase 1: CEO and his wife
+      const lCEO = mk("#hookfx", "JENSEN HUANG <small>CEO de NVIDIA</small>", "ov lbl gold", "left:60px;top:700px;");
+      const aCEO = curveArrow(HS, 230, 790, 270, 875, "#f0d488", -60);
+      inOut(lCEO, 0.32); aCEO.draw(0.45);
+      const lWife = mk("#hookfx", "SU ESPOSA", "ov lbl dark", "left:660px;top:800px;");
+      const aWife = curveArrow(HS, 780, 880, 600, 1000, "#f0d488", 60);
+      inOut(lWife, 1.82); aWife.draw(1.95);
+      tl.to([lCEO, lWife, aCEO, aWife], { opacity: 0, duration: 0.2 }, 2.55);
+      // phase 2: unfolded -> Alice
+      const tCEO = mk("#hookfx", "CEO", "ov lbl gold", "left:585px;top:745px;font-size:30px;padding:8px 16px;");
+      const tWife = mk("#hookfx", "ESPOSA", "ov lbl dark", "left:760px;top:1210px;font-size:30px;padding:8px 16px;");
+      inOut(tCEO, 4.35); inOut(tWife, 4.45);
+      const aAl = curveArrow(HS, 300, 650, 370, 850, "#e5484d", -50);
+      const err = mk("#hookfx", `<div class="tb">Error del sistema<span>✕</span></div>
+        <div class="bd"><div class="ic">✕</div><div class="tx"><b>ALICE HUANG</b><br>Presunta espía del gobierno chino<em>según la inteligencia de EE. UU. (NYT)</em></div></div>
+        <div class="bt"><div>Aceptar</div></div>`, "ov", "");
+      err.id = "err";
+      tl.fromTo(err, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.18, ease: "back.out(2.4)" }, 5.26);
+      tl.to(err, { x: -14, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 5.45);
+      aAl.draw(5.4);
+      tl.to("#hook", { scale: 0.92, opacity: 0, duration: 0.3, ease: "power2.in" }, 6.8);
+      tl.to("#hookfx", { opacity: 0, duration: 0.25 }, 6.8);
+
+      // ---------- 7 - 9.3: "parece una película de Netflix… pero está pasando" ----------
+      const bT = mk("#fx", "", "bar", "top:-170px"), bB = mk("#fx", "", "bar", "bottom:-170px");
+      tl.to(bT, { y: 170, duration: 0.4, ease: "power2.out" }, 7.05); tl.to(bB, { y: -170, duration: 0.4, ease: "power2.out" }, 7.05);
+      const film = mk("#fx", "🎬 PARECE UNA PELÍCULA…", "ov lbl dark", "top:1610px;");
+      gsap.set(film, { xPercent: -50, left: 540 });
+      tl.fromTo(film, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 7.3);
+      tl.to([bT], { y: 0, duration: 0.35, ease: "power2.in" }, 8.6); tl.to([bB], { y: 0, duration: 0.35, ease: "power2.in" }, 8.6);
+      tl.to(film, { opacity: 0, duration: 0.15 }, 8.55);
+      const real = mk("#fx", "…PERO ES REAL", "ov lbl red", "top:1610px;");
+      gsap.set(real, { xPercent: -50, left: 540 });
+      tl.fromTo(real, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 8.7);
+      tl.to(real, { opacity: 0, duration: 0.2 }, 9.3);
+
+      // ---------- 9.4 - 11.5: Nvidia stock falling ----------
+      const nv = mk("#fx", `<svg viewBox="0 0 940 220" width="940" height="220" style="position:absolute;inset:0">
+          <text x="40" y="78" font-size="52" font-weight="900" fill="#fff" font-family="Inter">NVDA</text>
+          <text x="40" y="122" font-size="26" font-weight="700" fill="#8d826a" font-family="Inter">NVIDIA · acción</text>
+          <path id="nvLine" d="M330 60 L380 70 L420 62 L470 92 L510 84 L560 120 L600 112 L650 150 L700 140 L760 176 L820 168 L880 196" fill="none" stroke="#e5484d" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="800" stroke-dashoffset="800"/>
+          </svg>`, "ov card", "");
+      inOut(nv, 9.4, 11.5);
+      tl.to("#nvLine", { attr: { "stroke-dashoffset": 0 }, duration: 1.1, ease: "power1.in" }, 9.86);
+      const dsp = mk("#fx", "▼ SE DESPLOMA", "ov lbl red", "left:660px;top:1700px;font-size:34px;");
+      inOut(dsp, 10.76, 11.5);
+
+      // ---------- 11.6 - 19: confidential information ----------
+      const conf = mk("#fx", `<div style="position:absolute;left:40px;top:40px;font-size:110px;line-height:1">📁</div>
+          <div style="position:absolute;left:190px;top:52px;font-size:34px;font-weight:800;color:#cfc3a6">Lo que preocupa a los inversores:</div>
+          <div style="position:absolute;left:190px;top:104px;font-size:40px;font-weight:900;color:#fff">¿Se filtró información?</div>`, "ov card", "");
+      inOut(conf, 13.2, 18.95);
+      const stamp = mk("#fx", "CONFIDENCIAL", "ov", "left:735px;top:1672px;padding:4px 16px;border:6px solid #e5484d;border-radius:12px;color:#e5484d;font-size:34px;font-weight:900;letter-spacing:0.08em;background:rgba(11,10,8,0.85);");
+      tl.fromTo(stamp, { opacity: 0, scale: 1.6, rotation: -14 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.25, ease: "power3.in" }, 17.16);
+      tl.to(stamp, { opacity: 0, duration: 0.2 }, 18.95);
+
+      // ---------- 19.1 - 28.1: the New York Times, underlined while he reads it ----------
+      toSplit(19.1);
+      const nyt = mk("#fx", `<img src="assets/nyt.png"><svg viewBox="0 0 892 802" width="847" height="762"></svg>`, "ov", "");
+      nyt.id = "nyt";
+      const NS2 = nyt.querySelector("svg");
+      const hl = (x1, x2, y1, y2, t, col) => {
+        const r = el("rect", { x: x1 - 6, y: y1, width: x2 - x1 + 12, height: y2 - y1, rx: 6, fill: col || "#ffe14d", style: "mix-blend-mode:multiply" }, NS2);
+        tl.set(r, { scaleX: 0, transformOrigin: "0% 50%" }, 0);
+        tl.to(r, { scaleX: 1, duration: 0.45, ease: "power2.inOut" }, t);
+      };
+      inOut(nyt, 19.45, 28.0, { y: 40 });
+      hl(431, 740, 440, 505, 20.64);            // "Relationship"
+      hl(41, 475, 512, 576, 20.98);             // "With Chinese Spy"
+      hl(534, 808, 700, 746, 22.84, "#ffb3b5"); // "U.S. officials had"
+      hl(41, 178, 750, 796, 24.3, "#ffb3b5");   // "determined"
+      hl(306, 836, 750, 796, 26.32);            // "working for Chinese intelligence"
+      toFull(28.0);
+
+      // ---------- 28.15 - 36.35: 3D chip (person hidden) ----------
+      const s3 = mk("#fx", `<div id="floor"></div><div id="iaGlow">IA</div>
+          <div id="stage"><div id="chip"><div class="face pcb"></div><div class="die"><b>NVIDIA</b><i>GPU · IA</i></div></div></div>
+          <div class="flag" id="fUS"><span>🇺🇸</span><b>ESTADOS UNIDOS</b></div><div class="flag" id="fCN"><span>🇨🇳</span><b>CHINA</b></div><div id="vs">VS</div>
+          <svg id="trace" viewBox="0 0 1080 1920" width="1080" height="1920" style="position:absolute;inset:0"></svg>`, "", "");
+      s3.id = "s3d";
+      // pins around the chip
+      const chipEl = $("#chip");
+      for (let i = 0; i < 9; i++) for (const side of ["t", "b", "l", "r"]) {
+        const p = document.createElement("div"); p.className = "pin";
+        const o = 48 + i * 38;
+        if (side === "t") p.style.cssText = `left:${o}px;top:-18px;width:14px;height:22px`;
+        if (side === "b") p.style.cssText = `left:${o}px;bottom:-18px;width:14px;height:22px`;
+        if (side === "l") p.style.cssText = `top:${o}px;left:-18px;width:22px;height:14px`;
+        if (side === "r") p.style.cssText = `top:${o}px;right:-18px;width:22px;height:14px`;
+        chipEl.appendChild(p);
+      }
+      gsap.set("#floor", { rotationX: 72 });
+      tl.to("#s3d", { opacity: 1, duration: 0.35 }, 28.15);
+      tl.fromTo("#chip", { rotationX: 70, rotationZ: -40, z: -900, opacity: 0 }, { rotationX: 52, rotationZ: 18, z: 0, opacity: 1, duration: 1.3, ease: "power3.out" }, 29.4);
+      tl.to("#chip", { rotationZ: 48, duration: 4.6, ease: "none" }, 30.7);
+      tl.fromTo("#floor", { backgroundPositionY: "0px" }, { backgroundPositionY: "540px", duration: 8.2, ease: "none" }, 28.15);
+      // circuit traces light up on "impulsan la inteligencia artificial"
+      const TR = $("#trace");
+      [[540, 900, 140, 1300], [540, 900, 940, 1300], [540, 900, 320, 1500], [540, 900, 760, 1500], [540, 900, 540, 1560]].forEach(([x1, y1, x2, y2], i) => {
+        const p = el("path", { d: `M${x1} ${y1} L${x1} ${y1 + 120} L${x2} ${y2 - 120} L${x2} ${y2}`, fill: "none", stroke: "#76b900", "stroke-width": 6, "stroke-dasharray": 1200, "stroke-dashoffset": 1200, opacity: 0.9 }, TR);
+        const d = el("circle", { cx: x2, cy: y2, r: 12, fill: "#b8ff4a", opacity: 0 }, TR);
+        tl.to(p, { attr: { "stroke-dashoffset": 0 }, duration: 0.7, ease: "power2.out" }, 31.38 + i * 0.08);
+        tl.to(d, { opacity: 1, duration: 0.2 }, 31.95 + i * 0.08);
+      });
+      tl.fromTo("#iaGlow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 32.14);
+      tl.to("#iaGlow", { opacity: 0, duration: 0.25 }, 33.4);
+      // "un pulso de tú a tú entre Estados Unidos y China": tug of war
+      tl.to(TR, { opacity: 0.25, duration: 0.3 }, 33.4);
+      tl.fromTo("#fUS", { opacity: 0, x: -200 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 34.98);
+      tl.fromTo("#fCN", { opacity: 0, x: 200 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 35.66);
+      tl.fromTo("#vs", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 33.7);
+      tl.to("#chip", { x: -60, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 1 }, 35.0);
+      tl.to("#chip", { x: 60, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 1 }, 35.68);
+      tl.to("#s3d", { opacity: 0, duration: 0.3 }, 36.35);
+
+      // ---------- 36.6 - 43.9: the board's investigation ----------
+      const inv = mk("#fx", `<div style="position:absolute;left:40px;top:34px;font-size:30px;font-weight:800;color:#c9a54c;letter-spacing:0.12em">🔍 EL CONSEJO DE NVIDIA</div>
+          <div style="position:absolute;left:40px;top:84px;font-size:46px;font-weight:900;color:#fff">INVESTIGACIÓN INDEPENDIENTE</div>
+          <div id="invOk" style="position:absolute;left:40px;top:150px;font-size:30px;font-weight:700;color:#7ff0b5;opacity:0">✓ Por ahora: sin motivos para creer que se filtrara información</div>`, "ov card", "");
+      inOut(inv, 38.0, 43.95);
+      tl.to("#invOk", { opacity: 1, duration: 0.3 }, 40.48);
+
+      // ---------- 44 - 49.6: stock under pressure, security and leadership (real photo) ----------
+      toSplit(43.95);
+      const jh = mk("#fx", `<img src="assets/jensen.jpg">`, "ov", ""); jh.id = "jh";
+      const jc = mk("#fx", "Jensen Huang · Foto: Wikimedia Commons", "ov", ""); jc.id = "jhCap";
+      inOut(jh, 44.2, 49.55, { x: -40 }); tl.to(jc, { opacity: 1, duration: 0.3 }, 44.5); tl.to(jc, { opacity: 0, duration: 0.2 }, 49.55);
+      const T4 = [["📉 ACCIÓN BAJO PRESIÓN", "red", 44.46, 1000], ["⚠️ INCERTIDUMBRE", "dark", 46.2, 1130], ["🔒 SEGURIDAD", "dark", 47.74, 1260], ["👔 LIDERAZGO", "dark", 48.36, 1390]];
+      T4.forEach(([t, c, at, y]) => { const e = mk("#fx", t, "ov lbl " + c + " tagR", `top:${y}px;font-size:36px;`); inOut(e, at, 49.55, { x: 40 }); });
+      toFull(49.7);
+
+      // ---------- 50 - 56.9: how far did it go? ----------
+      const q1 = mk("#fx", "¿HASTA DÓNDE LLEGÓ?", "ov lbl dark", "top:1610px;font-size:44px;");
+      gsap.set(q1, { xPercent: -50, left: 540 });
+      inOut(q1, 52.0, 54.3);
+      const q2 = mk("#fx", "⚠️ ¿INFORMACIÓN PRIVILEGIADA EN RIESGO?", "ov lbl red", "top:1610px;font-size:38px;");
+      gsap.set(q2, { xPercent: -50, left: 540 });
+      inOut(q2, 54.46, 56.85);
+
+      // ---------- CTA ----------
+      const NAME = "@TheCryptons_";
+      NAME.split("").forEach((ch) => { const sp = document.createElement("span"); sp.textContent = ch; $("#igName").appendChild(sp); });
+      tl.set("#caps", { y: -40 }, 57.15);
+      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 56.95);
+      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.2, ease: "back.out(3)" }, 57.07 + i * 0.014));
+      const BX = 750, BY = 1675, SX = 920;
+      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.32, ease: "power2.inOut" }, 57.30);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 57.67);
+      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 57.67);
+      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 57.69);
+      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 57.73);
+      tl.to("#tap", { x: SX - 6, duration: 0.28, ease: "power2.inOut" }, 57.89);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 58.19);
+      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 58.19);
+      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 58.21);
+      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 58.23);
+      tl.to("#tap", { opacity: 0, duration: 0.3 }, 58.57);
+
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (["b", "s", "g", "up", "dn"].includes(w.st)) tl.fromTo(w.el, { scale: 0.7 }, { scale: 1, duration: 0.22, ease: "back.out(2.5)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, 58.76);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
