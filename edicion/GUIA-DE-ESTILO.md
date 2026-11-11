@@ -41,6 +41,7 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - Le gustan los guiños de sonido tipo "inicio de sesión" y "error" de Windows en ganchos (versiones sintetizadas, `sonidos-extra/`).
 - Menos desplazamientos de cámara: la mayoría del vídeo a pantalla completa con tarjetas abajo; pantalla partida solo para capturas/fotos grandes; 3D a pantalla completa ocultándole cuando lo pida.
 
+- **Palabras clave en horizontal:** que nunca se salgan de los márgenes (≥ 60 px). Si la frase es larga, en dos líneas (serif arriba, caja abajo).
 - **Sin confeti** (ni en "enhorabuena").
 - Cuando hable de "aquí ya lo avisamos", enseñar el canal de YouTube real (solo vídeos completos, sin shorts) con portadas y fechas marcadas.
 
