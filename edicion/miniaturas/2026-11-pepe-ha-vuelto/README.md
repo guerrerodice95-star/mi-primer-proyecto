@@ -9,3 +9,6 @@
 - **Inspiración:** miniaturas virales de PEPE/memecoins (verde neón, moneda grande con brillo, flecha verde, texto gigante con contorno).
 
 Regenerar: recortar la cara a `person_c.png`, copiar `inter-latin-900-normal.woff2` y `python3 build.py` (Playwright hace la captura).
+
+v2: cara cambiada por la foto que mandó Unai (sorpresa con la mano en la cabeza), recortada con BiRefNet-lite, ampliada ×2 y con
+el borde izquierdo (hombro cortado en la foto) difuminado con `mask-image`. B: "PEPE" blanco + "HA VUELTO" amarillo, moneda grande.
