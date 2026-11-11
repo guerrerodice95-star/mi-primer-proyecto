@@ -12,3 +12,5 @@ Regenerar: recortar la cara a `person_c.png`, copiar `inter-latin-900-normal.wof
 
 v2: cara cambiada por la foto que mandó Unai (sorpresa con la mano en la cabeza), recortada con BiRefNet-lite, ampliada ×2 y con
 el borde izquierdo (hombro cortado en la foto) difuminado con `mask-image`. B: "PEPE" blanco + "HA VUELTO" amarillo, moneda grande.
+
+v3: Unai prefiere la **cara a la izquierda**. El brazo sale cortado en su foto: la moneda PEPE se coloca encima para taparlo.
