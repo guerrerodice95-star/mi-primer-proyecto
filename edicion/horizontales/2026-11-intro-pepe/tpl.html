@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --ink: #0b0a08; --line: rgba(201,165,76,0.38); --red: #e5484d; --red-hi: #ff7a7e; --green: #16c784; --pepe: #4caf50; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      #bg { background: radial-gradient(900px 700px at 25% 45%, rgba(201,165,76,0.14), transparent 70%), radial-gradient(900px 700px at 75% 50%, rgba(76,175,80,0.10), transparent 70%), #0b0a08; }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48% 0%; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #fadeR { position: absolute; right: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(270deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%); }
+      #bottomShade { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.7) 100%); }
+      .ov { position: absolute; opacity: 0; }
+      .glass { position: absolute; border-radius: 30px; background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.07));
+        -webkit-backdrop-filter: blur(22px) saturate(1.4) brightness(0.72); backdrop-filter: blur(22px) saturate(1.4) brightness(0.72);
+        border: 1.5px solid rgba(255,255,255,0.32); box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+      .coinchip { display: flex; align-items: center; gap: 20px; padding: 18px 30px 18px 18px; }
+      .coinchip img { width: 86px; height: 86px; border-radius: 50%; }
+      .coinchip b { display: block; font-size: 44px; font-weight: 900; line-height: 1.05; }
+      .coinchip i { display: block; font-style: normal; font-size: 32px; font-weight: 900; color: var(--red-hi); }
+      .coinchip i.up { color: #7ff0b5; }
+      .kw { position: absolute; left: 0; right: 0; top: 850px; text-align: center; white-space: nowrap; opacity: 0; text-shadow: 0 8px 30px rgba(0,0,0,0.85); }
+      .kw b { font-size: 96px; font-weight: 900; }
+      .kw .box { display: inline-block; padding: 4px 34px; border-radius: 24px; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); text-shadow: none;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 60px rgba(201,165,76,0.5); }
+      .kw .serif { font-size: 80px; color: #f6e6b8; margin-right: 18px; }
+      /* chart card (CoinMarketCap-like, real data) */
+      .card { position: absolute; border-radius: 36px; background: rgba(17,19,22,0.96); border: 1.5px solid rgba(255,255,255,0.10); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+      #chart { left: 80px; top: 110px; width: 840px; height: 860px; opacity: 0; }
+      #chart .hd { position: absolute; left: 46px; top: 40px; display: flex; align-items: center; gap: 18px; }
+      #chart .hd img { width: 72px; height: 72px; border-radius: 50%; }
+      #chart .hd b { font-size: 42px; font-weight: 900; } #chart .hd span { font-size: 30px; font-weight: 700; color: #8b93a1; margin-left: 6px; }
+      #chart .tabs { position: absolute; right: 40px; top: 52px; display: flex; gap: 8px; }
+      #chart .tabs i { font-style: normal; font-size: 22px; font-weight: 800; color: #8b93a1; padding: 6px 14px; border-radius: 10px; }
+      #chart .tabs i.on { background: #222531; color: #fff; }
+      #price { position: absolute; left: 46px; top: 140px; font-size: 76px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+      #chg { position: absolute; left: 50px; top: 238px; padding: 8px 18px; border-radius: 12px; background: rgba(22,199,132,0.16); color: #16c784; font-size: 34px; font-weight: 900; opacity: 0; }
+      #x2 { position: absolute; right: 44px; top: 150px; padding: 10px 26px; border-radius: 20px; font-size: 64px; font-weight: 900; color: #1a1408; opacity: 0;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 50px rgba(201,165,76,0.5); }
+      #chart svg { position: absolute; left: 30px; top: 320px; }
+      #src { position: absolute; left: 46px; bottom: 26px; font-size: 20px; font-weight: 700; color: #6b7280; }
+      /* three facts (cards on the right) */
+      .fact { position: absolute; left: 1060px; width: 790px; height: 230px; display: flex; align-items: center; gap: 30px; padding: 0 40px; opacity: 0; }
+      .fact .ic { flex: none; width: 130px; height: 130px; border-radius: 30px; background: rgba(201,165,76,0.14); border: 2px solid rgba(201,165,76,0.6); display: flex; align-items: center; justify-content: center; font-size: 74px; }
+      .fact b { display: block; font-size: 42px; font-weight: 900; line-height: 1.1; }
+      .fact span { display: block; margin-top: 8px; font-size: 28px; font-weight: 700; color: #cfc3a6; }
+      .fact .n { position: absolute; right: 30px; top: 20px; font-size: 26px; font-weight: 900; color: var(--gold); }
+      #f1 { top: 110px; } #f2 { top: 365px; } #f3 { top: 620px; }
+      /* YouTube screen */
+      #yt { position: absolute; inset: 0; opacity: 0; background: radial-gradient(1200px 800px at 50% 40%, #1a1712, #070605); overflow: hidden; }
+      #ytStage { position: absolute; left: 50%; top: 40px; width: 1700px; height: 1080px; margin-left: -850px; perspective: 2200px; }
+      #ytScreen { position: absolute; left: 0; top: 0; width: 1700px; height: 1300px; border-radius: 28px; background: #0f0f0f; transform-origin: 50% 0%;
+        box-shadow: 0 50px 120px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.08); overflow: hidden; }
+      .ytbar { height: 92px; display: flex; align-items: center; gap: 22px; padding: 0 36px; border-bottom: 1px solid #272727; }
+      .ytbar .logo { display: flex; align-items: center; gap: 8px; font-size: 32px; font-weight: 900; letter-spacing: -0.04em; }
+      .ytbar .logo i { width: 54px; height: 38px; border-radius: 10px; background: #ff0033; display: inline-block; position: relative; }
+      .ytbar .logo i::after { content: ""; position: absolute; left: 21px; top: 11px; border-left: 16px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+      .ytbar .search { margin-left: 120px; flex: 1; max-width: 760px; height: 56px; border-radius: 28px; border: 1px solid #303030; background: #121212; display: flex; align-items: center; padding: 0 26px; font-size: 26px; color: #f1f1f1; }
+      .ych { display: flex; align-items: center; gap: 28px; padding: 30px 40px 18px; }
+      .ych img { width: 120px; height: 120px; border-radius: 50%; }
+      .ych b { display: block; font-size: 40px; font-weight: 900; } .ych span { font-size: 24px; color: #aaa; }
+      .ych .sub { margin-left: auto; padding: 16px 30px; border-radius: 30px; background: #f1f1f1; color: #0f0f0f; font-size: 26px; font-weight: 800; }
+      #ytGrid { position: absolute; left: 40px; top: 260px; width: 1620px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px 26px; }
+      .vid { position: relative; opacity: 0; }
+      .vid .th { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; background: #222; }
+      .vid .th img { width: 100%; height: 100%; object-fit: cover; }
+      .vid .th em { position: absolute; right: 8px; bottom: 8px; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.8); font-style: normal; font-size: 20px; font-weight: 800; }
+      .vid h4 { margin-top: 12px; font-size: 22px; font-weight: 800; line-height: 1.25; color: #f1f1f1; height: 56px; overflow: hidden; }
+      .vid p { margin-top: 6px; font-size: 21px; color: #aaa; }
+      .vid p span { display: inline-block; padding: 2px 10px; margin-left: -10px; border-radius: 10px; }
+      #ytTag { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; opacity: 0; }
+      #ytTag span { display: inline-block; padding: 16px 36px; border-radius: 22px; font-size: 46px; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+        box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 60px rgba(201,165,76,0.5); }
+      /* subscribe */
+      #subBox { left: 490px; top: 760px; width: 940px; height: 190px; display: flex; align-items: center; gap: 22px; padding: 0 22px; opacity: 0; }
+      #subBox img { width: 140px; height: 140px; border-radius: 50%; }
+      #subBox .nm { flex: 1; } #subBox .nm b { display: block; font-size: 44px; font-weight: 900; } #subBox .nm span { font-size: 26px; color: rgba(255,255,255,0.75); font-weight: 700; }
+      #subBtn { position: relative; flex: none; width: 280px; height: 96px; border-radius: 48px; background: #ff0033; color: #fff; font-size: 34px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+      #subBtn .on { position: absolute; inset: 0; border-radius: 48px; background: #3a3a3a; color: #fff; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #bell { flex: none; width: 96px; height: 96px; border-radius: 50%; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 52px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      .conf { position: absolute; width: 16px; height: 26px; border-radius: 4px; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="53.64" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="53.64" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="53.64" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="53.64" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="fadeL"></div><div id="fadeR"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="53.64" data-track-index="2"></div>
+      <div id="bottomShade" class="clip" data-start="0" data-duration="53.64" data-track-index="2"></div>
+      <div id="fx" class="clip" data-start="0" data-duration="53.64" data-track-index="3"></div>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap", DUR = 53.64;
+      const SERIES = __SERIES__;
+      const VIDS = __VIDS__;
+__SCENES__
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

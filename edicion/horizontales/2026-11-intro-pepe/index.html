@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --ink: #0b0a08; --line: rgba(201,165,76,0.38); --red: #e5484d; --red-hi: #ff7a7e; --green: #16c784; --pepe: #4caf50; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      #bg { background: radial-gradient(900px 700px at 25% 45%, rgba(201,165,76,0.14), transparent 70%), radial-gradient(900px 700px at 75% 50%, rgba(76,175,80,0.10), transparent 70%), #0b0a08; }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48% 0%; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #fadeR { position: absolute; right: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(270deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%); }
+      #bottomShade { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.7) 100%); }
+      .ov { position: absolute; opacity: 0; }
+      .glass { position: absolute; border-radius: 30px; background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.07));
+        -webkit-backdrop-filter: blur(22px) saturate(1.4) brightness(0.72); backdrop-filter: blur(22px) saturate(1.4) brightness(0.72);
+        border: 1.5px solid rgba(255,255,255,0.32); box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+      .coinchip { display: flex; align-items: center; gap: 20px; padding: 18px 30px 18px 18px; }
+      .coinchip img { width: 86px; height: 86px; border-radius: 50%; }
+      .coinchip b { display: block; font-size: 44px; font-weight: 900; line-height: 1.05; }
+      .coinchip i { display: block; font-style: normal; font-size: 32px; font-weight: 900; color: var(--red-hi); }
+      .coinchip i.up { color: #7ff0b5; }
+      .kw { position: absolute; left: 0; right: 0; top: 850px; text-align: center; white-space: nowrap; opacity: 0; text-shadow: 0 8px 30px rgba(0,0,0,0.85); }
+      .kw b { font-size: 96px; font-weight: 900; }
+      .kw .box { display: inline-block; padding: 4px 34px; border-radius: 24px; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); text-shadow: none;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 60px rgba(201,165,76,0.5); }
+      .kw .serif { font-size: 80px; color: #f6e6b8; margin-right: 18px; }
+      /* chart card (CoinMarketCap-like, real data) */
+      .card { position: absolute; border-radius: 36px; background: rgba(17,19,22,0.96); border: 1.5px solid rgba(255,255,255,0.10); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+      #chart { left: 80px; top: 110px; width: 840px; height: 860px; opacity: 0; }
+      #chart .hd { position: absolute; left: 46px; top: 40px; display: flex; align-items: center; gap: 18px; }
+      #chart .hd img { width: 72px; height: 72px; border-radius: 50%; }
+      #chart .hd b { font-size: 42px; font-weight: 900; } #chart .hd span { font-size: 30px; font-weight: 700; color: #8b93a1; margin-left: 6px; }
+      #chart .tabs { position: absolute; right: 40px; top: 52px; display: flex; gap: 8px; }
+      #chart .tabs i { font-style: normal; font-size: 22px; font-weight: 800; color: #8b93a1; padding: 6px 14px; border-radius: 10px; }
+      #chart .tabs i.on { background: #222531; color: #fff; }
+      #price { position: absolute; left: 46px; top: 140px; font-size: 76px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+      #chg { position: absolute; left: 50px; top: 238px; padding: 8px 18px; border-radius: 12px; background: rgba(22,199,132,0.16); color: #16c784; font-size: 34px; font-weight: 900; opacity: 0; }
+      #x2 { position: absolute; right: 44px; top: 150px; padding: 10px 26px; border-radius: 20px; font-size: 64px; font-weight: 900; color: #1a1408; opacity: 0;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 50px rgba(201,165,76,0.5); }
+      #chart svg { position: absolute; left: 30px; top: 320px; }
+      #src { position: absolute; left: 46px; bottom: 26px; font-size: 20px; font-weight: 700; color: #6b7280; }
+      /* three facts (cards on the right) */
+      .fact { position: absolute; left: 1060px; width: 790px; height: 230px; display: flex; align-items: center; gap: 30px; padding: 0 40px; opacity: 0; }
+      .fact .ic { flex: none; width: 130px; height: 130px; border-radius: 30px; background: rgba(201,165,76,0.14); border: 2px solid rgba(201,165,76,0.6); display: flex; align-items: center; justify-content: center; font-size: 74px; }
+      .fact b { display: block; font-size: 42px; font-weight: 900; line-height: 1.1; }
+      .fact span { display: block; margin-top: 8px; font-size: 28px; font-weight: 700; color: #cfc3a6; }
+      .fact .n { position: absolute; right: 30px; top: 20px; font-size: 26px; font-weight: 900; color: var(--gold); }
+      #f1 { top: 110px; } #f2 { top: 365px; } #f3 { top: 620px; }
+      /* YouTube screen */
+      #yt { position: absolute; inset: 0; opacity: 0; background: radial-gradient(1200px 800px at 50% 40%, #1a1712, #070605); overflow: hidden; }
+      #ytStage { position: absolute; left: 50%; top: 40px; width: 1700px; height: 1080px; margin-left: -850px; perspective: 2200px; }
+      #ytScreen { position: absolute; left: 0; top: 0; width: 1700px; height: 1300px; border-radius: 28px; background: #0f0f0f; transform-origin: 50% 0%;
+        box-shadow: 0 50px 120px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.08); overflow: hidden; }
+      .ytbar { height: 92px; display: flex; align-items: center; gap: 22px; padding: 0 36px; border-bottom: 1px solid #272727; }
+      .ytbar .logo { display: flex; align-items: center; gap: 8px; font-size: 32px; font-weight: 900; letter-spacing: -0.04em; }
+      .ytbar .logo i { width: 54px; height: 38px; border-radius: 10px; background: #ff0033; display: inline-block; position: relative; }
+      .ytbar .logo i::after { content: ""; position: absolute; left: 21px; top: 11px; border-left: 16px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+      .ytbar .search { margin-left: 120px; flex: 1; max-width: 760px; height: 56px; border-radius: 28px; border: 1px solid #303030; background: #121212; display: flex; align-items: center; padding: 0 26px; font-size: 26px; color: #f1f1f1; }
+      .ych { display: flex; align-items: center; gap: 28px; padding: 30px 40px 18px; }
+      .ych img { width: 120px; height: 120px; border-radius: 50%; }
+      .ych b { display: block; font-size: 40px; font-weight: 900; } .ych span { font-size: 24px; color: #aaa; }
+      .ych .sub { margin-left: auto; padding: 16px 30px; border-radius: 30px; background: #f1f1f1; color: #0f0f0f; font-size: 26px; font-weight: 800; }
+      #ytGrid { position: absolute; left: 40px; top: 260px; width: 1620px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px 26px; }
+      .vid { position: relative; opacity: 0; }
+      .vid .th { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; background: #222; }
+      .vid .th img { width: 100%; height: 100%; object-fit: cover; }
+      .vid .th em { position: absolute; right: 8px; bottom: 8px; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.8); font-style: normal; font-size: 20px; font-weight: 800; }
+      .vid h4 { margin-top: 12px; font-size: 22px; font-weight: 800; line-height: 1.25; color: #f1f1f1; height: 56px; overflow: hidden; }
+      .vid p { margin-top: 6px; font-size: 21px; color: #aaa; }
+      .vid p span { display: inline-block; padding: 2px 10px; margin-left: -10px; border-radius: 10px; }
+      #ytTag { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; opacity: 0; }
+      #ytTag span { display: inline-block; padding: 16px 36px; border-radius: 22px; font-size: 46px; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+        box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 60px rgba(201,165,76,0.5); }
+      /* subscribe */
+      #subBox { left: 490px; top: 760px; width: 940px; height: 190px; display: flex; align-items: center; gap: 22px; padding: 0 22px; opacity: 0; }
+      #subBox img { width: 140px; height: 140px; border-radius: 50%; }
+      #subBox .nm { flex: 1; } #subBox .nm b { display: block; font-size: 44px; font-weight: 900; } #subBox .nm span { font-size: 26px; color: rgba(255,255,255,0.75); font-weight: 700; }
+      #subBtn { position: relative; flex: none; width: 280px; height: 96px; border-radius: 48px; background: #ff0033; color: #fff; font-size: 34px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+      #subBtn .on { position: absolute; inset: 0; border-radius: 48px; background: #3a3a3a; color: #fff; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #bell { flex: none; width: 96px; height: 96px; border-radius: 50%; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 52px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      .conf { position: absolute; width: 16px; height: 26px; border-radius: 4px; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="53.64" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="53.64" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="53.64" data-track-index="0"></div>
+      <div id="camwrap">
+        <video id="cam" class="clip" data-start="0" data-duration="53.64" data-track-index="1" src="assets/cam.mp4" muted playsinline></video>
+        <div id="fadeL"></div><div id="fadeR"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="53.64" data-track-index="2"></div>
+      <div id="bottomShade" class="clip" data-start="0" data-duration="53.64" data-track-index="2"></div>
+      <div id="fx" class="clip" data-start="0" data-duration="53.64" data-track-index="3"></div>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap", DUR = 53.64;
+      const SERIES = [2674.7, 2684.3, 2664.3, 2624.3, 2571.7, 2584.8, 2582.8, 2874.0, 3204.5, 4122.1, 4068.5, 4092.2, 4041.7, 3818.1, 3855.0, 3893.4, 3696.0, 3657.0, 3404.4, 3553.9, 3474.2, 3431.1, 3713.2, 3526.2, 3609.4, 3653.5, 3623.2, 3656.0, 3475.3, 3233.8, 3301.1, 3425.4, 3364.5, 3453.0, 3383.7, 3406.1, 3610.0, 3813.2, 4110.8, 3995.0, 4765.5, 4977.1, 4330.0, 4421.7, 4488.4, 4364.6, 4363.0, 4209.5, 4252.0, 4272.4, 4431.1, 4254.9, 4307.8, 4394.1, 4385.5, 4283.6, 4093.6, 3824.0, 3954.7, 4033.8, 4213.3, 3913.3, 4195.2, 4069.9, 4081.6, 4021.7, 3870.4, 4009.2, 4154.2, 4551.7, 4628.4, 4389.1, 4565.3, 4504.2, 4274.9, 4308.8, 4588.1, 5024.7, 4555.0, 4916.0, 4973.8, 4883.2, 4768.9, 4861.9, 4964.6, 4787.6, 4981.1, 4859.2, 4949.5, 5124.3, 5371.6, 4992.8];
+      const VIDS = [["NNOdLmVOTbI", "💣 LA MEMECOIN QUE MÁS SUBIRÁ EN 2024 - [SUPERARÁ A SHIBA]", "5:31", "12 K", "hace 3 años"], ["DAeZEJZNtFg", "PEPE ES LA CRIPTOMONEDA QUE HARÁ MILLONARIOS EN 2024 - SUPERARÁ A DOGE", "8:01", "28 K", "hace 2 años"], ["vkR7kksTIfc", "SI NO LLEVAS LA MEMECOIN PEPE ESTÁS PERDIDO EN EL BULLRUN - ELON MUSK", "8:01", "7,3 K", "hace 2 años"], ["k2ozi0GjHpM", "PEPE ES LA MEJOR MEMECOIN DE LA HISTORIA - AUN ESTÁS A TIEMPO", "7:31", "4,3 K", "hace 2 años"], ["io65lxsc4No", "PEPE ES LA MEMECOIN QUE HA HECHO MÁS MILLONARIOS", "8:29", "6,9 K", "hace 2 años"], ["R9A0b8pwL9E", "PEPE PUEDE HACER MILLONARIOS POR ESTOS 3 MOTIVOS - TOP MEMECOINS 2024", "10:14", "13 K", "hace 2 años"], ["m7XHSyeJ3sw", "ESTAS 4 MEMECOINS HARÁN MILLONARIOS EN 2024 - ¿PEPE A 1$? WIF NO TIENE TECHO", "11:32", "3,1 K", "hace 2 años"], ["WFEt-NMlk7M", "PEPE SUPERARÁ A DOGE EN 2025 POR ESTOS 5 MOTIVOS - SUBIRÁ x100", "10:51", "5,9 K", "hace 2 años"], ["g9QOTw0luu0", "PEPE ES LA MEJOR MEMECOIN DE LA HISTORIA - GANAMOS MUCHO DINERO", "9:15", "14 K", "hace 1 año"], ["3m2xJj6dYn8", "7 MOTIVOS por los que CRIPTOMONEDA PEPE HARÁ MILLONARIOS", "11:33", "23 K", "hace 1 año"], ["osJrVnQIq0w", "PEPE HARÁ MILLONARIOS Y SE COMERÁ UN CERO - TOP 5 MEMECOINS 2025", "13:11", "10 K", "hace 1 año"], ["lSxCl5yJ1ik", "PEPE SERÁ LA NUEVA DOGE EN 2026 - ¿MILLONARIOS CON ESTA MEMECOIN?", "11:50", "7,5 K", "hace 1 año"]];
+      const NS = "http://www.w3.org/2000/svg";
+      const mk = (html, cls, style, parent) => { const d = document.createElement("div"); if (cls) d.className = cls; if (style) d.style.cssText = style; d.innerHTML = html || ""; (parent || $("#fx")).appendChild(d); return d; };
+      const sv = (tag, a, p) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+      const pop = (e, t, from) => tl.fromTo(e, Object.assign({ opacity: 0, scale: 0.7 }, from || {}), { opacity: 1, scale: 1, x: 0, y: 0, rotation: 0, duration: 0.4, ease: "back.out(1.9)" }, t);
+      const fade = (e, t, d = 0.25) => tl.to(e, { opacity: 0, duration: d }, t);
+      const kw = (html, t0, t1, top) => { const k = mk(html, "kw", top ? `top:${top}px` : ""); tl.fromTo(k, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, t0); fade(k, t1, 0.2); return k; };
+      const fmtP = (v) => "0,00000" + String(Math.round(v / 10)).padStart(3, "0") + " $";
+
+      // ---------- camera ----------
+      const sideR = (t, s = 1.0) => { tl.to(cam, { x: 470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const sideL = (t, s = 1.0) => { tl.to(cam, { x: -470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeR", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const full = (t, s = 1.06) => { tl.to(cam, { x: 0, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to(["#fadeL", "#fadeR"], { opacity: 0, duration: 0.3 }, t + 0.05); };
+      tl.set(cam, { x: 0, scale: 1.04 }, 0);
+      // 0 - 7.3 camera still under the glass chips
+      tl.set(cam, { scale: 1.14 }, 8.1);                 // dry cut "Es la memecoin que más dinero…"
+      tl.to(cam, { scale: 1.17, duration: 3.1, ease: "none" }, 8.12);
+      sideR(11.3, 1.0);                                 // PEPE chart left
+      full(15.0, 1.06);
+      tl.set(cam, { scale: 1.16 }, 18.3);               // cut "hay muchas cosas que tienes que conocer"
+      sideL(20.7, 1.0);                                 // three facts right
+      full(31.5, 1.06);
+      // 31.8 - 36.7: YouTube screen hides him
+      tl.set(cam, { scale: 1.06 }, 36.7);
+      tl.to(cam, { scale: 1.1, duration: 7.5, ease: "none" }, 36.75);
+      tl.set(cam, { scale: 1.04 }, 44.38);               // wide for the subscribe card
+      tl.set(cam, { scale: 1.16 }, 49.1);               // cut "aquí encontraremos la próxima memecoin"
+      tl.to(cam, { scale: 1.22, duration: 4.5, ease: "none" }, 49.12);
+
+      // ---------- 0 - 7.3: coins as floating glass, camera still ----------
+      const COINS = [["bitcoin", "Bitcoin", "−11,4 %", 0.0, "left:1270px;top:150px"], ["ethereum", "Ethereum", "−19,3 %", 1.5, "left:150px;top:150px"],
+        ["dogecoin", "Dogecoin", "−21,8 %", 2.6, "left:110px;top:520px"], ["shiba-inu", "Shiba Inu", "−18,1 %", 3.22, "left:1330px;top:520px"]];
+      const chips = COINS.map(([id, n, c, t, pos]) => {
+        const e = mk(`<img src="assets/logos/${id}.png"><div><b>${n}</b><i>▼ ${c} <small style="font-size:20px;opacity:.8">30 d</small></i></div>`, "glass coinchip ov", pos);
+        tl.fromTo(e, { opacity: 0, scale: 0.6, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, Math.max(0.05, t));
+        tl.to(e, { y: "-=14", duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, Math.max(0.05, t) + 0.4);
+        return e;
+      });
+      tl.to(chips, { opacity: 0.35, scale: 0.92, filter: "grayscale(1)", duration: 0.4 }, 4.6);
+      const pepeChip = mk(`<img src="assets/logos/pepe.png"><div><b>PEPE</b><i class="up">▲ +18,7 % <small style="font-size:20px;opacity:.8">30 d</small></i></div>`, "glass coinchip ov", "left:740px;top:820px;border-color:rgba(127,240,181,0.7);box-shadow:0 0 50px rgba(76,175,80,0.45)");
+      tl.fromTo(pepeChip, { opacity: 0, scale: 0.5, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2.2)" }, 4.94);
+      tl.to(pepeChip, { scale: 1.08, duration: 0.2, yoyo: true, repeat: 1 }, 6.82);
+      tl.to([...chips, pepeChip], { opacity: 0, duration: 0.3 }, 7.6);
+
+      // ---------- 8.1 - 11: "la que más dinero nos ha dado en este canal" ----------
+      tl.to("#bottomShade", { opacity: 1, duration: 0.3 }, 8.3);
+      kw(`<span class="serif">la memecoin que más</span><b class="box">💰 DINERO NOS HA DADO</b>`, 9.0, 11.2);
+      tl.to("#bottomShade", { opacity: 0, duration: 0.3 }, 11.2);
+
+      // ---------- 11.3 - 15: PEPE doubled in 3 months (real data, CoinGecko) ----------
+      const ch = mk(`<div class="hd"><img src="assets/logos/pepe.png"><b>Pepe<span>PEPE</span></b></div>
+        <div class="tabs"><i>1D</i><i>7D</i><i>1M</i><i class="on">3M</i><i>1A</i></div>
+        <div id="price">0,00000257 $</div><div id="chg">▲ ×2 desde el mínimo de agosto</div><div id="x2">×2</div>
+        <svg width="780" height="480" viewBox="0 0 780 480"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16c784" stop-opacity="0.35"/><stop offset="1" stop-color="#16c784" stop-opacity="0"/></linearGradient></defs></svg>
+        <div id="src">Datos reales: CoinGecko · 13 ago – 11 nov 2026</div>`, "card", "", null);
+      ch.id = "chart";
+      const CS = ch.querySelector("svg");
+      for (let i = 0; i < 5; i++) sv("line", { x1: 0, x2: 780, y1: 40 + i * 100, y2: 40 + i * 100, stroke: "rgba(255,255,255,0.06)", "stroke-width": 2 }, CS);
+      ["13 ago", "13 sep", "13 oct", "11 nov"].forEach((l, i) => { const t = sv("text", { x: 10 + i * 248, y: 474, fill: "#6b7280", "font-size": 20, "font-weight": 700, "font-family": "Inter" }, CS); t.textContent = l; });
+      const mn = Math.min(...SERIES), mx = Math.max(...SERIES), N = SERIES.length;
+      const PX = (i) => (i / (N - 1)) * 770, PY = (v) => 420 - ((v - mn) / (mx - mn)) * 370;
+      const area = sv("path", { d: "", fill: "url(#ga)" }, CS), line = sv("path", { d: "", fill: "none", stroke: "#16c784", "stroke-width": 5, "stroke-linejoin": "round" }, CS);
+      const dot = sv("circle", { r: 10, fill: "#16c784", opacity: 0 }, CS);
+      const iMin = SERIES.indexOf(mn), iMax = SERIES.indexOf(mx);
+      const lowM = sv("g", { opacity: 0 }, CS);
+      sv("circle", { cx: PX(iMin), cy: PY(mn), r: 16, fill: "none", stroke: "#e5484d", "stroke-width": 4 }, lowM);
+      const lt = sv("text", { x: PX(iMin) + 24, y: PY(mn) + 8, fill: "#ff8d90", "font-size": 22, "font-weight": 900, "font-family": "Inter" }, lowM); lt.textContent = "MÍNIMO 0,00000257 $";
+      tl.fromTo(ch, { opacity: 0, x: -60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 11.5);
+      const pr = { k: 0 };
+      tl.set(dot, { opacity: 1 }, 11.9);
+      tl.to(pr, { k: 1, duration: 2.4, ease: "power1.inOut", onUpdate: () => {
+        const m = Math.max(1, Math.round(pr.k * (N - 1)));
+        let d = `M0 ${PY(SERIES[0])}`; for (let i = 1; i <= m; i++) d += ` L${PX(i)} ${PY(SERIES[i])}`;
+        line.setAttribute("d", d); area.setAttribute("d", d + ` L${PX(m)} 440 L0 440 Z`);
+        dot.setAttribute("cx", PX(m)); dot.setAttribute("cy", PY(SERIES[m]));
+        const v = SERIES[Math.min(m, iMax)] < mn ? mn : Math.max(mn, SERIES[m]);
+        $("#price").textContent = fmtP(m <= iMin ? mn : v);
+      } }, 11.9);
+      tl.to(lowM, { opacity: 1, duration: 0.2 }, 12.2);
+      tl.fromTo("#x2", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(3)" }, 12.66);
+      tl.to("#chg", { opacity: 1, duration: 0.3 }, 13.3);
+      tl.to(ch, { opacity: 0, x: -50, duration: 0.3, ease: "power2.in" }, 14.85);
+
+      // ---------- 15 - 20.5: everyone only looks at the falls ----------
+      tl.to("#bottomShade", { opacity: 1, duration: 0.3 }, 16.2);
+      kw(`<span class="serif">muchos solo miran</span><b style="color:#ff7a7e">LAS CAÍDAS ▼</b>`, 16.34, 18.2);
+      kw(`<b class="box">LO QUE TIENES QUE SABER</b>`, 18.52, 20.5);
+      tl.to("#bottomShade", { opacity: 0, duration: 0.3 }, 20.5);
+
+      // ---------- 20.9 - 31.4: three things (cards right) ----------
+      const F = [["🐋", "Grandes carteras", "retirando PEPE de los exchanges", 20.86], ["🔁", "Un viejo conocido", "ha vuelto a comprar PEPE", 23.96], ["📄", "Un ETF de PEPE", "una gestora sigue trabajando en él", 27.26]];
+      const facts = F.map(([ic, b, s, t], i) => { const e = mk(`<div class="ic">${ic}</div><div><b>${b}</b><span>${s}</span></div><div class="n">0${i + 1}</div>`, "card fact", ""); e.id = "f" + (i + 1);
+        tl.fromTo(e, { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.45, ease: "expo.out" }, t); return e; });
+      // whale: coins leaving the exchange
+      for (let k = 0; k < 4; k++) {
+        const c = mk(`<img src="assets/logos/pepe.png" style="width:44px;height:44px;border-radius:50%">`, "ov", `left:${1240}px;top:${200}px;`);
+        tl.fromTo(c, { opacity: 0, x: 0 }, { opacity: 1, x: 520, duration: 1.0, ease: "power1.inOut" }, 21.8 + k * 0.3);
+        tl.to(c, { opacity: 0, duration: 0.2 }, 22.6 + k * 0.3);
+      }
+      tl.to(facts[0], { borderColor: "rgba(201,165,76,0.8)", duration: 0.2, yoyo: true, repeat: 1 }, 22.3);
+      tl.to(facts[2], { boxShadow: "0 0 60px rgba(201,165,76,0.45)", duration: 0.3 }, 30.22);
+      tl.to(facts, { opacity: 0, x: 60, duration: 0.3, stagger: 0.05 }, 31.3);
+
+      // ---------- 31.8 - 36.7: our YouTube channel (real videos, real dates) ----------
+      const yt = mk(`<div id="ytStage"><div id="ytScreen">
+          <div class="ytbar"><div class="logo"><i></i>YouTube</div><div class="search">pepe</div></div>
+          <div class="ych"><img src="assets/perfil.png"><div><b>Unai Ortega · TheCryptons</b><span>@TheCryptons · búsqueda "pepe" · solo vídeos completos</span></div><div class="sub">Suscribirse</div></div>
+          <div id="ytGrid"></div></div></div>
+        <div id="ytTag"><span>🐸 AQUÍ YA HABLÁBAMOS DE PEPE HACE 3 AÑOS</span></div>`, "", "", null);
+      yt.id = "yt";
+      const G = $("#ytGrid");
+      const cells = VIDS.map(([id, title, dur, views, ago]) => {
+        const v = document.createElement("div"); v.className = "vid";
+        v.innerHTML = `<div class="th"><img src="assets/yt/${id}.jpg"><em>${dur}</em></div><h4>${title}</h4><p>${views} visualizaciones · <span>${ago}</span></p>`;
+        G.appendChild(v); return v;
+      });
+      tl.to(yt, { opacity: 1, duration: 0.35 }, 31.8);
+      tl.fromTo("#ytScreen", { rotationX: 28, y: 140, scale: 0.86 }, { rotationX: 14, y: 0, scale: 0.9, duration: 1.0, ease: "power3.out" }, 31.8);
+      cells.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 32.0 + i * 0.06));
+      // highlight the dates, oldest first
+      cells.forEach((c, i) => {
+        const sp = c.querySelector("p span");
+        tl.to(sp, { backgroundColor: "#f0d488", color: "#1a1408", duration: 0.15 }, 32.6 + i * 0.1);
+      });
+      tl.to("#ytScreen", { rotationX: 0, scale: 1.25, y: -70, x: 240, duration: 1.0, ease: "power2.inOut" }, 33.9);
+      tl.to(cells[0], { boxShadow: "0 0 0 6px #f0d488, 0 0 60px rgba(240,212,136,0.7)", borderRadius: "16px", duration: 0.3 }, 34.14);
+      tl.fromTo("#ytTag", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(2)" }, 34.3);
+      tl.to(yt, { opacity: 0, duration: 0.35 }, 36.65);
+
+      // ---------- 36.8 - 44: houses, cars, trips (glass, camera still) + congrats ----------
+      const LIFE = [["🏠", "CASAS", 36.86, "left:150px;top:220px"], ["🚗", "COCHES", 37.48, "left:1400px;top:240px"], ["✈️", "VIAJES", 38.48, "left:200px;top:560px"]];
+      const life = LIFE.map(([ic, n, t, pos]) => { const e = mk(`<span style="font-size:80px">${ic}</span><b style="font-size:44px;font-weight:900">${n}</b>`, "glass coinchip ov", pos + ";gap:18px;padding:18px 34px;");
+        tl.fromTo(e, { opacity: 0, scale: 0.6, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, t); return e; });
+      const frog = mk(`<img src="assets/logos/pepe.png" style="width:120px;height:120px;border-radius:50%"><b style="font-size:40px;font-weight:900">gracias a la ranita</b>`, "glass coinchip ov", "left:1290px;top:600px;gap:20px;");
+      pop(frog, 39.4);
+      tl.to([...life, frog], { opacity: 0, duration: 0.3 }, 40.6);
+      tl.to("#bottomShade", { opacity: 1, duration: 0.3 }, 40.7);
+      kw(`<b class="box">🎉 ENHORABUENA</b>`, 41.64, 42.6);
+      kw(`<span class="serif">y gracias por</span><b>CONFIAR EN NOSOTROS</b>`, 42.6, 44.3);
+      tl.to("#bottomShade", { opacity: 0, duration: 0.3 }, 44.3);
+
+      // ---------- 44.4 - 49: subscribe + bell ----------
+      const sb = mk(`<img src="assets/perfil.png"><div class="nm"><b>TheCryptons</b><span>Unai Ortega · YouTube</span></div>
+        <div id="subBtn">SUSCRIBIRSE<div class="on">✓ Suscrito</div></div><div id="bell">🔔</div>`, "glass", "", null);
+      sb.id = "subBox";
+      const tap = mk(`<svg viewBox="0 0 24 24" width="70" height="70"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>`, "", "", null); tap.id = "tap";
+      tl.fromTo(sb, { opacity: 0, y: 60, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 44.6);
+      const SBX = 1160, SBY = 852, BLX = 1372;
+      tl.fromTo(tap, { opacity: 0, x: SBX + 200, y: SBY + 200 }, { opacity: 1, x: SBX, y: SBY, duration: 0.5, ease: "power2.inOut" }, 45.4);
+      tl.to(tap, { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1 }, 46.24);
+      tl.to("#subBtn", { scale: 0.92, duration: 0.08, yoyo: true, repeat: 1 }, 46.24);
+      tl.to("#subBtn .on", { opacity: 1, duration: 0.1 }, 46.32);
+      tl.to("#subBtn", { backgroundColor: "rgba(255,255,255,0.12)", duration: 0.1 }, 46.32);
+      tl.to(tap, { x: BLX, duration: 0.35, ease: "power2.inOut" }, 47.3);
+      tl.to(tap, { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1 }, 47.94);
+      tl.to("#bell", { rotation: 18, duration: 0.08, yoyo: true, repeat: 5, ease: "sine.inOut" }, 48.0);
+      tl.to("#bell", { backgroundColor: "#f0d488", duration: 0.15 }, 48.0);
+      tl.to([sb, tap], { opacity: 0, duration: 0.3 }, 48.9);
+
+      // ---------- 49 - 53.6: the next memecoin ----------
+      tl.to("#bottomShade", { opacity: 1, duration: 0.3 }, 49.2);
+      kw(`<span class="serif">la próxima</span><b>MEMECOIN</b>`, 50.14, 51.3);
+      kw(`<span class="serif">la próxima</span><b class="box">🐸 PEPE</b><b style="font-size:96px;color:#f0d488"> ?</b>`, 51.62, 53.6);
+
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
