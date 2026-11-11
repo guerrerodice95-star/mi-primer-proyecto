@@ -64,6 +64,11 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 
 - Cuando un reel funciona, hacer variantes que Instagram vea como distintas: cambiar **el primer fotograma y los primeros segundos** (reordenar para empezar por el resultado), **el layout** (gráfico arriba/abajo), **el estilo de subtítulos** y la forma del gancho. No voltear la imagen (el logo TC sale al revés) ni limitarse a cambiar velocidad/color.
 
+## Miniaturas de YouTube
+
+- 1280x720. Cara de Unai recortada de un fotograma expresivo del bruto, texto gigante con contorno (2–3 palabras), moneda/logo grande con brillo,
+  gráfico real detrás y flecha. Hacer 2 versiones (A/B). Ver `miniaturas/`.
+
 ## Formatos
 
 - **Vertical (Reels/anuncio Meta):** 1080x1920, 30 fps. Objetivo habitual: seguidores. Cierre preferido: persona a pantalla completa y abajo una **pastilla blanca flotante estilo Instagram** (sin fondo) con su foto de perfil (`marca/foto-perfil-instagram.png`), @TheCryptons_, "Seguir" → "Siguiendo" y botón Guardar.
