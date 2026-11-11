@@ -21,3 +21,5 @@ Datos reales:
 | 36,8–44,3 | 🏠 CASAS · 🚗 COCHES · ✈️ VIAJES · "gracias a la ranita"; "🎉 ENHORABUENA" (sin confeti: a Unai no le gusta) · "gracias por CONFIAR EN NOSOTROS" |
 | 44,6–48,9 | Tarjeta de cristal de suscripción: SUSCRIBIRSE → ✓ Suscrito y campanita 🔔 |
 | 49–53,6 | "la próxima MEMECOIN" → "la próxima 🐸 PEPE ?" |
+
+v2: textos largos ("la memecoin que más 💰 DINERO NOS HA DADO", "y gracias por CONFIAR EN NOSOTROS") en dos líneas para no salirse de márgenes.
