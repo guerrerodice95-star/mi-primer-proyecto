@@ -68,6 +68,7 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 
 - 1280x720. Cara de Unai recortada de un fotograma expresivo del bruto, texto gigante con contorno (2–3 palabras), moneda/logo grande con brillo,
   gráfico real detrás y flecha. Hacer 2 versiones (A/B). Ver `miniaturas/`.
+- Prefiere **su cara a la izquierda** y el texto a la derecha.
 
 ## Formatos
 
