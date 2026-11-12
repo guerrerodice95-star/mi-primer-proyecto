@@ -72,7 +72,7 @@
       const noMod = mk("✓ NINGUNA MODIFICACIÓN", "pill green ov", "left:40px;top:790px;font-size:34px;");
       pop(noMod, 18.5);
       // the hack candle (wide view, 26 Oct week)
-      const HX = 740, HY = 465;
+      const HX = 791, HY = 465;
       const arr = sv("g", { opacity: 0 });
       const ap = (d, w, c) => { const p = document.createElementNS(NS, "path"); p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", c); p.setAttribute("stroke-width", w); p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round"); arr.appendChild(p); };
       ap(`M${HX - 250} ${HY - 230} Q${HX - 120} ${HY - 220} ${HX - 30} ${HY - 40}`, 16, "#1a0507");
@@ -89,6 +89,9 @@
       tl.to([chartTag, nada], { opacity: 0, duration: 0.2 }, 27.0);
 
       // ---------- D: strength, big buyers ----------
+      const bigPepe = mk(`<img src="assets/logos/pepe.png" style="width:230px;height:230px;border-radius:50%;box-shadow:0 0 0 8px #7dff9a,0 0 60px 14px rgba(80,255,140,0.6)">`, "ov", "left:425px;top:1420px;");
+      tl.fromTo(bigPepe, { opacity: 0, scale: 0.3, rotation: -25 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.4, ease: "back.out(2.4)" }, 27.3);
+      tl.to(bigPepe, { opacity: 0, scale: 0.6, duration: 0.2 }, 27.95);
       const inm = mk(`<img src="assets/logos/pepe.png"><b>NI SE HA INMUTADO</b>`, "glass chip ov", "left:70px;top:1500px;");
       pop(inm, 28.0);
       tl.to(inm, { opacity: 0, duration: 0.2 }, 30.0);

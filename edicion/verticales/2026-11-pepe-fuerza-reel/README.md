@@ -17,3 +17,6 @@ mal encuadrado; ahora se ve ~1.200 px de ancho (cabeza + hombros) y los rótulos
 | 6,76–14,68 | Noticia: subrayado amarillo "7,77 billones de tokens PEPE robados" y verde "14.049 ETH"; "7.770.000.000 PEPE · ROBADOS" → "PEPE → 14.049 ETH" |
 | 14,68–27,2 | Gráfico semanal intacto; "✓ NINGUNA MODIFICACIÓN"; flecha "🚨 HACKEO · 30 OCT" a la vela; "NO HA PASADO ABSOLUTAMENTE NADA" |
 | 27,2–35,8 | "NI SE HA INMUTADO" · 💪 FUERZA · 🐋 GRANDES COMPRADORES DETRÁS · pastilla de Instagram |
+
+v2: gráfico con el eje de precios pegado al borde derecho (`crop=1662:1971:0:1100`) y el hueco relleno del gris del gráfico (#e6e6e6) en vez de negro;
+logo de PEPE grande en "Pepe ni se ha inmutado" (27,3 s).

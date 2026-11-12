@@ -81,6 +81,11 @@
  },
  {
   "sonido": "pop",
+  "segundo": 27.3,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
   "segundo": 28.0,
   "volumen": 0.18
  },
