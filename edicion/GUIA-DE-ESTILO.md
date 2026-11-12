@@ -29,6 +29,7 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Poco aire arriba.** No quiere ver techo. Con la persona sola a pantalla completa, la cabeza cerca de la parte superior (respetando la barra de Instagram, ~200 px).
 - **En pantalla partida** (gráfico arriba, persona abajo): la parte de arriba de la cabeza empieza justo donde está el subtítulo. Sin hueco entre gráfico y cabeza.
 - **No acercar demasiado** a pantalla completa: si se ve solo la cara (sin hombros) está mal. Con brutos 1728 de ancho mostrar ~1.100–1.200 px de ancho de origen; si queda hueco abajo, usarlo para rótulos y subtítulos.
+- **Nada de huecos vacíos:** si al principio solo habla (aún no explica el gráfico), va a pantalla completa con motions de cristal; el gráfico entra cuando lo usa.
 - **El final del reel, con la cara a pantalla completa** (sin margen ni franja abajo).
 - Si el bruto trae zooms a saltos, compensarlos para que el movimiento sea suave (sin "tirones").
 - **Primer plano:** cara centrada y cabeza completa (sin cortar el pelo).
