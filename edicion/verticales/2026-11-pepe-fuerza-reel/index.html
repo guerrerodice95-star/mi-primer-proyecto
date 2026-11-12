@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --gold-lo: #8a6d2a; --cream: #f3e3b5; --green: #3fbf7f; --red: #e5484d; --bg: #0b0a08; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      .goldtext { background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-lo) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      #bg { background: radial-gradient(900px 700px at 50% 70%, rgba(201,165,76,0.14), transparent 70%), var(--bg); }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px;
+        -webkit-mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); mask-image: linear-gradient(180deg, transparent 45%, #000 55%, #000 85%, transparent 95%); }
+
+      /* source band 1728x1382 (head near the top edge) */
+      #camwrap { position: absolute; left: 0; top: 0; width: 1728px; height: 1382px; transform-origin: 864px 0px; }
+      #track { position: absolute; inset: 0; }
+      #cam { position: absolute; inset: 0; width: 1728px; height: 1382px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #strip { position: absolute; inset: 0; pointer-events: none; opacity: 1;
+        background: linear-gradient(180deg, rgba(11,10,8,0) 0px, rgba(11,10,8,0) 780px, var(--bg) 880px, var(--bg) 1920px); }
+      #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(130% 85% at 50% 35%, transparent 60%, rgba(0,0,0,0.42) 100%); }
+      #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 22%, #fff7dc 0%, rgba(240,212,136,0.75) 30%, rgba(201,165,76,0) 70%); mix-blend-mode: screen; }
+
+      /* ---------- shared panels (60px safe margin each side) ---------- */
+      .panel { position: absolute; left: 60px; right: 60px; opacity: 0; }
+
+      /* tweet card */
+      #tweet { top: 1150px; padding: 34px 38px 30px; border-radius: 30px; background: #000; border: 1.5px solid #2f3336; box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 50px rgba(201,165,76,0.12); }
+      #tweet .hd { display: flex; align-items: center; gap: 20px; }
+      #tweet .av { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; object-position: 50% 50%; transform: scale(1.0); background: #15181c; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; color: #cfd3d8; flex: none; }
+      #tweet .nm { font-weight: 800; font-size: 36px; display: flex; align-items: center; gap: 10px; }
+      #tweet .ck { width: 32px; height: 32px; border-radius: 50%; background: #1d9bf0; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; }
+      #tweet .hn { color: #71767b; font-size: 30px; font-weight: 500; margin-top: 2px; }
+      #tweet .x { margin-left: auto; font-weight: 900; font-size: 46px; color: #e7e9ea; }
+      #tweet .tx { margin-top: 26px; font-size: 42px; line-height: 1.32; font-weight: 500; color: #e7e9ea; }
+      #tweet .tx p + p { margin-top: 22px; }
+      .hl { position: relative; z-index: 0; display: inline-block; }
+      .hl i { position: absolute; left: -6px; right: -6px; bottom: 0px; height: 52%; border-radius: 6px; background: rgba(240,212,136,0.6); z-index: -1; transform-origin: 0 50%; }
+      #tweet .tr { margin-top: 18px; font-size: 30px; line-height: 1.3; color: var(--gold-hi); }
+      #tweet .mt { margin-top: 22px; padding-top: 18px; border-top: 1px solid #2f3336; color: #71767b; font-size: 26px; font-weight: 500; }
+      #tweet .mt b { color: #e7e9ea; font-weight: 800; }
+
+      /* hook data pill */
+      #hookPill { position: absolute; left: 50%; top: 1072px; padding: 14px 30px; border-radius: 999px; white-space: nowrap; opacity: 0;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1408; font-weight: 900; font-size: 38px; letter-spacing: 0.02em;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+
+      /* numbers */
+      #nums { top: 1010px; height: 640px; }
+      .stat { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; }
+      .stat .big { font-weight: 900; font-size: 128px; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+      .stat .lbl { margin-top: 6px; font-size: 54px; color: var(--cream); }
+      #s1 { top: 0; }
+      #kids { position: absolute; left: 40px; right: 40px; top: 210px; height: 120px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; }
+      .kid { width: 32px; height: 50px; opacity: 0; }
+      #s2 { top: 360px; }
+      #s3 { top: 560px; }
+      #s3 span { display: inline-block; padding: 12px 30px; border-radius: 999px; border: 2px solid var(--gold); background: rgba(201,165,76,0.12); font-weight: 800; font-size: 42px; color: var(--cream); }
+      #s3 b { color: var(--gold-hi); font-weight: 900; }
+
+      /* boom */
+      #boom { position: absolute; inset: 0; pointer-events: none; }
+      .ringB { position: absolute; left: 540px; top: 230px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 10px solid var(--gold-hi); opacity: 0; box-shadow: 0 0 40px rgba(240,212,136,0.8); }
+      .spark { position: absolute; left: 540px; top: 230px; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 18px var(--gold); opacity: 0; }
+      .ray { position: absolute; left: 540px; top: 230px; width: 8px; height: 120px; margin-left: -4px; border-radius: 4px; background: linear-gradient(180deg, #fff, rgba(240,212,136,0)); transform-origin: 50% 0; opacity: 0; }
+
+      /* growth */
+      #grow { top: 1010px; height: 620px; }
+      #grow svg { position: absolute; inset: 0; }
+      #grow text { font-family: "Inter", sans-serif; }
+
+
+      /* FVG/BAG chart (no frame) */
+      #chartWrap { position: absolute; left: 30px; top: 975px; width: 1020px; height: 720px; opacity: 0; }
+      #chartWrap svg { position: absolute; inset: 0; }
+      #tb { position: absolute; left: 20px; top: 1010px; width: 1040px; height: 663px; overflow: hidden; border-radius: 22px; opacity: 1;
+        box-shadow: 0 30px 70px rgba(0,0,0,0.7), 0 0 0 1.5px rgba(255,255,255,0.12); }
+      #tbIn { position: absolute; left: 0; top: 0; width: 1420px; height: 905px; }
+      #tabla { position: absolute; inset: auto; left: 0; top: 0; width: 1420px; height: 905px; }
+      #mk { position: absolute; left: 0; top: 0; overflow: visible; }
+      .w.fvg, .w.bag { padding: 0 18px; border-radius: 14px; font-weight: 900; text-shadow: none; }
+      .w.fvg { color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 34px rgba(201,165,76,0.45); }
+      .w.bag { color: #fff; background: linear-gradient(180deg, #2fb57a, #1f8a5a); box-shadow: 0 0 34px rgba(63,191,127,0.45); }
+      /* captions */
+      #caps { position: absolute; inset: 0; pointer-events: none; }
+      .cg { position: absolute; left: 70px; right: 70px; top: 1420px; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 20px; opacity: 0; text-align: center; }
+      .w { position: relative; display: inline-block; font-weight: 800; font-size: 72px; line-height: 1.14; letter-spacing: -0.01em; color: #fff; opacity: 0.38;
+        text-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 26px rgba(0,0,0,0.75); }
+      .hook .w { font-size: 80px; font-weight: 900; }
+      .w.s { margin: 0 6px; font-family: "Serif", serif; font-style: italic; font-weight: 400; font-size: 92px; color: #f6e6b8; letter-spacing: 0; }
+      .w.g { color: var(--gold-hi); }
+      .w.up { color: #6fe0a6; }
+      .w.dn { color: #ff7a7e; }
+      .w.b { padding: 0 20px; border-radius: 16px; text-shadow: none; font-weight: 900; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(201,165,76,0.45); }
+      .w.u .ul { position: absolute; left: 0; right: 0; bottom: -2px; height: 11px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; box-shadow: 0 0 18px rgba(201,165,76,0.8); }
+
+      /* Instagram follow pill */
+      #ig { position: absolute; left: 90px; right: 90px; top: 1600px; height: 150px; border-radius: 34px; background: #ffffff; opacity: 0;
+        display: flex; align-items: center; padding: 0 26px; gap: 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+      #ig img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 4px #fff, 0 0 0 7px #d62976; }
+      #igName { flex: 1; font-weight: 800; font-size: 40px; color: #111; letter-spacing: -0.01em; white-space: nowrap; }
+      #igName span { display: inline-block; }
+      #igBtn { position: relative; flex: none; width: 220px; height: 88px; border-radius: 18px; background: #0095f6; color: #fff; font-weight: 800; font-size: 38px; display: flex; align-items: center; justify-content: center; }
+      #igBtn .on { position: absolute; inset: 0; border-radius: 18px; background: #efefef; color: #111; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      #igSave { position: relative; flex: none; width: 88px; height: 88px; border-radius: 18px; background: #efefef; display: flex; align-items: center; justify-content: center; margin-left: -8px; }
+      #igSave svg { width: 46px; height: 46px; }
+      #tap { position: absolute; width: 70px; height: 70px; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+      #ripple { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(255,255,255,0.9); left: 0; top: 0; opacity: 0; }
+      #face, #ct { position: absolute; left: 0; top: 0; }
+      #rw { position: absolute; left: 0; top: 0; width: 1728px; height: 3072px; transform-origin: 0 0; }
+      #raw { position: absolute; inset: 0; width: 1728px; height: 3072px; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #rwfade { position: absolute; left: 0; top: 0; width: 1080px; height: 260px; background: linear-gradient(180deg, rgba(11,10,8,0) 0px, #0b0a08 120px, #0b0a08 260px); }
+      #face { width: 1080px; height: 1920px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #ct { width: 1080px; height: 1220px; overflow: hidden; opacity: 0; }
+      #ctIn { position: absolute; left: 0; top: 0; width: 1080px; height: 1220px; transform-origin: 0 0; }
+      #content { position: absolute; left: 0; top: 0; width: 1080px; height: 1220px; }
+      #mk { position: absolute; left: 0; top: 0; overflow: visible; }
+      #fx { position: absolute; inset: 0; pointer-events: none; }
+      .ov { position: absolute; opacity: 0; }
+      .glass { position: absolute; border-radius: 28px; background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.07));
+        -webkit-backdrop-filter: blur(20px) saturate(1.3) brightness(0.72); backdrop-filter: blur(20px) saturate(1.3) brightness(0.72);
+        border: 1.5px solid rgba(255,255,255,0.32); box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+      .chip { display: flex; align-items: center; gap: 18px; padding: 16px 28px 16px 16px; white-space: nowrap; }
+      .chip img { width: 78px; height: 78px; border-radius: 50%; }
+      .chip b { font-size: 46px; font-weight: 900; }
+      .pill { position: absolute; padding: 10px 24px; border-radius: 999px; font-size: 36px; font-weight: 900; white-space: nowrap; box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
+      .pill.red { background: #e5484d; color: #fff; } .pill.green { background: #2fb57a; color: #fff; }
+      .pill.gold { background: linear-gradient(180deg, #f0d488, #c9a54c); color: #1a1408; }
+      .pill.dark { background: rgba(22,19,13,0.94); color: #f3e3b5; border: 2px solid rgba(201,165,76,0.55); }
+      #redTint { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(120% 90% at 50% 40%, transparent 50%, rgba(140,10,15,0.55) 100%); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="35.76" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="35.76" data-track-index="0"></div>
+      <div id="rw"><video id="raw" class="clip" data-start="0" data-duration="35.76" data-track-index="1" src="assets/raw30.mp4" muted playsinline></video></div>
+      <div id="rwfade"></div>
+      <video id="face" class="clip" data-start="0" data-duration="35.76" data-track-index="1" src="assets/face.mp4" muted playsinline></video>
+      <div id="ct"><div id="ctIn">
+        <video id="content" class="clip" data-start="6.76" data-duration="20.44" data-track-index="1" src="assets/content.mp4" muted playsinline></video>
+        <svg id="mk" viewBox="0 0 1080 1220" width="1080" height="1220"></svg>
+      </div></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="35.76" data-track-index="2"></div>
+      <div id="redTint" class="clip" data-start="0" data-duration="35.76" data-track-index="2"></div>
+      <div id="fx"></div>
+      <div id="pCta" class="clip" data-start="34.1" data-duration="1.66" data-track-index="3">
+        <div id="ig">
+          <img src="assets/perfil.png" alt="" />
+          <div id="igName"></div>
+          <div id="igBtn">Seguir<div class="on">Siguiendo</div></div>
+          <div id="igSave"><svg viewBox="0 0 24 24"><path id="bmk" d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div id="ripple"></div>
+        <svg id="tap" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div id="caps" class="clip" data-start="0" data-duration="35.76" data-track-index="5"></div>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const NS = "http://www.w3.org/2000/svg";
+      const rnd = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap";
+      const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      // ---------- captions ----------
+      const G = [{"e": 0.86, "hook": 1, "w": [["Hace", 0.0, ""], ["no", 0.36, ""], ["mucho", 0.62, ""]]}, {"e": 1.5, "hook": 1, "w": [["hemos", 0.86, ""], ["tenido", 1.04, ""], ["un", 1.28, ""]]}, {"e": 2.84, "hook": 0, "w": [["hackeo", 1.5, "dn"], ["muy", 2.12, ""], ["importante,", 2.38, "u"]]}, {"e": 3.7, "hook": 0, "w": [["el", 2.84, ""], ["más", 2.98, ""], ["importante", 3.24, "u"]]}, {"e": 4.18, "hook": 0, "w": [["en", 3.7, ""], ["el", 3.88, ""], ["mundo", 3.94, ""]]}, {"e": 6.26, "hook": 0, "w": [["cripto", 4.18, ""], ["atacando", 4.82, ""], ["directamente", 5.34, ""]]}, {"e": 7.36, "hook": 0, "w": [["a", 6.26, ""], ["Binance,", 6.54, "g"]]}, {"e": 10.44, "hook": 0, "w": [["robaron", 7.36, "dn"], ["7,77", 8.02, ""], ["billones", 9.7, "b"]]}, {"e": 11.74, "hook": 0, "w": [["de", 10.44, ""], ["tokens", 10.82, ""], ["de", 11.2, ""]]}, {"e": 12.64, "hook": 0, "w": [["Pepe", 11.74, "g"], ["y", 12.14, ""], ["los", 12.34, ""]]}, {"e": 13.8, "hook": 0, "w": [["pasaron", 12.64, ""], ["a", 13.3, ""], ["Ethereum", 13.56, "g"]]}, {"e": 15.1, "hook": 0, "w": [["y", 13.8, ""], ["aun", 14.04, ""], ["así,", 14.22, ""]]}, {"e": 15.7, "hook": 0, "w": [["yo", 15.1, ""], ["me", 15.36, ""], ["voy", 15.54, ""]]}, {"e": 16.78, "hook": 0, "w": [["al", 15.7, ""], ["precio", 15.96, "u"], ["y", 16.38, ""]]}, {"e": 17.5, "hook": 0, "w": [["es", 16.78, ""], ["que", 16.98, ""], ["no", 17.22, ""]]}, {"e": 19.22, "hook": 0, "w": [["ha", 17.5, ""], ["habido", 17.74, ""], ["ninguna", 18.5, "dn"]]}, {"e": 20.24, "hook": 0, "w": [["modificación,", 19.22, "b"]]}, {"e": 20.96, "hook": 0, "w": [["es", 20.24, ""], ["decir,", 20.24, ""]]}, {"e": 21.78, "hook": 0, "w": [["el", 20.96, ""], ["hackeo", 21.14, "dn"], ["fue", 21.56, ""]]}, {"e": 23.02, "hook": 0, "w": [["aquí", 21.78, ""], ["en", 22.5, ""], ["esta", 22.7, ""]]}, {"e": 23.6, "hook": 0, "w": [["vela", 23.02, "u"], ["de", 23.28, ""], ["aquí,", 23.44, ""]]}, {"e": 24.72, "hook": 0, "w": [["no", 23.6, ""], ["ha", 24.1, ""], ["pasado", 24.32, ""]]}, {"e": 27.02, "hook": 0, "w": [["absolutamente", 24.72, ""], ["nada", 25.64, "b"]]}, {"e": 28.44, "hook": 0, "w": [["Pepe", 27.32, "g"], ["ni", 28.0, ""], ["se", 28.34, ""]]}, {"e": 29.4, "hook": 0, "w": [["ha", 28.44, ""], ["inmutado,", 28.7, "b"]]}, {"e": 30.06, "hook": 0, "w": [["es", 29.4, ""], ["decir,", 29.44, ""]]}, {"e": 31.0, "hook": 0, "w": [["la", 30.06, ""], ["fuerza", 30.14, "up"], ["que", 30.78, ""]]}, {"e": 31.92, "hook": 0, "w": [["ha", 31.0, ""], ["tenido,", 31.12, ""]]}, {"e": 32.8, "hook": 0, "w": [["me", 31.92, ""], ["está", 31.94, ""], ["demostrando", 32.16, ""]]}, {"e": 34.12, "hook": 0, "w": [["que", 32.8, ""], ["ha", 32.96, ""], ["grandes", 33.52, "g"]]}, {"e": 35.76, "hook": 0, "w": [["compradores", 34.12, "up"], ["detrás", 35.18, "s"]]}];
+      const caps = $("#caps");
+      const groups = G.map((g) => {
+        const e = document.createElement("div"); e.className = "cg" + (g.hook ? " hook" : "");
+        const ws = g.w.map(([t, s, st]) => {
+          const sp = document.createElement("span"); sp.className = "w" + (st ? " " + st : ""); sp.textContent = t;
+          if (st === "u") { const u = document.createElement("span"); u.className = "ul"; sp.appendChild(u); }
+          e.appendChild(sp); return { el: sp, s, st };
+        });
+        caps.appendChild(e); return { el: e, s: g.w[0][1], e: g.e, ws };
+      });
+      gsap.set(".w.u .ul", { scaleX: 0 });
+      gsap.set(".hl i", { scaleX: 0 });
+      gsap.set("#hookPill", { xPercent: -50 });
+
+      // ---------- face tracking ----------
+      const FACE = []
+;
+      FACE.forEach((f, i) => {
+        const v = Math.max(-300, Math.min(300, 864 - f.x));
+        if (i === 0) tl.set("#track", { x: v }, 0);
+        else tl.to("#track", { x: v, duration: f.t - FACE[i - 1].t, ease: "none" }, FACE[i - 1].t);
+      });
+
+      // ================= layout: A full face · B face + news · C face + chart · D full face =================
+      const mk = (html, cls, style) => { const d = document.createElement("div"); if (cls) d.className = cls; if (style) d.style.cssText = style; d.innerHTML = html || ""; $("#fx").appendChild(d); return d; };
+      const sv = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); $("#mk").appendChild(e); return e; };
+      const pop = (e, t, from) => tl.fromTo(e, Object.assign({ opacity: 0, scale: 0.6, y: 20 }, from || {}), { opacity: 1, scale: 1, x: 0, y: 0, duration: 0.35, ease: "back.out(2.2)" }, t);
+      const fade = (e, t, d = 0.25) => tl.to(e, { opacity: 0, duration: d }, t);
+      const fc = { b: 0 }, setFace = () => { $("#face").style.clipPath = `inset(0 0 ${fc.b}px 0)`; };
+      const ccl = { b: 0 }, setCt = () => { $("#ct").style.clipPath = `inset(0 0 ${ccl.b}px 0)`; };
+      setFace();
+      const KF = {"k": [[0.0, 0.9, -156.3, -672.3, 1419.3], [0.1, 0.9, -160.9, -672.3, 1419.3], [0.2, 0.9, -163.8, -672.3, 1419.3], [0.3, 0.9, -165.1, -672.3, 1419.3], [0.4, 0.9, -165.1, -672.3, 1419.3], [0.5, 0.9, -164.6, -672.3, 1419.3], [0.6, 0.9, -164.9, -672.3, 1419.3], [0.7, 0.9, -167.7, -672.3, 1419.3], [0.8, 0.9, -171.7, -672.3, 1419.3], [0.9, 0.9, -174.9, -672.3, 1419.3], [1.0, 0.9, -177.2, -672.3, 1419.3], [1.1, 0.9, -177.2, -672.3, 1419.3], [1.2, 0.9, -175.6, -672.3, 1419.3], [1.3, 0.9, -173.4, -672.3, 1419.3], [1.4, 0.9, -172.0, -672.3, 1419.3], [1.5, 0.9, -170.9, -672.3, 1419.3], [1.6, 0.9, -171.4, -672.3, 1419.3], [1.7, 0.9, -172.7, -672.3, 1419.3], [1.8, 0.9, -174.9, -672.3, 1419.3], [1.9, 0.9, -175.4, -672.3, 1419.3], [2.0, 0.9, -174.5, -672.3, 1419.3], [2.1, 0.9, -172.8, -672.3, 1419.3], [2.2, 0.9, -171.6, -672.3, 1419.3], [2.3, 0.9, -168.4, -672.3, 1419.3], [2.4, 0.9, -164.8, -672.3, 1419.3], [2.5, 0.9, -162.6, -672.3, 1419.3], [2.6, 0.9, -162.3, -672.3, 1419.3], [2.7, 0.9, -162.4, -672.3, 1419.3], [2.8, 0.9, -162.8, -672.3, 1419.3], [2.9, 0.9, -162.4, -672.3, 1419.3], [3.0, 0.9, -162.0, -672.3, 1419.3], [3.1, 0.9, -161.6, -672.3, 1419.3], [3.2, 0.9, -161.7, -672.3, 1419.3], [3.3, 0.9, -163.1, -672.3, 1419.3], [3.4, 0.9, -164.9, -672.3, 1419.3], [3.5, 0.9, -165.6, -672.3, 1419.3], [3.6, 0.9, -168.8, -672.3, 1419.3], [3.7, 0.9, -172.8, -672.3, 1419.3], [3.8, 0.9, -175.7, -672.3, 1419.3], [3.9, 0.9, -177.9, -672.3, 1419.3], [4.0, 0.9, -180.4, -672.3, 1419.3], [4.1, 0.9, -183.6, -672.3, 1419.3], [4.2, 0.9, -187.1, -672.3, 1419.3], [4.3, 0.9, -190.4, -672.3, 1419.3], [4.4, 0.9, -193.3, -672.3, 1419.3], [4.5, 0.9, -195.9, -672.3, 1419.3], [4.6, 0.9, -198.3, -672.3, 1419.3], [4.7, 0.9, -199.9, -672.3, 1419.3], [4.8, 0.9, -201.0, -672.3, 1419.3], [4.9, 0.9, -201.7, -672.3, 1419.3], [5.0, 0.9, -201.6, -672.3, 1419.3], [5.1, 0.9, -199.9, -672.3, 1419.3], [5.2, 0.9, -197.4, -672.3, 1419.3], [5.3, 0.9, -193.6, -672.3, 1419.3], [5.4, 0.9, -188.6, -672.3, 1419.3], [5.5, 0.9, -183.6, -672.3, 1419.3], [5.6, 0.9, -177.9, -672.3, 1419.3], [5.7, 0.9, -171.7, -672.3, 1419.3], [5.8, 0.9, -166.3, -672.3, 1419.3], [5.9, 0.9, -160.9, -672.3, 1419.3], [6.0, 0.9, -155.5, -672.3, 1419.3], [6.1, 0.9, -150.2, -672.3, 1419.3], [6.2, 0.9, -149.1, -672.3, 1419.3], [6.3, 0.9, -147.0, -672.3, 1419.3], [6.4, 0.9, -145.0, -672.3, 1419.3], [6.5, 0.9, -142.6, -672.3, 1419.3], [6.6, 0.9, -140.8, -672.3, 1419.3], [6.7, 0.9, -139.1, -672.3, 1419.3], [6.8, 0.9, -136.3, -202.5, 2561.4], [27.1, 0.86, -165.9, -92.0, 2549.0], [27.2, 0.86, -165.8, -473.0, 1281.4], [27.3, 0.86, -164.4, -473.0, 1281.4], [27.4, 0.86, -163.1, -473.0, 1281.4], [27.5, 0.86, -161.9, -473.0, 1281.4], [27.6, 0.86, -161.3, -473.0, 1281.4], [27.7, 0.86, -160.6, -473.0, 1281.4], [27.8, 0.86, -160.3, -473.0, 1281.4], [27.9, 0.86, -160.4, -473.0, 1281.4], [28.0, 0.86, -159.6, -749.9, 1141.2], [28.1, 0.86, -157.9, -744.8, 1151.5], [28.2, 0.86, -155.3, -737.0, 1167.0], [28.3, 0.86, -152.9, -731.9, 1177.3], [28.4, 0.86, -151.3, -725.0, 1192.0], [28.5, 0.86, -150.6, -719.8, 1202.3], [28.6, 0.86, -151.3, -712.1, 1216.9], [28.7, 0.86, -151.6, -706.9, 1227.2], [28.8, 0.86, -151.4, -699.2, 1242.7], [28.9, 0.86, -151.0, -694.0, 1253.0], [29.0, 0.86, -150.0, -686.3, 1268.5], [29.1, 0.86, -148.3, -681.1, 1278.8], [29.2, 0.86, -148.3, -673.4, 1294.3], [29.3, 0.86, -148.7, -668.2, 1304.6], [29.4, 0.86, -148.3, -660.5, 1320.1], [29.5, 0.86, -147.7, -655.3, 1330.4], [29.6, 0.86, -146.1, -648.4, 1345.0], [29.7, 0.86, -145.1, -643.3, 1354.5], [29.8, 0.86, -143.9, -635.5, 1370.0], [29.9, 0.86, -142.6, -630.4, 1380.3], [30.0, 0.86, -142.2, -622.6, 1395.8], [30.1, 0.86, -142.6, -617.5, 1406.1], [30.2, 0.86, -143.1, -609.7, 1421.6], [30.3, 0.86, -144.7, -604.6, 1431.9], [30.4, 0.86, -146.9, -596.8, 1447.4], [30.5, 0.86, -147.5, -591.7, 1457.7], [30.6, 0.86, -146.9, -583.9, 1473.2], [30.7, 0.86, -147.3, -578.8, 1483.5], [30.8, 0.86, -146.9, -571.9, 1498.1], [30.9, 0.86, -147.6, -566.7, 1508.4], [31.0, 0.86, -147.5, -559.0, 1523.1], [31.1, 0.86, -147.2, -553.8, 1533.4], [31.2, 0.86, -148.0, -546.1, 1548.9], [31.3, 0.86, -149.1, -540.9, 1559.2], [31.4, 0.86, -149.7, -533.2, 1574.7], [31.5, 1.0, -262.6, -614.0, 1843.0], [31.6, 1.0, -262.6, -888.0, 1295.0], [31.7, 1.0, -262.6, -888.0, 1295.0], [31.8, 1.0, -263.1, -888.0, 1295.0], [31.9, 1.0, -264.8, -888.0, 1295.0], [32.0, 1.0, -266.0, -888.0, 1295.0], [32.1, 1.0, -268.8, -888.0, 1295.0], [32.2, 1.0, -270.6, -888.0, 1295.0], [32.3, 1.0, -272.8, -888.0, 1295.0], [32.4, 1.0, -274.3, -888.0, 1295.0], [32.5, 1.0, -274.0, -888.0, 1295.0], [32.6, 1.0, -272.9, -888.0, 1295.0], [32.7, 1.0, -271.2, -888.0, 1295.0], [32.8, 1.0, -269.4, -888.0, 1295.0], [32.9, 1.0, -268.5, -888.0, 1295.0], [33.0, 1.0, -267.8, -888.0, 1295.0], [33.1, 1.0, -267.2, -888.0, 1295.0], [33.2, 1.0, -266.3, -888.0, 1295.0], [33.3, 1.0, -265.4, -888.0, 1295.0], [33.4, 1.0, -263.8, -888.0, 1295.0], [33.5, 1.0, -262.9, -888.0, 1295.0], [33.6, 1.0, -261.4, -888.0, 1295.0], [33.7, 1.0, -260.6, -888.0, 1295.0], [33.8, 1.0, -260.6, -888.0, 1295.0], [33.9, 1.0, -261.2, -888.0, 1295.0], [34.0, 1.0, -262.3, -888.0, 1295.0], [34.1, 1.0, -263.4, -888.0, 1295.0], [34.2, 1.0, -264.2, -888.0, 1295.0], [34.3, 1.0, -264.8, -888.0, 1295.0], [34.4, 1.0, -264.9, -888.0, 1295.0], [34.5, 1.0, -265.1, -888.0, 1295.0], [34.6, 1.0, -265.5, -888.0, 1295.0], [34.7, 1.0, -267.1, -888.0, 1295.0], [34.8, 1.0, -268.5, -888.0, 1295.0], [34.9, 1.0, -270.3, -888.0, 1295.0], [35.0, 1.0, -272.0, -888.0, 1295.0], [35.1, 1.0, -272.6, -888.0, 1295.0], [35.2, 1.0, -272.7, -888.0, 1295.0], [35.3, 1.0, -273.1, -888.0, 1295.0], [35.4, 1.0, -273.6, -888.0, 1295.0], [35.5, 1.0, -274.0, -888.0, 1295.0], [35.6, 1.0, -274.2, -888.0, 1295.0], [35.7, 1.0, -274.9, -888.0, 1295.0]]};
+      tl.set("#rw", { scale: KF.k[0][1], x: KF.k[0][2], y: KF.k[0][3] }, 0);
+      tl.set("#rwfade", { y: KF.k[0][4] - 120 }, 0);
+      KF.k.forEach((k, i) => {
+        if (i === 0) return;
+        const p = KF.k[i - 1], dt = k[0] - p[0];
+        if (dt > 0.15 || Math.abs(k[3] - p[3]) > 60 || k[1] !== p[1]) { tl.set("#rw", { scale: k[1], x: k[2], y: k[3] }, k[0]); tl.set("#rwfade", { y: k[4] - 120 }, k[0]); return; }
+        tl.to("#rw", { x: k[2], y: k[3], duration: dt, ease: "none" }, p[0]);
+        tl.to("#rwfade", { y: k[4] - 120, duration: dt, ease: "none" }, p[0]);
+      });
+      // A 0 - 6.76: raw framed (head at the top, chips + captions below)
+      tl.set("#face", { opacity: 0 }, 0);
+      tl.set("#caps", { y: -60 }, 0);
+      // B 6.76 - 14.68: face 0-900, news 900-1836
+      tl.set(["#rw", "#rwfade"], { opacity: 0 }, 6.76);
+      tl.set("#face", { opacity: 1 }, 6.76);
+      tl.set(fc, { b: 1020 }, 6.76); tl.call(setFace, null, 6.77);
+      tl.set("#ct", { top: 900, opacity: 1 }, 6.76);
+      tl.set(ccl, { b: 284 }, 6.76); tl.call(setCt, null, 6.77);
+      tl.fromTo("#ctIn", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power2.out" }, 6.76);
+      tl.set("#caps", { y: -610 }, 6.76);
+      // C 14.68 - 27.2: face 0-700, chart 700-1920 (the TradingView chart itself is never altered)
+      tl.set(fc, { b: 1220 }, 14.68); tl.call(setFace, null, 14.69);
+      tl.set("#ct", { top: 700 }, 14.68);
+      tl.set(ccl, { b: 0 }, 14.68); tl.call(setCt, null, 14.69);
+      tl.set("#caps", { y: -830 }, 14.68);
+      // D 27.2 - end: raw framed again
+      tl.set("#ct", { opacity: 0 }, 27.2);
+      tl.set("#face", { opacity: 0 }, 27.2);
+      tl.set(["#rw", "#rwfade"], { opacity: 1 }, 27.2);
+      tl.set("#caps", { y: -60 }, 27.2);
+      tl.set("#caps", { y: -110 }, 31.5);
+
+      // ---------- A: hook ----------
+      const hack = mk(`<span style="font-size:70px">🚨</span><b>HACKEO</b>`, "glass chip ov", "left:70px;top:1500px;");
+      pop(hack, 0.1); tl.to("#redTint", { opacity: 1, duration: 0.15, yoyo: true, repeat: 3 }, 1.5);
+      tl.to(hack, { x: -8, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 1.5);
+      tl.to(hack, { opacity: 0, duration: 0.2 }, 5.9);
+      const top1 = mk("EL MÁS IMPORTANTE DEL MUNDO CRIPTO", "pill red ov", "left:70px;top:1640px;font-size:34px;");
+      pop(top1, 3.24);
+      const bnb = mk(`<img src="assets/logos/binancecoin.png"><b>BINANCE</b>`, "glass chip ov", "right:70px;top:1500px;");
+      pop(bnb, 6.0, { x: 40 });
+      tl.to([top1, bnb], { opacity: 0, duration: 0.2 }, 6.7);
+
+      // ---------- B: the news, underlined while he says it ----------
+      const ul = (x1, x2, y, t, col, d = 0.5) => {
+        const r = sv("rect", { x: x1, y: y - 10, width: x2 - x1, height: 22, rx: 6, fill: col || "#ffe14d", opacity: 0.85, style: "mix-blend-mode:multiply" });
+        tl.set(r, { scaleX: 0, transformOrigin: "0% 50%" }, 0); tl.to(r, { scaleX: 1, duration: d, ease: "power2.inOut" }, t); return r;
+      };
+      const u1 = ul(335, 1030, 172, 8.02, "#ffe14d", 0.9);
+      const u2 = ul(420, 670, 285, 13.56, "#7ff0b5", 0.5);
+      const stolen = mk(`<img src="assets/logos/pepe.png"><b>7.770.000.000 PEPE</b>`, "glass chip ov", "left:70px;top:610px;");
+      pop(stolen, 8.4);
+      const robados = mk("ROBADOS", "pill red ov", "left:700px;top:560px;font-size:30px;");
+      pop(robados, 7.6);
+      const toEth = mk(`<img src="assets/logos/pepe.png" style="width:64px;height:64px"><b style="font-size:40px">→</b><img src="assets/logos/ethereum.png" style="width:64px;height:64px"><b style="font-size:40px">14.049 ETH</b>`, "glass chip ov", "left:70px;top:610px;");
+      tl.to(stolen, { opacity: 0, duration: 0.2 }, 13.4);
+      pop(toEth, 13.56);
+      tl.to([toEth, robados, u1, u2], { opacity: 0, duration: 0.2 }, 14.5);
+
+      // ---------- C: the chart (his own marks stay, ours are added on top) ----------
+      const chartTag = mk("PEPE · GRÁFICO SEMANAL", "pill dark ov", "left:40px;top:722px;font-size:26px;");
+      pop(chartTag, 15.96);
+      const noMod = mk("✓ NINGUNA MODIFICACIÓN", "pill green ov", "left:40px;top:790px;font-size:34px;");
+      pop(noMod, 18.5);
+      // the hack candle (wide view, 26 Oct week)
+      const HX = 740, HY = 465;
+      const arr = sv("g", { opacity: 0 });
+      const ap = (d, w, c) => { const p = document.createElementNS(NS, "path"); p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", c); p.setAttribute("stroke-width", w); p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round"); arr.appendChild(p); };
+      ap(`M${HX - 250} ${HY - 230} Q${HX - 120} ${HY - 220} ${HX - 30} ${HY - 40}`, 16, "#1a0507");
+      ap(`M${HX - 250} ${HY - 230} Q${HX - 120} ${HY - 220} ${HX - 30} ${HY - 40}`, 10, "#e5484d");
+      ap(`M${HX - 64} ${HY - 62} L${HX - 30} ${HY - 40} L${HX - 22} ${HY - 80}`, 10, "#e5484d");
+      const hackTag = sv("g", { opacity: 0 });
+      { const r = document.createElementNS(NS, "rect"); r.setAttribute("x", HX - 560); r.setAttribute("y", HY - 300); r.setAttribute("width", 330); r.setAttribute("height", 64); r.setAttribute("rx", 32); r.setAttribute("fill", "#e5484d"); hackTag.appendChild(r);
+        const tx = document.createElementNS(NS, "text"); tx.setAttribute("x", HX - 395); tx.setAttribute("y", HY - 256); tx.setAttribute("text-anchor", "middle"); tx.setAttribute("font-size", 32); tx.setAttribute("font-weight", 900); tx.setAttribute("fill", "#fff"); tx.setAttribute("font-family", "Inter"); tx.textContent = "🚨 HACKEO · 30 OCT"; hackTag.appendChild(tx); }
+      tl.to([arr, hackTag], { opacity: 1, duration: 0.25 }, 21.14);
+      tl.to([arr, hackTag], { opacity: 0, duration: 0.2 }, 23.5);
+      tl.to(noMod, { opacity: 0, duration: 0.2 }, 21.0);
+      const nada = mk("NO HA PASADO ABSOLUTAMENTE NADA", "pill gold ov", "left:40px;top:790px;font-size:32px;");
+      pop(nada, 24.72);
+      tl.to([chartTag, nada], { opacity: 0, duration: 0.2 }, 27.0);
+
+      // ---------- D: strength, big buyers ----------
+      const inm = mk(`<img src="assets/logos/pepe.png"><b>NI SE HA INMUTADO</b>`, "glass chip ov", "left:70px;top:1500px;");
+      pop(inm, 28.0);
+      tl.to(inm, { opacity: 0, duration: 0.2 }, 30.0);
+      const str = mk(`<span style="font-size:70px">💪</span><b>FUERZA</b>`, "glass chip ov", "right:70px;top:1500px;");
+      pop(str, 30.14, { x: 40 });
+      tl.to(str, { opacity: 0, duration: 0.2 }, 33.3);
+      const whale = mk(`<span style="font-size:76px">🐋</span><div><b style="display:block;font-size:44px">GRANDES COMPRADORES</b><b style="display:block;font-size:44px;color:#7ff0b5">DETRÁS</b></div>`, "glass chip ov", "left:120px;top:1470px;");
+      pop(whale, 33.52);
+      tl.to(whale, { opacity: 0, duration: 0.2 }, 34.05);
+
+      // ---------- CTA ----------
+      const NAME = "@TheCryptons_";
+      NAME.split("").forEach((ch) => { const sp = document.createElement("span"); sp.textContent = ch; $("#igName").appendChild(sp); });
+      tl.set("#caps", { y: -40 }, 34.30);
+      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 34.10);
+      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.2, ease: "back.out(3)" }, 34.22 + i * 0.016));
+      const BX = 750, BY = 1675, SX = 920;
+      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.32, ease: "power2.inOut" }, 34.45);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 34.82);
+      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 34.82);
+      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 34.84);
+      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 34.88);
+      tl.to("#tap", { x: SX - 6, duration: 0.28, ease: "power2.inOut" }, 35.12);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 35.42);
+      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 35.42);
+      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 35.44);
+      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 35.46);
+      tl.to("#tap", { opacity: 0, duration: 0.3 }, 35.80);
+      // ---------- captions timeline ----------
+      groups.forEach((g) => {
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.set(g.el, { opacity: 0 }, g.e);
+        g.ws.forEach((w) => {
+          tl.to(w.el, { opacity: 1, duration: 0.06 }, w.s);
+          if (["b", "s", "g", "up", "dn"].includes(w.st)) tl.fromTo(w.el, { scale: 0.7 }, { scale: 1, duration: 0.22, ease: "back.out(2.5)" }, w.s);
+          if (w.st === "u") tl.to(w.el.querySelector(".ul"), { scaleX: 1, duration: 0.25, ease: "power2.out" }, w.s);
+        });
+      });
+
+      tl.set({}, {}, 35.76);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
