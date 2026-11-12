@@ -37,7 +37,8 @@
       tl.set("#face", { opacity: 0 }, 27.2);
       tl.set(["#rw", "#rwfade"], { opacity: 1 }, 27.2);
       tl.set("#caps", { y: -60 }, 27.2);
-      tl.set("#caps", { y: -110 }, 31.5);
+      tl.to("#caps", { y: 0, duration: 0.6, ease: "power2.inOut" }, 31.9);
+      tl.to("#rwfade", { opacity: 0, duration: 0.4 }, 32.2);
 
       // ---------- A: hook ----------
       const hack = mk(`<span style="font-size:70px">🚨</span><b>HACKEO</b>`, "glass chip ov", "left:70px;top:1500px;");
@@ -98,6 +99,6 @@
       const str = mk(`<span style="font-size:70px">💪</span><b>FUERZA</b>`, "glass chip ov", "right:70px;top:1500px;");
       pop(str, 30.14, { x: 40 });
       tl.to(str, { opacity: 0, duration: 0.2 }, 33.3);
-      const whale = mk(`<span style="font-size:76px">🐋</span><div><b style="display:block;font-size:44px">GRANDES COMPRADORES</b><b style="display:block;font-size:44px;color:#7ff0b5">DETRÁS</b></div>`, "glass chip ov", "left:120px;top:1470px;");
+      const whale = mk(`<span style="font-size:76px">🐋</span><div><b style="display:block;font-size:44px">GRANDES COMPRADORES</b><b style="display:block;font-size:44px;color:#7ff0b5">DETRÁS</b></div>`, "glass chip ov", "left:120px;top:1560px;");
       pop(whale, 33.52);
       tl.to(whale, { opacity: 0, duration: 0.2 }, 34.05);
