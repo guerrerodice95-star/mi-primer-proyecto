@@ -16,3 +16,5 @@ TradingView del oro (semanal) abajo. Clips (no se suben):
 v2: 0–9,3 s a pantalla completa con tarjetas de cristal (🥇 ORO · 📈 GRANDES OPORTUNIDADES DE COMPRA · ⚽ CADA 4 AÑOS como el Mundial ·
 ESTAMOS EN 2026 · AÑO BAJISTA); en "si yo retrocedo" pasa a cara arriba + gráfico. La línea de ciclos entra con el gráfico y se queda hasta 32,4 s
 (antes el principio se veía vacío).
+
+v3: el gráfico entra en "como el Mundial" (5,75 s) en vez de en 9,3 s.
