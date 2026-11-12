@@ -5,7 +5,7 @@
       const fade = (e, t, d = 0.25) => tl.to(e, { opacity: 0, duration: d }, t);
       const SP = 0.83, FL = 1920 / 1184, END = 32.6;
       const fx = (s, x) => Math.min(0, Math.max(1080 - 1728 * s, 540 - s * x));
-      const SPLIT0 = 9.3;
+      const SPLIT0 = 5.75;
       const sAt = (t) => (t < SPLIT0 || t >= END ? FL : SP);
       tl.set("#fw", { scale: FL, x: fx(FL, FACE[0].x), y: -2 }, 0);
       tl.set("#caps", { y: 0 }, 0);
@@ -49,7 +49,7 @@
       // ---------- 4-year cycle timeline under the chart ----------
       const TLW = mk("", "", "position:absolute;left:60px;right:60px;top:1640px;height:110px;");
       const line = mk("", "", "position:absolute;left:60px;right:60px;top:52px;height:6px;border-radius:3px;background:rgba(240,212,136,0.25);", TLW);
-      const Y = [["2018", 18.64, 0], ["2022", 11.66, 0.5], ["2026", 9.7, 1]];
+      const Y = [["2018", 18.64, 0], ["2022", 11.66, 0.5], ["2026", 6.2, 1]];
       Y.forEach(([y, t, k]) => {
         const n = mk(`<div style="width:38px;height:38px;border-radius:50%;margin:0 auto;background:#e5484d;box-shadow:0 0 24px rgba(229,72,77,.8)"></div><div style="margin-top:8px;font-size:30px;font-weight:900;color:#fff;text-align:center">${y}</div>`, "ov", `left:calc(60px + ${k} * (100% - 120px) - 60px);top:36px;width:120px;`, TLW);
         tl.fromTo(n, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.5)" }, t);
@@ -58,7 +58,7 @@
         const l = mk("+4 AÑOS", "ov", `left:calc(60px + ${k} * (100% - 120px) - 70px);top:0;width:140px;text-align:center;font-size:24px;font-weight:900;color:#f0d488;letter-spacing:.06em`, TLW);
         tl.to(l, { opacity: 1, duration: 0.3 }, t + (k > 0.5 ? 0.2 : 0));
       });
-      tl.fromTo(line, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 9.6);
+      tl.fromTo(line, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 6.1);
       tl.to(TLW, { opacity: 0, duration: 0.3 }, 32.4);
 
       // ---------- end: full face + follow ----------
