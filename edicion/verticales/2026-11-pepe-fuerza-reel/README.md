@@ -20,3 +20,7 @@ mal encuadrado; ahora se ve ~1.200 px de ancho (cabeza + hombros) y los rótulos
 
 v2: gráfico con el eje de precios pegado al borde derecho (`crop=1662:1971:0:1100`) y el hueco relleno del gris del gráfico (#e6e6e6) en vez de negro;
 logo de PEPE grande en "Pepe ni se ha inmutado" (27,3 s).
+
+v3: el bruto trae un zoom a saltos (28,4–31,3 s) y un corte a 31,5 s que daba tirones. Ahora el encuadre se calcula fotograma a
+fotograma con la altura de la imagen del bruto, compensando sus saltos: el tamaño aparente crece suave hasta llenar la pantalla
+(escala 1920/1295) a 32,6 s y **termina con la cara a pantalla completa, sin margen abajo**.

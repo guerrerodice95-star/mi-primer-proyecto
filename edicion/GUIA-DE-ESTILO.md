@@ -29,6 +29,8 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 - **Poco aire arriba.** No quiere ver techo. Con la persona sola a pantalla completa, la cabeza cerca de la parte superior (respetando la barra de Instagram, ~200 px).
 - **En pantalla partida** (gráfico arriba, persona abajo): la parte de arriba de la cabeza empieza justo donde está el subtítulo. Sin hueco entre gráfico y cabeza.
 - **No acercar demasiado** a pantalla completa: si se ve solo la cara (sin hombros) está mal. Con brutos 1728 de ancho mostrar ~1.100–1.200 px de ancho de origen; si queda hueco abajo, usarlo para rótulos y subtítulos.
+- **El final del reel, con la cara a pantalla completa** (sin margen ni franja abajo).
+- Si el bruto trae zooms a saltos, compensarlos para que el movimiento sea suave (sin "tirones").
 - **Primer plano:** cara centrada y cabeza completa (sin cortar el pelo).
 - **La cabeza siempre en el centro horizontal.** Si se mueve en el plano, usar seguimiento de cara (`herramientas/seguir_cara.py`, 10 muestras/s, suavizado 0,5 s) en vez de un encuadre fijo.
 - Comprobar el encuadre con capturas en varios segundos antes de renderizar: la cara se mueve.
