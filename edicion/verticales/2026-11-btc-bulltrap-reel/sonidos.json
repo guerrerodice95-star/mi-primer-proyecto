@@ -1,0 +1,187 @@
+[
+ {
+  "sonido": "pop",
+  "segundo": 1.58,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 2.34,
+  "volumen": 0.22
+ },
+ {
+  "sonido": "impact",
+  "segundo": 3.48,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "tick",
+  "segundo": 5.3,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 6.6,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 7.12,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "ding",
+  "segundo": 9.44,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "impact",
+  "segundo": 11.4,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "swish",
+  "segundo": 12.78,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "pop",
+  "segundo": 13.14,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 14.3,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 15.3,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 16.0,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 16.9,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "swish",
+  "segundo": 19.1,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 19.2,
+  "volumen": 0.16
+ },
+ {
+  "sonido": "pop",
+  "segundo": 20.66,
+  "volumen": 0.16
+ },
+ {
+  "sonido": "impact",
+  "segundo": 22.5,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "pop",
+  "segundo": 23.74,
+  "volumen": 0.16
+ },
+ {
+  "sonido": "click",
+  "segundo": 24.14,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "pop",
+  "segundo": 24.85,
+  "volumen": 0.16
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 25.8,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "ding",
+  "segundo": 26.5,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 28.1,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "tick",
+  "segundo": 30.0,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "tick",
+  "segundo": 30.56,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "tick",
+  "segundo": 31.42,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "pop",
+  "segundo": 32.4,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "tick",
+  "segundo": 32.55,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 32.67,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 32.79,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 32.91,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "ding",
+  "segundo": 34.34,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "glitch",
+  "segundo": 36.42,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "pop",
+  "segundo": 36.95,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "click",
+  "segundo": 37.67,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "click",
+  "segundo": 38.27,
+  "volumen": 0.15
+ }
+]
