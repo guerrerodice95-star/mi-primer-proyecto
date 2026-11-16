@@ -17,3 +17,5 @@ Logos: `s2.coinmarketcap.com/static/img/coins/128x128/{id}.png`.
 
 v2: gancho (0–2,3 s) con el gráfico real de Bitcoin de 60 días (CoinGecko) cayendo arriba: precio en contador hasta 64.449 $, "▼ −20,3 %",
 temblor y glitch. El gráfico ya está a medio dibujar en el primer fotograma. Sustituye en `escenas.js` `__BTC__` por `datos/btc_series.json`.
+
+v3: el gráfico de BTC empieza ya en la parte de la caída (74 % de la serie) y baja de forma continua desde el fotograma 0 (1,7 s, lineal).

@@ -258,7 +258,7 @@
       const fmtN = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       tl.set(bt, { opacity: 1 }, 0);
       tl.set(bdot, { opacity: 1 }, 0);
-      const bpr = { k: 0.45 };
+      const bpr = { k: 0.74 };
       const drawB = () => {
         const m = Math.max(1, Math.round(bpr.k * (BN - 1)));
         let d = `M0 ${GY(BTC[0])}`; for (let i = 1; i <= m; i++) d += ` L${GX(i)} ${GY(BTC[i])}`;
@@ -267,8 +267,8 @@
         $("#bpx").textContent = fmtN(BTC[m]) + " $";
       };
       drawB();
-      tl.to(bpr, { k: 1, duration: 2.0, ease: "power2.in", onUpdate: drawB }, 0.05);
-      tl.to("#bpx", { color: "#ff6b70", duration: 0.3 }, 1.5);
+      tl.to(bpr, { k: 1, duration: 1.7, ease: "none", onUpdate: drawB }, 0.0);
+      tl.to("#bpx", { color: "#ff6b70", duration: 0.3 }, 0.3);
       tl.fromTo("#bpc", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 1.86);
       tl.to("#redTint", { opacity: 0 }, 0);
       tl.to(bt, { x: -8, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 2.0);
