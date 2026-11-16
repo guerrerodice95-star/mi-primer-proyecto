@@ -1,0 +1,172 @@
+[
+ {
+  "sonido": "pop",
+  "segundo": 0.64,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 1.16,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 1.86,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 2.9,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "tick",
+  "segundo": 3.4,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 3.7,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 3.82,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 4.2,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 4.55,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 4.85,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 5.01,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 5.17,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 5.33,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "pop",
+  "segundo": 5.49,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 7.1,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 7.88,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.3,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 8.7,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 9.1,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "error",
+  "segundo": 9.96,
+  "volumen": 0.2
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 10.5,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 10.84,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "pop",
+  "segundo": 12.82,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 13.82,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 15.26,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "pop",
+  "segundo": 16.4,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "whoosh",
+  "segundo": 17.9,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "pop",
+  "segundo": 19.44,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "swish",
+  "segundo": 20.66,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "ding",
+  "segundo": 20.72,
+  "volumen": 0.12
+ },
+ {
+  "sonido": "swish",
+  "segundo": 22.4,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "pop",
+  "segundo": 23.74,
+  "volumen": 0.18
+ },
+ {
+  "sonido": "riser",
+  "segundo": 24.0,
+  "volumen": 0.06
+ },
+ {
+  "sonido": "pop",
+  "segundo": 24.5,
+  "volumen": 0.2
+ }
+]
