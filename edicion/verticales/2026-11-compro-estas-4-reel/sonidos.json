@@ -1,8 +1,33 @@
 [
  {
+  "sonido": "tick",
+  "segundo": 0.3,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 0.7,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 1.1,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "tick",
+  "segundo": 1.5,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 1.86,
+  "volumen": 0.18
+ },
+ {
   "sonido": "glitch",
-  "segundo": 1.46,
-  "volumen": 0.08
+  "segundo": 2.0,
+  "volumen": 0.09
  },
  {
   "sonido": "pop",
