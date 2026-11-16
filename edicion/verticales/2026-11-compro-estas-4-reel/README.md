@@ -14,3 +14,6 @@ Logos: `s2.coinmarketcap.com/static/img/coins/128x128/{id}.png`.
 | 0–3,1 | "TODO EL MERCADO ▼" y los 4 logos en "estas cuatro" |
 | 3,3–18,9 | Tarjeta CMC de cada moneda: primer precio en "compro", corte al segundo precio en "a este precio compro más" |
 | 18,9–21,6 | Cara a pantalla completa centrada y pastilla de Instagram |
+
+v2: gancho (0–2,3 s) con el gráfico real de Bitcoin de 60 días (CoinGecko) cayendo arriba: precio en contador hasta 64.449 $, "▼ −20,3 %",
+temblor y glitch. El gráfico ya está a medio dibujar en el primer fotograma. Sustituye en `escenas.js` `__BTC__` por `datos/btc_series.json`.

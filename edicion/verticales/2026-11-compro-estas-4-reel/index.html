@@ -242,10 +242,37 @@
         tl.fromTo(e, { opacity: 0, y: 40, scale: 0.6 }, { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, 2.48 + i * 0.12);
         return e;
       });
-      const fall = mk("TODO EL MERCADO ▼", "ov", "left:0;right:0;top:150px;text-align:center;font-size:72px;font-weight:900;color:#ff6b70;letter-spacing:-.01em;");
-      tl.fromTo(fall, { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 0.1);
-      tl.to(fall, { x: -8, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 1.46);
-      tl.to(fall, { opacity: 0, duration: 0.2 }, 2.3);
+      // BTC crash chart (real 60-day CoinGecko data) in the top band
+      const BTC = [80874, 81236, 81169, 86597, 86183, 84382, 84378, 84076, 84417, 84449, 83479, 83640, 83576, 84842, 84506, 84743, 86490, 85771, 85540, 83282, 81686, 82564, 82918, 83691, 81795, 83115, 81604, 82156, 81524, 81408, 82020, 81875, 82944, 84082, 81328, 81102, 80811, 80049, 80029, 80801, 81274, 77839, 77275, 77521, 78294, 76709, 77385, 80443, 76006, 75775, 75776, 74740, 75267, 73721, 73974, 71372, 68314, 64120, 65305, 64449];
+      const bt = mk(`<div style="position:absolute;left:60px;top:34px;display:flex;align-items:center;gap:16px"><img src="assets/logos/btc.png" style="width:62px;height:62px"><b style="font-size:40px;font-weight:900">Bitcoin</b><span style="font-size:26px;font-weight:800;color:#ff7a7e;letter-spacing:.08em">TODO EL MERCADO CAE</span></div>
+        <div id="bpx" style="position:absolute;right:60px;top:26px;font-size:66px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums">80.874 $</div>
+        <div id="bpc" style="position:absolute;right:60px;top:104px;padding:6px 16px;border-radius:12px;background:#e5484d;font-size:30px;font-weight:900;opacity:0">▼ −20,3 %</div>
+        <svg id="bsv" width="960" height="270" viewBox="0 0 960 270" style="position:absolute;left:60px;top:160px"><defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5484d" stop-opacity=".45"/><stop offset="1" stop-color="#e5484d" stop-opacity="0"/></linearGradient></defs></svg>`, "ov", "left:0;top:0;width:1080px;height:460px;opacity:1;");
+      const BS = bt.querySelector("#bsv"), NSV = "http://www.w3.org/2000/svg";
+      const svl = (tag, a) => { const e = document.createElementNS(NSV, tag); for (const k in a) e.setAttribute(k, a[k]); BS.appendChild(e); return e; };
+      for (let i = 0; i < 4; i++) svl("line", { x1: 0, x2: 960, y1: 20 + i * 80, y2: 20 + i * 80, stroke: "rgba(255,255,255,.06)", "stroke-width": 2 });
+      const bmn = Math.min(...BTC), bmx = Math.max(...BTC), BN = BTC.length;
+      const GX = (i) => (i / (BN - 1)) * 950, GY = (v) => 250 - ((v - bmn) / (bmx - bmn)) * 230;
+      const bar = svl("path", { d: "", fill: "url(#rg)" }), bln = svl("path", { d: "", fill: "none", stroke: "#ff3b4e", "stroke-width": 6, "stroke-linejoin": "round", style: "filter:drop-shadow(0 0 8px rgba(255,59,78,.8))" });
+      const bdot = svl("circle", { r: 11, fill: "#fff", opacity: 0 });
+      const fmtN = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      tl.set(bt, { opacity: 1 }, 0);
+      tl.set(bdot, { opacity: 1 }, 0);
+      const bpr = { k: 0.45 };
+      const drawB = () => {
+        const m = Math.max(1, Math.round(bpr.k * (BN - 1)));
+        let d = `M0 ${GY(BTC[0])}`; for (let i = 1; i <= m; i++) d += ` L${GX(i)} ${GY(BTC[i])}`;
+        bln.setAttribute("d", d); bar.setAttribute("d", d + ` L${GX(m)} 270 L0 270 Z`);
+        bdot.setAttribute("cx", GX(m)); bdot.setAttribute("cy", GY(BTC[m]));
+        $("#bpx").textContent = fmtN(BTC[m]) + " $";
+      };
+      drawB();
+      tl.to(bpr, { k: 1, duration: 2.0, ease: "power2.in", onUpdate: drawB }, 0.05);
+      tl.to("#bpx", { color: "#ff6b70", duration: 0.3 }, 1.5);
+      tl.fromTo("#bpc", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 1.86);
+      tl.to("#redTint", { opacity: 0 }, 0);
+      tl.to(bt, { x: -8, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 2.0);
+      tl.to(bt, { opacity: 0, y: -20, duration: 0.25 }, 2.3);
       tl.to(hook, { opacity: 0, y: -20, duration: 0.2, stagger: 0.03 }, 3.15);
 
       // ---------- CMC cards (same as the old reel): price 1 = "compro", price 2 = "compro más" ----------
