@@ -3,7 +3,7 @@ import json, re, sys
 
 words = json.load(open(sys.argv[1]))
 out = sys.argv[2]
-DUR = 17.94
+DUR = 18.32
 
 # ---- merge split numbers ("15" ".500", "22" "%") ----
 W = []

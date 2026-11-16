@@ -62,3 +62,4 @@ npx hyperframes browser ensure
 - faster-whisper falla abriendo archivos con algunas versiones de PyAV: `transcribir.py` ya lo evita.
 - El linter de HyperFrames da error si un elemento tiene `transform` en CSS y GSAP lo anima: poner la
   transformación inicial con `gsap.set`.
+- Al reordenar o recortar frases, no cortar con los tiempos de la transcripción (cortan la primera letra): buscar el silencio real midiendo la energía del audio (ventanas de 10–20 ms) y cortar ahí, con fundidos de ~10 ms.

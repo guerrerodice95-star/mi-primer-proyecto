@@ -1,47 +1,52 @@
 [
  {
   "sonido": "ding",
-  "segundo": 2.37,
+  "segundo": 2.61,
   "volumen": 0.1
  },
  {
   "sonido": "swish",
-  "segundo": 4.07,
+  "segundo": 4.04,
   "volumen": 0.08
  },
  {
   "sonido": "ding",
-  "segundo": 6.38,
+  "segundo": 6.55,
   "volumen": 0.1
  },
  {
   "sonido": "swish",
-  "segundo": 7.92,
+  "segundo": 8.02,
   "volumen": 0.08
  },
  {
   "sonido": "ding",
-  "segundo": 10.13,
+  "segundo": 10.35,
   "volumen": 0.1
  },
  {
   "sonido": "swish",
-  "segundo": 11.72,
+  "segundo": 11.82,
   "volumen": 0.08
  },
  {
   "sonido": "ding",
-  "segundo": 13.81,
+  "segundo": 14.0,
   "volumen": 0.1
  },
  {
   "sonido": "swish",
-  "segundo": 15.28,
+  "segundo": 15.4,
   "volumen": 0.07
  },
  {
   "sonido": "pop",
-  "segundo": 16.4,
+  "segundo": 16.52,
+  "volumen": 0.15
+ },
+ {
+  "sonido": "pop",
+  "segundo": 17.12,
   "volumen": 0.15
  }
 ]

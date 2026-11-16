@@ -170,7 +170,7 @@
       <div id="vignette" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
       <div id="redTint" class="clip" data-start="0" data-duration="__DUR__" data-track-index="2"></div>
       <div id="fx"></div>
-      <div id="pCta" class="clip" data-start="15.68" data-duration="2.26" data-track-index="3">
+      <div id="pCta" class="clip" data-start="15.80" data-duration="2.52" data-track-index="3">
         <div id="ig">
           <img src="assets/perfil.png" alt="" />
           <div id="igName"></div>
@@ -220,24 +220,24 @@ __CHART__
       // ---------- CTA ----------
       const NAME = "@TheCryptons_";
       NAME.split("").forEach((ch) => { const sp = document.createElement("span"); sp.textContent = ch; $("#igName").appendChild(sp); });
-      tl.set("#caps", { y: -40 }, 15.88);
-      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 15.68);
-      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.2, ease: "back.out(3)" }, 15.80 + i * 0.016));
+      tl.set("#caps", { y: -40 }, 16.00);
+      tl.fromTo("#ig", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 15.80);
+      $$("#igName span").forEach((sp, i) => tl.fromTo(sp, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.2, ease: "back.out(3)" }, 15.92 + i * 0.016));
       const BX = 750, BY = 1675, SX = 920;
-      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.32, ease: "power2.inOut" }, 16.03);
-      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 16.40);
-      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 16.40);
-      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 16.42);
-      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 16.46);
-      tl.to("#tap", { x: SX - 6, duration: 0.28, ease: "power2.inOut" }, 16.70);
-      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 17.00);
-      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 17.00);
-      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 17.02);
-      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 17.04);
-      tl.to("#tap", { opacity: 0, duration: 0.3 }, 17.38);
+      tl.fromTo("#tap", { opacity: 0, x: BX + 120, y: BY + 220 }, { opacity: 1, x: BX - 6, y: BY - 4, duration: 0.32, ease: "power2.inOut" }, 16.15);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 16.52);
+      tl.to("#igBtn", { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 }, 16.52);
+      tl.fromTo("#ripple", { opacity: 1, x: BX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.4, duration: 0.5, ease: "power2.out" }, 16.54);
+      tl.to("#igBtn .on", { opacity: 1, duration: 0.1 }, 16.58);
+      tl.to("#tap", { x: SX - 6, duration: 0.28, ease: "power2.inOut" }, 16.82);
+      tl.to("#tap", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, 17.12);
+      tl.to("#igSave", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 17.12);
+      tl.fromTo("#ripple", { opacity: 1, x: SX - 30, y: BY - 30, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.5, ease: "power2.out", immediateRender: false }, 17.14);
+      tl.to("#bmk", { attr: { fill: "#111" }, duration: 0.1 }, 17.16);
+      tl.to("#tap", { opacity: 0, duration: 0.3 }, 17.50);
       // ---------- captions timeline ----------
       groups.forEach((g) => {
-        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" }, g.s);
+        tl.fromTo(g.el, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: Math.max(0.04, Math.min(0.18, g.e - g.s - 0.02)), ease: "power2.out" }, g.s);
         tl.set(g.el, { opacity: 0 }, g.e);
         g.ws.forEach((w) => {
           tl.fromTo(w.el, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, w.s);
