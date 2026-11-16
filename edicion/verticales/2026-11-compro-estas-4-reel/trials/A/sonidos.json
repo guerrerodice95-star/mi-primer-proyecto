@@ -1,0 +1,47 @@
+[
+ {
+  "sonido": "ding",
+  "segundo": 2.37,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "swish",
+  "segundo": 4.07,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "ding",
+  "segundo": 6.38,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "swish",
+  "segundo": 7.92,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "ding",
+  "segundo": 10.13,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "swish",
+  "segundo": 11.72,
+  "volumen": 0.08
+ },
+ {
+  "sonido": "ding",
+  "segundo": 13.81,
+  "volumen": 0.1
+ },
+ {
+  "sonido": "swish",
+  "segundo": 15.28,
+  "volumen": 0.07
+ },
+ {
+  "sonido": "pop",
+  "segundo": 16.4,
+  "volumen": 0.15
+ }
+]
