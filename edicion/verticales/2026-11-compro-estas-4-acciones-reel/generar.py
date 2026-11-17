@@ -16,7 +16,7 @@ for w in W:
     w["w"] = w["w"].replace(" ", "")
 
 def key(t): return re.sub(r"[^\wáéíóúñ%.]", "", t.lower()).strip(".")
-FIX = {"Nvidia": "Nvidia", "SpaceX": "SpaceX"}
+FIX = {"Sílame": "Sígueme", "Sírame": "Sígueme"}
 for w in W:
     w["w"] = FIX.get(w["w"], w["w"])
 # "stop loss" as one token
