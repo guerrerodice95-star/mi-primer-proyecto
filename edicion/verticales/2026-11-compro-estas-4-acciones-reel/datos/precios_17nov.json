@@ -1,0 +1,32 @@
+{
+ "NVDA": {
+  "precio": 154.49,
+  "cierre_hace_5_sesiones": 168.89,
+  "cambio_1s_%": -8.53,
+  "bolsa": "NasdaqGS"
+ },
+ "TSLA": {
+  "precio": 381.95,
+  "cierre_hace_5_sesiones": 379.78,
+  "cambio_1s_%": 0.57,
+  "bolsa": "NasdaqGS"
+ },
+ "SPCX": {
+  "precio": 140.67,
+  "cierre_hace_5_sesiones": 143.09,
+  "cambio_1s_%": -1.69,
+  "bolsa": "NasdaqGS"
+ },
+ "GC=F": {
+  "precio": 3864.7,
+  "cierre_hace_5_sesiones": 4030.2,
+  "cambio_1s_%": -4.11,
+  "bolsa": "COMEX"
+ },
+ "^IXIC": {
+  "precio": 24452.951,
+  "cierre_hace_5_sesiones": 25065.87,
+  "cambio_1s_%": -2.45,
+  "bolsa": "Nasdaq GIDS"
+ }
+}
