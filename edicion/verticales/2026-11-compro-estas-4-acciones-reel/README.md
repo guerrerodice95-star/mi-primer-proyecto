@@ -19,3 +19,6 @@ el oro es una moneda dorada con "Au".
 | 2,36–3,1 | Los 4 logos en "estas cuatro" |
 | 3,2–18,3 | Tarjeta de cada valor: primer precio en "Si … cae", segundo en "a este precio compro más" |
 | 18,3–21 | Cara a pantalla completa y pastilla de Instagram ("para la segunda parte") |
+
+v2: Unai reenvió el bruto con el audio bueno (id `1dwaJ9BuC9mmNTACzW5tEcLfOW2gELkRN`). La imagen es idéntica; solo cambian el audio
+y la transcripción (los subtítulos se rehicieron con ella). Las tarjetas mantienen sus tiempos.
