@@ -1,0 +1,79 @@
+[
+ {
+  "id": "solana",
+  "symbol": "sol",
+  "current_price": 72.57,
+  "ath": 293.31,
+  "ath_date": "2025-01-19T03:15:27.000Z",
+  "atl": 0.500801,
+  "atl_date": "2020-05-11T11:35:23.000Z",
+  "ath_entre_atl": 586,
+  "caida_desde_ath_%": -75.3
+ },
+ {
+  "id": "dogecoin",
+  "symbol": "doge",
+  "current_price": 0.055759,
+  "ath": 0.731578,
+  "ath_date": "2021-05-07T21:08:23.000Z",
+  "atl": 8.69e-05,
+  "atl_date": "2015-05-05T16:00:00.000Z",
+  "ath_entre_atl": 8419,
+  "caida_desde_ath_%": -92.4
+ },
+ {
+  "id": "shiba-inu",
+  "symbol": "shib",
+  "current_price": 3.63e-06,
+  "ath": 8.616e-05,
+  "ath_date": "2021-10-27T19:54:55.000Z",
+  "atl": 5.6366e-11,
+  "atl_date": "2020-11-28T03:26:25.000Z",
+  "ath_entre_atl": 1528581,
+  "caida_desde_ath_%": -95.8
+ },
+ {
+  "id": "pepe",
+  "symbol": "pepe",
+  "current_price": 3.45e-06,
+  "ath": 2.803e-05,
+  "ath_date": "2024-12-09T08:30:35.000Z",
+  "atl": 5.5142e-08,
+  "atl_date": "2023-04-17T18:14:41.000Z",
+  "ath_entre_atl": 508,
+  "caida_desde_ath_%": -87.7
+ },
+ {
+  "id": "bonk",
+  "symbol": "bonk",
+  "current_price": 2.16e-06,
+  "ath": 5.825e-05,
+  "ath_date": "2024-11-19T20:01:06.000Z",
+  "atl": 8.6142e-08,
+  "atl_date": "2022-12-29T14:48:46.000Z",
+  "ath_entre_atl": 676,
+  "caida_desde_ath_%": -96.3
+ },
+ {
+  "id": "floki",
+  "symbol": "floki",
+  "current_price": 1.664e-05,
+  "ath": 0.00034495,
+  "ath_date": "2024-06-04T23:25:59.000Z",
+  "atl": 8.428e-08,
+  "atl_date": "2021-07-05T17:11:20.000Z",
+  "ath_entre_atl": 4093,
+  "caida_desde_ath_%": -95.2
+ },
+ {
+  "id": "dogwifcoin",
+  "symbol": "wif",
+  "current_price": 0.123734,
+  "ath": 4.83,
+  "ath_date": "2024-03-31T01:34:58.000Z",
+  "atl": 0.00155464,
+  "atl_date": "2023-12-12T23:13:50.000Z",
+  "ath_entre_atl": 3107,
+  "caida_desde_ath_%": -97.4
+ }
+]
