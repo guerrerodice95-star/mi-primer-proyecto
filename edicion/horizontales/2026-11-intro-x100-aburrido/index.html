@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Serif"; font-style: italic; src: url(assets/fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); }
+      :root { --gold: #c9a54c; --gold-hi: #f0d488; --red: #e5484d; --red-hi: #ff7a7e; --green: #16c784; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0b0a08; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      .serif { font-family: "Serif", serif; font-style: italic; font-weight: 400; }
+      #bg { background: radial-gradient(900px 700px at 25% 45%, rgba(229,72,77,0.12), transparent 70%), radial-gradient(900px 700px at 75% 50%, rgba(201,165,76,0.10), transparent 70%), #0b0a08; }
+      #grid { background-image: linear-gradient(rgba(201,165,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,76,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+      #camwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 48% 0%; }
+      #cam { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #fadeL { position: absolute; left: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(90deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #fadeR { position: absolute; right: -2px; top: 0; width: 820px; height: 1080px; opacity: 0; background: linear-gradient(270deg, #0b0a08 0%, rgba(11,10,8,0.9) 45%, rgba(11,10,8,0) 100%); }
+      #vignette { position: absolute; inset: 0; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.5) 100%); }
+      #redTint { position: absolute; inset: 0; opacity: 0; background: radial-gradient(110% 100% at 50% 45%, transparent 45%, rgba(150,10,15,0.55) 100%); }
+      #bottomShade { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.7) 100%); }
+      .ov { position: absolute; opacity: 0; }
+      .glass { position: absolute; border-radius: 30px; background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.07));
+        -webkit-backdrop-filter: blur(22px) saturate(1.4) brightness(0.72); backdrop-filter: blur(22px) saturate(1.4) brightness(0.72);
+        border: 1.5px solid rgba(255,255,255,0.32); box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+      .chip { display: flex; align-items: center; gap: 18px; padding: 16px 30px 16px 16px; white-space: nowrap; }
+      .chip img { width: 80px; height: 80px; border-radius: 50%; }
+      .chip b { display: block; font-size: 40px; font-weight: 900; line-height: 1.05; }
+      .chip i { display: block; font-style: normal; font-size: 34px; font-weight: 900; color: var(--red-hi); }
+      .chip small { font-size: 20px; opacity: .75; margin-left: 6px; }
+      .card { position: absolute; top: 120px; width: 800px; height: 840px; border-radius: 40px; opacity: 0;
+        background: rgba(17,19,22,0.96); border: 1.5px solid rgba(255,255,255,0.10); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+      .kw { position: absolute; left: 0; right: 0; top: 830px; text-align: center; opacity: 0; white-space: nowrap; text-shadow: 0 8px 30px rgba(0,0,0,0.85); }
+      .kw b { font-size: 96px; font-weight: 900; }
+      .kw .box { display: inline-block; padding: 4px 34px; border-radius: 24px; color: #1a1408; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); text-shadow: none; box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 60px rgba(201,165,76,0.5); }
+      .kw .serif { font-size: 80px; color: #f6e6b8; margin-right: 18px; }
+          .kw .box.red { color: #fff; background: linear-gradient(180deg, #ff6b70, #d63a40); box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 60px rgba(229,72,77,0.45); }
+      .chip .up { display: block; font-style: normal; font-size: 40px; font-weight: 900; color: #4ade80; }
+      .chip .dn { display: block; font-style: normal; font-size: 40px; font-weight: 900; color: #ff7a7e; }
+      .chip em { display: block; font-style: normal; font-size: 20px; font-weight: 700; opacity: .75; letter-spacing: .04em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="28.68" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="28.68" data-track-index="0"></div>
+      <div id="grid" class="clip" data-start="0" data-duration="28.68" data-track-index="0"></div>
+      <div id="camwrap">
+        <div id="track" style="position:absolute;inset:0"><video id="cam" class="clip" data-start="0" data-duration="28.68" data-track-index="1" src="assets/cam.mp4" muted playsinline></video></div>
+        <div id="fadeL"></div><div id="fadeR"></div>
+      </div>
+      <div id="vignette" class="clip" data-start="0" data-duration="28.68" data-track-index="2"></div>
+      <div id="redTint" class="clip" data-start="0" data-duration="28.68" data-track-index="2"></div>
+      <div id="bottomShade" class="clip" data-start="0" data-duration="28.68" data-track-index="2"></div>
+      <div id="fx" class="clip" data-start="0" data-duration="28.68" data-track-index="3"></div>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const tl = gsap.timeline({ paused: true });
+      const cam = "#camwrap", DUR = 28.68, NS = "http://www.w3.org/2000/svg";
+      const FACE = [{"t": 0.0, "x": 1195.7, "y": 510.9, "h": 667.7}, {"t": 0.1, "x": 1200.5, "y": 511.5, "h": 673.1}, {"t": 0.2, "x": 1205.9, "y": 511.5, "h": 675.2}, {"t": 0.3, "x": 1211.7, "y": 510.9, "h": 678.4}, {"t": 0.4, "x": 1216.5, "y": 509.3, "h": 675.2}, {"t": 0.5, "x": 1218.7, "y": 508.3, "h": 666.7}, {"t": 0.6, "x": 1217.6, "y": 507.2, "h": 658.1}, {"t": 0.7, "x": 1215.5, "y": 506.1, "h": 656.0}, {"t": 0.8, "x": 1213.9, "y": 506.7, "h": 659.2}, {"t": 0.9, "x": 1212.3, "y": 507.2, "h": 673.1}, {"t": 1.0, "x": 1209.6, "y": 507.7, "h": 691.2}, {"t": 1.1, "x": 1208.0, "y": 509.3, "h": 709.3}, {"t": 1.2, "x": 1205.9, "y": 512.5, "h": 724.3}, {"t": 1.3, "x": 1203.2, "y": 515.2, "h": 733.9}, {"t": 1.4, "x": 1200.0, "y": 517.3, "h": 742.4}, {"t": 1.5, "x": 1197.9, "y": 517.3, "h": 746.7}, {"t": 1.6, "x": 1196.8, "y": 516.3, "h": 746.7}, {"t": 1.7, "x": 1197.3, "y": 513.6, "h": 743.5}, {"t": 1.8, "x": 1199.5, "y": 511.5, "h": 737.1}, {"t": 1.9, "x": 1202.7, "y": 509.3, "h": 726.4}, {"t": 2.0, "x": 1206.9, "y": 509.3, "h": 717.9}, {"t": 2.1, "x": 1210.1, "y": 509.3, "h": 705.1}, {"t": 2.2, "x": 1212.3, "y": 505.1, "h": 694.4}, {"t": 2.3, "x": 1211.7, "y": 496.0, "h": 686.9}, {"t": 2.4, "x": 1210.7, "y": 484.3, "h": 684.8}, {"t": 2.5, "x": 1208.0, "y": 470.9, "h": 683.7}, {"t": 2.6, "x": 1204.3, "y": 459.7, "h": 689.1}, {"t": 2.7, "x": 1200.5, "y": 461.3, "h": 702.9}, {"t": 2.8, "x": 1195.2, "y": 475.2, "h": 715.7}, {"t": 2.9, "x": 1191.5, "y": 498.1, "h": 727.5}, {"t": 3.0, "x": 1188.8, "y": 525.3, "h": 737.1}, {"t": 3.1, "x": 1187.2, "y": 550.4, "h": 746.7}, {"t": 3.2, "x": 1186.1, "y": 565.3, "h": 748.8}, {"t": 3.3, "x": 1188.8, "y": 569.1, "h": 749.9}, {"t": 3.4, "x": 1188.3, "y": 566.4, "h": 742.4}, {"t": 3.5, "x": 1188.8, "y": 560.5, "h": 730.7}, {"t": 3.6, "x": 1187.7, "y": 553.1, "h": 717.9}, {"t": 3.7, "x": 1184.0, "y": 546.1, "h": 706.1}, {"t": 3.8, "x": 1179.2, "y": 540.3, "h": 700.8}, {"t": 3.9, "x": 1174.9, "y": 533.9, "h": 696.5}, {"t": 4.0, "x": 1169.6, "y": 525.3, "h": 700.8}, {"t": 4.1, "x": 1165.3, "y": 517.9, "h": 705.1}, {"t": 4.2, "x": 1163.7, "y": 510.9, "h": 708.3}, {"t": 4.3, "x": 1162.1, "y": 501.9, "h": 707.2}, {"t": 4.4, "x": 1162.7, "y": 490.7, "h": 714.7}, {"t": 4.5, "x": 1162.1, "y": 477.3, "h": 715.7}, {"t": 4.6, "x": 1165.3, "y": 465.6, "h": 713.6}, {"t": 4.7, "x": 1170.7, "y": 458.1, "h": 713.6}, {"t": 4.8, "x": 1174.9, "y": 460.3, "h": 720.0}, {"t": 4.9, "x": 1175.5, "y": 468.3, "h": 725.3}, {"t": 5.0, "x": 1176.5, "y": 482.1, "h": 733.9}, {"t": 5.1, "x": 1172.8, "y": 495.5, "h": 749.9}, {"t": 5.2, "x": 1168.0, "y": 508.8, "h": 761.6}, {"t": 5.3, "x": 1165.3, "y": 517.9, "h": 764.8}, {"t": 5.4, "x": 1170.1, "y": 525.9, "h": 765.9}, {"t": 5.5, "x": 1173.9, "y": 532.8, "h": 769.1}, {"t": 5.6, "x": 1179.2, "y": 537.1, "h": 764.8}, {"t": 5.7, "x": 1183.5, "y": 538.1, "h": 758.4}, {"t": 5.8, "x": 1185.6, "y": 533.9, "h": 756.3}, {"t": 5.9, "x": 1182.9, "y": 520.5, "h": 748.8}, {"t": 6.0, "x": 1182.4, "y": 501.9, "h": 737.1}, {"t": 6.1, "x": 1182.4, "y": 486.9, "h": 728.5}, {"t": 6.2, "x": 1183.5, "y": 477.3, "h": 726.4}, {"t": 6.3, "x": 1186.1, "y": 476.8, "h": 723.2}, {"t": 6.4, "x": 1189.9, "y": 492.3, "h": 726.4}, {"t": 6.5, "x": 1190.4, "y": 517.3, "h": 731.7}, {"t": 6.6, "x": 1189.3, "y": 544.0, "h": 740.3}, {"t": 6.7, "x": 1185.6, "y": 565.9, "h": 745.6}, {"t": 6.8, "x": 1181.9, "y": 581.3, "h": 750.9}, {"t": 6.9, "x": 1178.1, "y": 588.3, "h": 754.1}, {"t": 7.0, "x": 1175.5, "y": 589.9, "h": 759.5}, {"t": 7.1, "x": 1174.9, "y": 588.3, "h": 760.5}, {"t": 7.2, "x": 1175.5, "y": 586.7, "h": 765.9}, {"t": 7.3, "x": 1170.7, "y": 572.3, "h": 758.4}, {"t": 7.4, "x": 1157.9, "y": 557.3, "h": 745.6}, {"t": 7.5, "x": 1146.7, "y": 541.9, "h": 733.9}, {"t": 7.6, "x": 1142.4, "y": 528.0, "h": 725.3}, {"t": 7.7, "x": 1140.3, "y": 513.1, "h": 712.5}, {"t": 7.8, "x": 1141.3, "y": 510.9, "h": 710.4}, {"t": 7.9, "x": 1150.4, "y": 510.4, "h": 715.7}, {"t": 8.0, "x": 1160.0, "y": 512.5, "h": 713.6}, {"t": 8.1, "x": 1162.7, "y": 514.1, "h": 708.3}, {"t": 8.2, "x": 1161.1, "y": 515.7, "h": 711.5}, {"t": 8.3, "x": 1161.1, "y": 518.9, "h": 713.6}, {"t": 8.4, "x": 1158.9, "y": 521.1, "h": 720.0}, {"t": 8.5, "x": 1154.7, "y": 522.1, "h": 732.8}, {"t": 8.6, "x": 1150.4, "y": 528.5, "h": 749.9}, {"t": 8.7, "x": 1147.2, "y": 534.9, "h": 760.5}, {"t": 8.8, "x": 1144.5, "y": 545.1, "h": 774.4}, {"t": 8.9, "x": 1143.5, "y": 555.7, "h": 782.9}, {"t": 9.0, "x": 1147.2, "y": 568.0, "h": 788.3}, {"t": 9.1, "x": 1149.9, "y": 574.9, "h": 785.1}, {"t": 9.2, "x": 1154.1, "y": 581.3, "h": 785.1}, {"t": 9.3, "x": 1157.9, "y": 579.7, "h": 773.3}, {"t": 9.4, "x": 1160.0, "y": 576.5, "h": 758.4}, {"t": 9.5, "x": 1158.9, "y": 569.1, "h": 743.5}, {"t": 9.6, "x": 1158.4, "y": 554.7, "h": 733.9}, {"t": 9.7, "x": 1156.8, "y": 539.2, "h": 717.9}, {"t": 9.8, "x": 1154.7, "y": 523.2, "h": 705.1}, {"t": 9.9, "x": 1157.3, "y": 513.1, "h": 695.5}, {"t": 10.0, "x": 1160.5, "y": 508.8, "h": 695.5}, {"t": 10.1, "x": 1162.7, "y": 513.1, "h": 697.6}, {"t": 10.2, "x": 1166.9, "y": 523.7, "h": 695.5}, {"t": 10.3, "x": 1172.3, "y": 537.6, "h": 704.0}, {"t": 10.4, "x": 1172.8, "y": 543.5, "h": 711.5}, {"t": 10.5, "x": 1171.2, "y": 545.1, "h": 716.8}, {"t": 10.6, "x": 1171.2, "y": 547.2, "h": 723.2}, {"t": 10.7, "x": 1169.6, "y": 549.9, "h": 734.9}, {"t": 10.8, "x": 1165.3, "y": 559.5, "h": 745.6}, {"t": 10.9, "x": 1163.2, "y": 572.3, "h": 758.4}, {"t": 11.0, "x": 1161.6, "y": 582.4, "h": 768.0}, {"t": 11.1, "x": 1160.5, "y": 586.7, "h": 778.7}, {"t": 11.2, "x": 1162.1, "y": 585.1, "h": 790.4}, {"t": 11.3, "x": 1165.9, "y": 579.2, "h": 795.7}, {"t": 11.4, "x": 1167.5, "y": 578.7, "h": 796.8}, {"t": 11.5, "x": 1170.1, "y": 581.3, "h": 797.9}, {"t": 11.6, "x": 1171.7, "y": 587.2, "h": 790.4}, {"t": 11.7, "x": 1170.7, "y": 591.5, "h": 786.1}, {"t": 11.8, "x": 1169.1, "y": 588.8, "h": 782.9}, {"t": 11.9, "x": 1168.0, "y": 580.3, "h": 782.9}, {"t": 12.0, "x": 1165.9, "y": 571.7, "h": 774.4}, {"t": 12.1, "x": 1165.3, "y": 547.7, "h": 758.4}, {"t": 12.2, "x": 1166.4, "y": 528.5, "h": 741.3}, {"t": 12.3, "x": 1167.5, "y": 517.9, "h": 726.4}, {"t": 12.4, "x": 1170.1, "y": 512.0, "h": 712.5}, {"t": 12.5, "x": 1173.3, "y": 505.6, "h": 706.1}, {"t": 12.6, "x": 1175.5, "y": 515.2, "h": 712.5}, {"t": 12.7, "x": 1176.5, "y": 522.7, "h": 714.7}, {"t": 12.8, "x": 1178.7, "y": 526.9, "h": 714.7}, {"t": 12.9, "x": 1180.8, "y": 528.0, "h": 712.5}, {"t": 13.0, "x": 1182.4, "y": 528.5, "h": 711.5}, {"t": 13.1, "x": 1184.0, "y": 529.1, "h": 710.4}, {"t": 13.2, "x": 1184.5, "y": 529.6, "h": 713.6}, {"t": 13.3, "x": 1183.5, "y": 528.5, "h": 715.7}, {"t": 13.4, "x": 1181.3, "y": 526.4, "h": 724.3}, {"t": 13.5, "x": 1178.1, "y": 526.4, "h": 732.8}, {"t": 13.6, "x": 1176.0, "y": 528.5, "h": 741.3}, {"t": 13.7, "x": 1174.4, "y": 535.5, "h": 750.9}, {"t": 13.8, "x": 1172.3, "y": 545.1, "h": 765.9}, {"t": 13.9, "x": 1171.7, "y": 555.2, "h": 775.5}, {"t": 14.0, "x": 1173.9, "y": 559.5, "h": 777.6}, {"t": 14.1, "x": 1174.4, "y": 557.9, "h": 776.5}, {"t": 14.2, "x": 1176.0, "y": 545.6, "h": 764.8}, {"t": 14.3, "x": 1180.3, "y": 530.7, "h": 747.7}, {"t": 14.4, "x": 1183.5, "y": 517.9, "h": 732.8}, {"t": 14.5, "x": 1185.6, "y": 511.5, "h": 722.1}, {"t": 14.6, "x": 1186.7, "y": 510.4, "h": 715.7}, {"t": 14.7, "x": 1186.7, "y": 515.7, "h": 715.7}, {"t": 14.8, "x": 1185.1, "y": 525.9, "h": 721.1}, {"t": 14.9, "x": 1183.5, "y": 537.1, "h": 730.7}, {"t": 15.0, "x": 1181.3, "y": 548.8, "h": 743.5}, {"t": 15.1, "x": 1180.8, "y": 560.0, "h": 755.2}, {"t": 15.2, "x": 1180.3, "y": 571.2, "h": 766.9}, {"t": 15.3, "x": 1180.3, "y": 578.7, "h": 777.6}, {"t": 15.4, "x": 1180.8, "y": 582.4, "h": 782.9}, {"t": 15.5, "x": 1182.4, "y": 584.0, "h": 784.0}, {"t": 15.6, "x": 1180.8, "y": 568.5, "h": 778.7}, {"t": 15.7, "x": 1179.7, "y": 552.5, "h": 770.1}, {"t": 15.8, "x": 1177.6, "y": 535.5, "h": 757.3}, {"t": 15.9, "x": 1175.5, "y": 520.5, "h": 746.7}, {"t": 16.0, "x": 1173.9, "y": 509.3, "h": 732.8}, {"t": 16.1, "x": 1176.0, "y": 511.5, "h": 722.1}, {"t": 16.2, "x": 1180.3, "y": 513.6, "h": 717.9}, {"t": 16.3, "x": 1184.5, "y": 516.8, "h": 715.7}, {"t": 16.4, "x": 1184.5, "y": 520.0, "h": 720.0}, {"t": 16.5, "x": 1181.9, "y": 523.7, "h": 727.5}, {"t": 16.6, "x": 1177.6, "y": 533.3, "h": 742.4}, {"t": 16.7, "x": 1168.5, "y": 544.5, "h": 752.0}, {"t": 16.8, "x": 1159.5, "y": 552.5, "h": 763.7}, {"t": 16.9, "x": 1154.1, "y": 554.7, "h": 763.7}, {"t": 17.0, "x": 1152.0, "y": 544.0, "h": 759.5}, {"t": 17.1, "x": 1152.0, "y": 525.9, "h": 750.9}, {"t": 17.2, "x": 1157.3, "y": 516.3, "h": 744.5}, {"t": 17.3, "x": 1164.3, "y": 521.1, "h": 741.3}, {"t": 17.4, "x": 1173.9, "y": 533.9, "h": 741.3}, {"t": 17.5, "x": 1182.9, "y": 552.5, "h": 742.4}, {"t": 17.6, "x": 1192.0, "y": 568.0, "h": 739.2}, {"t": 17.7, "x": 1200.0, "y": 568.5, "h": 733.9}, {"t": 17.8, "x": 1206.9, "y": 550.9, "h": 724.3}, {"t": 17.9, "x": 1210.1, "y": 528.5, "h": 713.6}, {"t": 18.0, "x": 1210.7, "y": 507.7, "h": 706.1}, {"t": 18.1, "x": 1207.5, "y": 496.0, "h": 706.1}, {"t": 18.2, "x": 1201.1, "y": 491.7, "h": 710.4}, {"t": 18.3, "x": 1193.6, "y": 497.1, "h": 721.1}, {"t": 18.4, "x": 1185.1, "y": 506.7, "h": 736.0}, {"t": 18.5, "x": 1178.7, "y": 516.3, "h": 753.1}, {"t": 18.6, "x": 1174.4, "y": 522.7, "h": 765.9}, {"t": 18.7, "x": 1171.7, "y": 526.4, "h": 771.2}, {"t": 18.8, "x": 1170.7, "y": 526.4, "h": 771.2}, {"t": 18.9, "x": 1171.7, "y": 522.1, "h": 769.1}, {"t": 19.0, "x": 1172.8, "y": 514.7, "h": 760.5}, {"t": 19.1, "x": 1174.4, "y": 508.8, "h": 748.8}, {"t": 19.2, "x": 1176.0, "y": 507.2, "h": 747.7}, {"t": 19.3, "x": 1174.9, "y": 508.3, "h": 743.5}, {"t": 19.4, "x": 1176.0, "y": 509.3, "h": 745.6}, {"t": 19.5, "x": 1173.9, "y": 513.6, "h": 747.7}, {"t": 19.6, "x": 1172.8, "y": 520.0, "h": 756.3}, {"t": 19.7, "x": 1171.7, "y": 522.1, "h": 758.4}, {"t": 19.8, "x": 1172.8, "y": 524.3, "h": 764.8}, {"t": 19.9, "x": 1171.2, "y": 524.8, "h": 755.2}, {"t": 20.0, "x": 1173.9, "y": 521.1, "h": 749.9}, {"t": 20.1, "x": 1176.5, "y": 514.1, "h": 744.5}, {"t": 20.2, "x": 1177.1, "y": 510.4, "h": 741.3}, {"t": 20.3, "x": 1176.5, "y": 508.8, "h": 736.0}, {"t": 20.4, "x": 1176.0, "y": 510.4, "h": 743.5}, {"t": 20.5, "x": 1172.8, "y": 512.5, "h": 756.3}, {"t": 20.6, "x": 1169.1, "y": 515.2, "h": 770.1}, {"t": 20.7, "x": 1170.1, "y": 517.3, "h": 780.8}, {"t": 20.8, "x": 1173.9, "y": 527.5, "h": 796.8}, {"t": 20.9, "x": 1176.0, "y": 540.3, "h": 807.5}, {"t": 21.0, "x": 1177.6, "y": 558.9, "h": 814.9}, {"t": 21.1, "x": 1176.5, "y": 573.9, "h": 814.9}, {"t": 21.2, "x": 1174.9, "y": 582.9, "h": 811.7}, {"t": 21.3, "x": 1171.2, "y": 578.1, "h": 802.1}, {"t": 21.4, "x": 1170.1, "y": 568.5, "h": 785.1}, {"t": 21.5, "x": 1170.7, "y": 552.0, "h": 762.7}, {"t": 21.6, "x": 1171.7, "y": 526.4, "h": 741.3}, {"t": 21.7, "x": 1171.2, "y": 499.2, "h": 721.1}, {"t": 21.8, "x": 1172.3, "y": 474.7, "h": 704.0}, {"t": 21.9, "x": 1172.3, "y": 458.7, "h": 701.9}, {"t": 22.0, "x": 1170.7, "y": 461.3, "h": 711.5}, {"t": 22.1, "x": 1171.7, "y": 483.7, "h": 726.4}, {"t": 22.2, "x": 1172.3, "y": 523.7, "h": 748.8}, {"t": 22.3, "x": 1172.3, "y": 569.6, "h": 776.5}, {"t": 22.4, "x": 1172.3, "y": 611.2, "h": 793.6}, {"t": 22.5, "x": 1174.4, "y": 636.8, "h": 804.3}, {"t": 22.6, "x": 1175.5, "y": 656.0, "h": 810.7}, {"t": 22.7, "x": 1176.0, "y": 661.9, "h": 811.7}, {"t": 22.8, "x": 1177.1, "y": 633.1, "h": 788.3}, {"t": 22.9, "x": 1178.1, "y": 602.1, "h": 766.9}, {"t": 23.0, "x": 1178.1, "y": 572.3, "h": 754.1}, {"t": 23.1, "x": 1177.6, "y": 545.1, "h": 746.7}, {"t": 23.2, "x": 1176.0, "y": 527.5, "h": 745.6}, {"t": 23.3, "x": 1173.9, "y": 540.3, "h": 764.8}, {"t": 23.4, "x": 1172.8, "y": 550.9, "h": 781.9}, {"t": 23.5, "x": 1171.7, "y": 559.5, "h": 788.3}, {"t": 23.6, "x": 1169.1, "y": 561.1, "h": 789.3}, {"t": 23.7, "x": 1168.0, "y": 551.5, "h": 785.1}, {"t": 23.8, "x": 1164.8, "y": 536.5, "h": 772.3}, {"t": 23.9, "x": 1161.6, "y": 526.9, "h": 768.0}, {"t": 24.0, "x": 1158.9, "y": 527.5, "h": 760.5}, {"t": 24.1, "x": 1157.3, "y": 534.4, "h": 759.5}, {"t": 24.2, "x": 1156.3, "y": 545.1, "h": 759.5}, {"t": 24.3, "x": 1156.8, "y": 560.5, "h": 764.8}, {"t": 24.4, "x": 1158.4, "y": 571.7, "h": 761.6}, {"t": 24.5, "x": 1160.0, "y": 574.4, "h": 762.7}, {"t": 24.6, "x": 1163.2, "y": 569.1, "h": 758.4}, {"t": 24.7, "x": 1164.3, "y": 559.5, "h": 756.3}, {"t": 24.8, "x": 1166.4, "y": 546.7, "h": 747.7}, {"t": 24.9, "x": 1167.5, "y": 533.9, "h": 743.5}, {"t": 25.0, "x": 1168.5, "y": 525.3, "h": 749.9}, {"t": 25.1, "x": 1168.0, "y": 524.8, "h": 759.5}, {"t": 25.2, "x": 1168.0, "y": 531.2, "h": 768.0}, {"t": 25.3, "x": 1165.9, "y": 538.7, "h": 785.1}, {"t": 25.4, "x": 1162.7, "y": 547.2, "h": 802.1}, {"t": 25.5, "x": 1160.0, "y": 556.3, "h": 807.5}, {"t": 25.6, "x": 1157.3, "y": 565.3, "h": 812.8}, {"t": 25.7, "x": 1158.4, "y": 570.7, "h": 819.2}, {"t": 25.8, "x": 1158.9, "y": 576.5, "h": 820.3}, {"t": 25.9, "x": 1161.1, "y": 578.7, "h": 820.3}, {"t": 26.0, "x": 1163.2, "y": 566.9, "h": 816.0}, {"t": 26.1, "x": 1165.9, "y": 550.4, "h": 804.3}, {"t": 26.2, "x": 1166.4, "y": 537.1, "h": 792.5}, {"t": 26.3, "x": 1168.0, "y": 528.0, "h": 778.7}, {"t": 26.4, "x": 1166.9, "y": 526.9, "h": 765.9}, {"t": 26.5, "x": 1163.7, "y": 535.5, "h": 755.2}, {"t": 26.6, "x": 1161.6, "y": 542.9, "h": 746.7}, {"t": 26.7, "x": 1157.3, "y": 545.1, "h": 736.0}, {"t": 26.8, "x": 1155.2, "y": 546.1, "h": 736.0}, {"t": 26.9, "x": 1154.1, "y": 544.0, "h": 738.1}, {"t": 27.0, "x": 1156.8, "y": 539.2, "h": 747.7}, {"t": 27.1, "x": 1159.5, "y": 532.3, "h": 761.6}, {"t": 27.2, "x": 1162.7, "y": 525.9, "h": 776.5}, {"t": 27.3, "x": 1163.2, "y": 520.0, "h": 788.3}, {"t": 27.4, "x": 1157.9, "y": 516.8, "h": 796.8}, {"t": 27.5, "x": 1154.1, "y": 523.7, "h": 802.1}, {"t": 27.6, "x": 1160.5, "y": 540.8, "h": 797.9}, {"t": 27.7, "x": 1160.5, "y": 560.0, "h": 797.9}, {"t": 27.8, "x": 1163.7, "y": 577.1, "h": 797.9}, {"t": 27.9, "x": 1173.9, "y": 590.4, "h": 801.1}, {"t": 28.0, "x": 1178.7, "y": 602.7, "h": 802.1}, {"t": 28.1, "x": 1176.0, "y": 613.9, "h": 820.3}, {"t": 28.2, "x": 1175.5, "y": 633.6, "h": 832.0}, {"t": 28.3, "x": 1170.7, "y": 653.3, "h": 848.0}, {"t": 28.4, "x": 1165.3, "y": 670.4, "h": 856.5}, {"t": 28.5, "x": 1161.6, "y": 682.7, "h": 866.1}, {"t": 28.6, "x": 1154.1, "y": 691.2, "h": 866.1}];
+      const mk = (html, cls, style, par) => { const d = document.createElement("div"); if (cls) d.className = cls; if (style) d.style.cssText = style; d.innerHTML = html || ""; (par || $("#fx")).appendChild(d); return d; };
+      const sv = (p, tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+      const pop = (e, t, from) => tl.fromTo(e, Object.assign({ opacity: 0, scale: 0.6, y: 24 }, from || {}), { opacity: 1, scale: 1, x: 0, y: 0, duration: 0.4, ease: "back.out(1.9)" }, t);
+      const fade = (e, t, d = 0.25) => tl.to(e, { opacity: 0, duration: d }, t);
+      const kw = (html, t0, t1, top) => { const k = mk(html, "kw", top ? `top:${top}px` : ""); tl.fromTo(k, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, t0); if (t1) fade(k, t1, 0.2); return k; };
+
+      // ---------- keep the head centred (face tracking, small range so no edge shows) ----------
+      FACE.forEach((f, i) => {
+        const v = Math.max(-50, Math.min(50, (1280 - f.x) * 0.75));
+        if (!i) tl.set("#track", { x: v }, 0); else tl.to("#track", { x: v, duration: f.t - FACE[i - 1].t, ease: "none" }, FACE[i - 1].t);
+      });
+
+      // ---------- camera: glass (still) / lateral / glass + dry cuts / lateral / glass ----------
+      const sideR = (t, s = 1.0) => { tl.to(cam, { x: 470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeL", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const sideL = (t, s = 1.0) => { tl.to(cam, { x: -470, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to("#fadeR", { opacity: 1, duration: 0.45 }, t + 0.1); };
+      const full = (t, s = 1.06) => { tl.to(cam, { x: 0, scale: s, duration: 0.6, ease: "power3.inOut" }, t); tl.to(["#fadeL", "#fadeR"], { opacity: 0, duration: 0.3 }, t + 0.05); };
+      tl.set(cam, { x: 0, scale: 1.06 }, 0);
+      tl.to(cam, { scale: 1.1, duration: 4.5, ease: "none" }, 0.05);
+      sideR(4.7, 1.0);
+      full(7.45, 1.06);
+      tl.set(cam, { scale: 1.18 }, 9.46);            // dry cut: "lo perdí todo"
+      tl.to(cam, { scale: 1.22, duration: 2.7, ease: "none" }, 9.48);
+      tl.set(cam, { scale: 1.06 }, 12.3);            // back wide
+      tl.to(cam, { scale: 1.1, duration: 3.4, ease: "none" }, 12.32);
+      sideL(15.9, 1.0);
+      full(22.95, 1.06);
+      tl.to(cam, { scale: 1.09, duration: 3.4, ease: "none" }, 23.56);
+      tl.set(cam, { scale: 1.18 }, 27.0);            // dry cut: "nadie lo hace"
+      tl.to(cam, { scale: 1.2, duration: 1.6, ease: "none" }, 27.02);
+
+      // ---------- A 0–4.7: everybody wants the ×100 coin (glass in front, camera still) ----------
+      const COINS = { doge: ["Dogecoin", "×8.419", "−92 %"], shib: ["Shiba Inu", "×1,5 MILLONES", "−96 %"], pepe: ["PEPE", "×508", "−88 %"], wif: ["dogwifhat", "×3.107", "−97 %"], bonk: ["BONK", "×676", "−96 %"] };
+      const chip = (id, pos) => mk(`<img src="assets/logos/${id}.png"><div><b>${COINS[id][0]}</b><i class="up">▲ ${COINS[id][1]}</i><em>DE MÍNIMO A MÁXIMO</em></div>`, "glass chip ov", pos);
+      const A = [["doge", 1.04, "left:110px;top:150px"], ["shib", 1.86, "left:1330px;top:170px"], ["pepe", 2.54, "left:140px;top:470px"], ["wif", 3.3, "left:1390px;top:490px"]];
+      const aEls = A.map(([id, t, pos]) => { const e = chip(id, pos); pop(e, t); tl.to(e, { y: "+=14", duration: 1.1, ease: "sine.inOut", yoyo: true, repeat: 1 }, t + 0.4); return e; });
+      // search bar typing what everybody searches
+      const bar = mk(`<div style="display:flex;align-items:center;gap:22px;padding:22px 34px"><span style="font-size:46px">🔍</span>
+          <span id="q" style="font-size:44px;font-weight:800;white-space:nowrap"></span><span id="cur" style="width:4px;height:52px;background:#fff;display:inline-block"></span>
+          <span id="go" style="margin-left:18px;padding:10px 26px;border-radius:16px;background:linear-gradient(180deg,#f0d488,#c9a54c);color:#1a1408;font-size:34px;font-weight:900">Buscar</span></div>`,
+        "glass ov", "left:0;right:0;margin:0 auto;width:max-content;top:820px;border-radius:999px;");
+      const Q = "la criptomoneda que multiplica ×100";
+      tl.set(bar, { opacity: 1 }, 0);
+      for (let i = 1; i <= Q.length; i++) tl.call(() => { $("#q").textContent = Q.slice(0, i); }, null, 0.2 + (i / Q.length) * 3.0);
+      tl.call(() => { $("#q").textContent = ""; }, null, 0.19);
+      tl.to("#cur", { opacity: 0, duration: 0.01, repeat: 7, yoyo: true, repeatDelay: 0.22 }, 3.32);
+      // his own click: "y yo también la busqué"
+      const ptr = mk(`<svg viewBox="0 0 24 24" width="64" height="64"><path d="M3 2l17 9.5-7.4 1.6L9.4 20z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>`, "ov", "left:0;top:0;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))");
+      const GX = 1370, GY = 880;
+      tl.fromTo(ptr, { opacity: 0, x: GX + 160, y: GY + 120 }, { opacity: 1, x: GX, y: GY, duration: 0.45, ease: "power2.inOut" }, 3.82);
+      tl.to(ptr, { scale: 0.8, duration: 0.07, yoyo: true, repeat: 1 }, 4.4);
+      tl.to("#go", { scale: 0.9, duration: 0.07, yoyo: true, repeat: 1 }, 4.4);
+      const yo = mk(`<span class="serif" style="font-size:54px;color:#f6e6b8">yo también</span> <b style="font-size:54px">la busqué</b>`, "ov", "left:0;right:0;text-align:center;top:735px;text-shadow:0 6px 24px rgba(0,0,0,.85)");
+      pop(yo, 3.82, { scale: 0.85 });
+      tl.to([...aEls, bar, ptr, yo], { opacity: 0, y: 30, duration: 0.3, stagger: 0.03 }, 4.55);
+
+      // ---------- B 4.7–7.45: lost time and money (lateral, card on the left) ----------
+      const cB = mk(`<div style="position:absolute;left:56px;top:56px;font-size:28px;font-weight:800;letter-spacing:.16em;color:#c9a54c">BUSCANDO EL ×100</div>
+          <div style="position:absolute;left:56px;top:104px;font-size:64px;font-weight:900;line-height:1.05">Lo que <span style="color:#ff7a7e">perdí</span></div>
+          <div id="rT" style="position:absolute;left:56px;right:56px;top:300px;opacity:0"><div style="display:flex;align-items:center;gap:20px"><span style="font-size:84px">⏳</span><b style="font-size:66px;font-weight:900">TIEMPO</b></div>
+            <div style="margin-top:22px;height:34px;border-radius:12px;background:rgba(255,255,255,.08);overflow:hidden"><div class="bf" style="height:100%;background:linear-gradient(90deg,#c23a3f,#ff6b70);transform-origin:0 50%"></div></div></div>
+          <div id="rD" style="position:absolute;left:56px;right:56px;top:540px;opacity:0"><div style="display:flex;align-items:center;gap:20px"><span style="font-size:84px">💸</span><b style="font-size:66px;font-weight:900">DINERO</b></div>
+            <div style="margin-top:22px;height:34px;border-radius:12px;background:rgba(255,255,255,.08);overflow:hidden"><div class="bf" style="height:100%;background:linear-gradient(90deg,#c23a3f,#ff6b70);transform-origin:0 50%"></div></div></div>`, "card", "left:80px;");
+      tl.fromTo(cB, { opacity: 0, x: -60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 4.85);
+      [["#rT", 5.52], ["#rD", 6.38]].forEach(([s, t]) => {
+        tl.fromTo(s, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }, t);
+        tl.fromTo(s + " .bf", { scaleX: 1 }, { scaleX: 0.12, duration: 0.9, ease: "power2.inOut" }, t + 0.15);
+      });
+      tl.to(cB, { opacity: 0, x: -50, duration: 0.25, ease: "power2.in" }, 7.3);
+
+      // ---------- C 7.45–12.3: found some… lost it all (glass in front, dry cut, real drawdowns) ----------
+      const fnd = mk(`<span class="serif" style="font-size:58px;color:#f6e6b8">encontré</span> <b style="font-size:58px">ALGUNA</b>`, "ov", "left:0;right:0;text-align:center;top:840px;text-shadow:0 6px 24px rgba(0,0,0,.85)");
+      pop(fnd, 7.66, { scale: 0.85 }); fade(fnd, 9.4, 0.12);
+      const C = [["pepe", 7.7, "left:120px;top:190px"], ["bonk", 7.9, "left:1380px;top:210px"], ["wif", 8.1, "left:150px;top:510px"]];
+      const cEls = C.map(([id, t, pos]) => { const e = chip(id, pos); pop(e, t); return e; });
+      // "lo perdí todo": same coins, real fall from their all-time high
+      cEls.forEach((e, i) => {
+        const id = C[i][0];
+        tl.call(() => { const it = e.querySelector("i"); it.className = "dn"; it.textContent = "▼ " + COINS[id][2]; e.querySelector("em").textContent = "DESDE SU MÁXIMO"; }, null, 9.46);
+        tl.call(() => { const it = e.querySelector("i"); it.className = "up"; it.textContent = "▲ " + COINS[id][1]; e.querySelector("em").textContent = "DE MÍNIMO A MÁXIMO"; }, null, 9.45);
+        tl.fromTo(e, { rotationX: 0 }, { rotationX: 360, duration: 0.45, ease: "power2.out", immediateRender: false }, 9.46 + i * 0.05);
+        tl.to(e, { x: -8, duration: 0.05, yoyo: true, repeat: 3, ease: "none" }, 9.95);
+      });
+      tl.to("#redTint", { opacity: 1, duration: 0.3 }, 9.46);
+      const todo = kw(`<span class="serif">lo perdí</span><b class="box red">TODO</b>`, 9.6, 10.25);
+      tl.to(cEls, { opacity: 0, y: 30, duration: 0.3, stagger: 0.04 }, 10.2);
+      kw(`<span class="serif">por la</span><b class="box red">AVARICIA</b>`, 10.38, 10.95);
+      const mas = kw(`<span class="serif">de querer</span><b id="m1" style="display:inline-block">MÁS</b> <span class="serif" style="font-size:70px;color:#f6e6b8;margin:0 22px 0 4px">y</span><b id="m2" style="display:inline-block;color:#ff7a7e;transform-origin:0 70%">MÁS</b>`, 10.98, 12.2);
+      tl.set(["#m1", "#m2"], { opacity: 0 }, 0);
+      tl.fromTo("#m1", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 11.08);
+      tl.fromTo("#m2", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1.15, duration: 0.35, ease: "back.out(3)" }, 11.8);
+      tl.to("#redTint", { opacity: 0, duration: 0.4 }, 12.2);
+
+      // ---------- D 12.3–15.9: be profitable and change my life (full, keywords) ----------
+      kw(`<span class="serif">cómo conseguir</span><b class="box">SER RENTABLE</b>`, 13.6, 14.8);
+      kw(`<span class="serif">y</span><b class="box">CAMBIAR MI VIDA</b>`, 14.86, 15.85);
+
+      // ---------- E 15.9–22.95: lateral, card on the right ----------
+      const cE = mk(`<div style="position:absolute;left:56px;top:56px;font-size:28px;font-weight:800;letter-spacing:.16em;color:#c9a54c">A DÍA DE HOY</div>
+          <div style="position:absolute;left:56px;top:104px;font-size:58px;font-weight:900;line-height:1.08">Mis inversiones me han<br>asegurado <span style="color:#f0d488">el resto<br>de mi vida</span></div>
+          <svg id="ue" width="690" height="330" viewBox="0 0 690 330" style="position:absolute;left:56px;top:400px"></svg>
+          <div id="ok" style="position:absolute;left:56px;bottom:56px;padding:12px 26px;border-radius:16px;background:rgba(63,191,127,.16);color:#6fe0a6;font-size:34px;font-weight:900;opacity:0">✅ RESTO DE MI VIDA ASEGURADO</div>`, "card", "left:1040px;");
+      const UE = cE.querySelector("#ue");
+      for (let i = 0; i < 4; i++) sv(UE, "line", { x1: 0, x2: 690, y1: 30 + i * 90, y2: 30 + i * 90, stroke: "rgba(255,255,255,.06)", "stroke-width": 2 });
+      const smooth = (n, seed, amp) => { const p = []; for (let i = 0; i <= n; i++) { const k = i / n; p.push([k, 0.08 + 0.84 * Math.pow(k, 1.35) + amp * Math.sin(i * seed) * (0.3 + 0.7 * k)]); } return p; };
+      const toD = (pts, W, H) => pts.map(([k, v], i) => (i ? "L" : "M") + (k * W).toFixed(1) + " " + (H - v * H).toFixed(1)).join(" ");
+      const up = sv(UE, "path", { d: toD(smooth(40, 1.7, 0.012), 680, 310), fill: "none", stroke: "#f0d488", "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round", style: "filter:drop-shadow(0 0 10px rgba(240,212,136,.6))", "stroke-dasharray": 1200, "stroke-dashoffset": 1200 });
+      tl.fromTo(cE, { opacity: 0, x: 60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 16.05);
+      tl.to(up, { attr: { "stroke-dashoffset": 0 }, duration: 2.2, ease: "power1.inOut" }, 16.5);
+      tl.fromTo("#ok", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.5)" }, 18.54);
+      tl.to(cE, { opacity: 0, x: 50, duration: 0.25, ease: "power2.in" }, 19.2);
+      // the two roads: chasing ×100 vs the boring way
+      const cF = mk(`<div style="position:absolute;left:56px;top:56px;font-size:28px;font-weight:800;letter-spacing:.16em;color:#c9a54c">PARA CONSEGUIRLO</div>
+          <div id="pA" style="position:absolute;left:40px;right:40px;top:120px;height:300px;border-radius:26px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);opacity:0">
+            <div style="position:absolute;left:26px;top:20px;font-size:38px;font-weight:900">🎢 Buscar el ×100</div><svg id="sa" width="640" height="190" viewBox="0 0 640 190" style="position:absolute;left:40px;top:92px"></svg></div>
+          <div id="pB" style="position:absolute;left:40px;right:40px;top:450px;height:300px;border-radius:26px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);opacity:0">
+            <div style="position:absolute;left:26px;top:20px;font-size:38px;font-weight:900">😴 La manera aburrida</div><svg id="sb" width="640" height="190" viewBox="0 0 640 190" style="position:absolute;left:40px;top:92px"></svg>
+            <div id="wk" style="position:absolute;right:24px;top:22px;padding:6px 18px;border-radius:12px;background:#2fb57a;color:#fff;font-size:28px;font-weight:900;opacity:0">✅ FUNCIONA</div></div>`, "card", "left:1040px;");
+      const spiky = [0.3, 0.34, 0.28, 0.55, 0.42, 0.9, 0.62, 0.95, 0.5, 0.7, 0.35, 0.48, 0.2, 0.3, 0.1, 0.16, 0.05];
+      const sA = sv(cF.querySelector("#sa"), "path", { d: spiky.map((v, i) => (i ? "L" : "M") + (i / (spiky.length - 1) * 630).toFixed(1) + " " + (180 - v * 170).toFixed(1)).join(" "), fill: "none", stroke: "#ff6b70", "stroke-width": 6, "stroke-linejoin": "round", "stroke-dasharray": 2600, "stroke-dashoffset": 2600 });
+      const sB = sv(cF.querySelector("#sb"), "path", { d: toD(smooth(40, 2.3, 0.01), 630, 180), fill: "none", stroke: "#6fe0a6", "stroke-width": 6, "stroke-linejoin": "round", "stroke-dasharray": 1200, "stroke-dashoffset": 1200 });
+      tl.fromTo(cF, { opacity: 0, x: 60, scale: 0.95 }, { opacity: 1, x: 0, scale: 1, duration: 0.45, ease: "expo.out" }, 19.32);
+      tl.fromTo("#pA", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 }, 19.5);
+      tl.to(sA, { attr: { "stroke-dashoffset": 0 }, duration: 1.1, ease: "none" }, 19.6);
+      tl.fromTo("#pB", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 }, 20.6);
+      tl.to(sB, { attr: { "stroke-dashoffset": 0 }, duration: 1.4, ease: "power1.inOut" }, 20.7);
+      tl.to("#pA", { opacity: 0.35, duration: 0.3 }, 22.1);
+      tl.to("#pB", { borderColor: "#f0d488", boxShadow: "0 0 40px rgba(240,212,136,.35)", duration: 0.3 }, 22.14);
+      tl.fromTo("#wk", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(3)" }, 22.2);
+      tl.to(cF, { opacity: 0, x: 50, duration: 0.25, ease: "power2.in" }, 22.8);
+
+      // ---------- F 22.95–28.68: what's in this video (glass in front) + "nobody does it" ----------
+      const L = mk(`<div style="font-size:26px;font-weight:800;letter-spacing:.16em;color:#c9a54c">EN ESTE VÍDEO</div>
+          <div id="l1" style="display:flex;align-items:center;gap:18px;margin-top:22px;opacity:0"><span style="width:58px;height:58px;border-radius:50%;background:linear-gradient(180deg,#f0d488,#c9a54c);color:#1a1408;font-size:34px;font-weight:900;display:flex;align-items:center;justify-content:center">1</span><b style="font-size:46px;font-weight:900">Cuál es el método</b></div>
+          <div id="l2" style="display:flex;align-items:center;gap:18px;margin-top:18px;opacity:0"><span style="width:58px;height:58px;border-radius:50%;background:linear-gradient(180deg,#f0d488,#c9a54c);color:#1a1408;font-size:34px;font-weight:900;display:flex;align-items:center;justify-content:center">2</span><b style="font-size:46px;font-weight:900">Cómo conseguirlo</b></div>`,
+        "glass ov", "left:100px;top:300px;padding:34px 42px;");
+      pop(L, 23.3, { x: -40 });
+      tl.fromTo("#l1", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }, 24.6);
+      tl.fromTo("#l2", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }, 25.45);
+      tl.to(L, { opacity: 0, x: -40, duration: 0.3 }, 26.5);
+      kw(`<span class="serif">por eso</span><b class="box">NADIE LO HACE</b>`, 27.0, 27.62);
+      kw(`<span class="serif">porque es</span><b class="box">ABURRIDO 😴</b>`, 27.66, null);
+      tl.set("#redTint", { opacity: 0 }, 0);
+
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
