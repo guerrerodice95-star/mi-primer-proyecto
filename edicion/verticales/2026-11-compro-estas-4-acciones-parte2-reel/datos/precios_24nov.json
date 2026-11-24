@@ -1,0 +1,27 @@
+{
+ "AAPL": {
+  "precio": 349.08,
+  "cierre_hace_5_sesiones": 352.78,
+  "cambio_1s_%": -1.05
+ },
+ "MSFT": {
+  "precio": 492.5,
+  "cierre_hace_5_sesiones": 517.99,
+  "cambio_1s_%": -4.92
+ },
+ "GOOGL": {
+  "precio": 282.1,
+  "cierre_hace_5_sesiones": 283.72,
+  "cambio_1s_%": -0.57
+ },
+ "AMZN": {
+  "precio": 255.39,
+  "cierre_hace_5_sesiones": 257.75,
+  "cambio_1s_%": -0.92
+ },
+ "^IXIC": {
+  "precio": 24089.559,
+  "cierre_hace_5_sesiones": 24509.76,
+  "cambio_1s_%": -1.71
+ }
+}
