@@ -11,6 +11,8 @@ Lo que le gusta a Unai, aprendido de sus correcciones. **Leer antes de editar cu
 
 - **Color de cámara:** el de los reels, `contrast(1.08) saturate(1.05) brightness(1.06)`. Se probó un ajuste con menos
   naranja (`saturate(0.9) hue-rotate(6deg) brightness(1.17)`, horizontal de las 3 preguntas) y **no le gustó**: no usarlo.
+- **Vídeos "naturales" (los de fotos, con luz de exterior): no tocar su color.** Si solo hay que poner gráficos encima, montarlos sobre el bruto
+  original sin filtro (ver `COMO-EDITAR.md`, "Gráficos encima sin tocar la imagen"). Ejemplo: `verticales/2026-11-titulares-miedo-trozo/`.
 
 ## Ritmo y cantidad de efectos
 
