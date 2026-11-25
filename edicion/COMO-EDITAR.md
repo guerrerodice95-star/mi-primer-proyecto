@@ -63,3 +63,10 @@ npx hyperframes browser ensure
 - El linter de HyperFrames da error si un elemento tiene `transform` en CSS y GSAP lo anima: poner la
   transformación inicial con `gsap.set`.
 - Al reordenar o recortar frases, no cortar con los tiempos de la transcripción (cortan la primera letra): buscar el silencio real midiendo la energía del audio (ventanas de 10–20 ms) y cortar ahí, con fundidos de ~10 ms.
+
+## Gráficos encima sin tocar la imagen
+
+Al pasar por el navegador, un bruto sin etiquetas de color (lo normal en los de Unai) cambia un poco de tono. Si pide que no se toque su imagen:
+renderizar **solo los gráficos** con fondo transparente (`hyperframes render --format mov`, ProRes 4444 con alfa; sin `<video>` y con
+`background: transparent` en `html, body`) y ponerlos encima del bruto con ffmpeg (`overlay`, misma resolución y fps del bruto). Ejemplo y comando
+en `verticales/2026-11-titulares-miedo-trozo/README.md`.
