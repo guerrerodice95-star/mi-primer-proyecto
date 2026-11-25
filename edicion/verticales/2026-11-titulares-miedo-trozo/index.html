@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Caladea"; font-weight: 700; src: url(assets/fonts/Caladea-Bold.ttf) format("truetype"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; }
+      .clip { position: absolute; inset: 0; }
+      #cam { width: 1080px; height: 1920px; object-fit: cover; filter: contrast(1.08) saturate(1.05) brightness(1.06); }
+      #shade { background: linear-gradient(180deg, transparent 52%, rgba(0,0,0,0.28) 100%); }
+      .news { position: absolute; left: 80px; width: 920px; padding: 30px 38px 34px; border-radius: 18px; background: #fff; color: #111; opacity: 0;
+        box-shadow: 0 26px 60px rgba(0,0,0,0.45), 0 2px 0 rgba(0,0,0,0.06); transform-origin: 50% 100%; }
+      .news .top { display: flex; align-items: center; gap: 16px; font-size: 24px; font-weight: 700; color: #6b6b6b; }
+      .news .tag { padding: 5px 14px; border-radius: 6px; background: #d4111e; color: #fff; font-size: 22px; font-weight: 900; letter-spacing: .08em; }
+      .news h2 { margin-top: 16px; font-family: "Caladea", serif; font-weight: 700; font-size: 62px; line-height: 1.06; letter-spacing: -0.005em; }
+      .news h2 em { font-style: normal; color: #d4111e; }
+      .news .rule { margin-top: 20px; height: 2px; background: #e6e6e6; }
+      .news .by { margin-top: 14px; font-size: 22px; font-weight: 700; color: #8a8a8a; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="4.68" data-width="1080" data-height="1920">
+      <video id="cam" class="clip" data-start="0" data-duration="4.68" data-track-index="0" src="assets/cam.mp4" muted playsinline></video>
+      <div id="shade" class="clip" data-start="0" data-duration="4.68" data-track-index="1"></div>
+      <div id="fx" class="clip" data-start="0" data-duration="4.68" data-track-index="2"></div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const fx = document.querySelector("#fx");
+      // headlines given by Unai, in a generic digital-newspaper style (no real outlet)
+      const N = [
+        ["MERCADOS", "hace 12 min", "Bitcoin cae de 60.000 $ y <em>se va a cero</em>", 0.1, -2.2, -10],
+        ["CRIPTO", "hace 1 h", "<em>La estafa</em> de las criptomonedas", 1.0, 1.8, 12],
+        ["BOLSA", "hace 2 h", "La bolsa cae y <em>atrapa</em> a los inversores", 1.84, -1.4, -6],
+        ["ECONOMÍA", "hace 3 h", "Se acerca un nuevo <em>crash mundial</em>", 3.2, 1.2, 8],
+      ];
+      const cards = N.map(([sec, ago, h, t, rot, dx], i) => {
+        const c = document.createElement("div"); c.className = "news";
+        c.innerHTML = `<div class="top"><span class="tag">ÚLTIMA HORA</span><span>${sec} · ${ago}</span></div><h2>${h}</h2><div class="rule"></div><div class="by">Redacción · Economía</div>`;
+        c.style.top = (1150 + i * 46) + "px"; fx.appendChild(c);
+        tl.fromTo(c, { opacity: 0, y: 90, x: dx, rotation: rot * 1.8, scale: 0.96 }, { opacity: 1, y: 0, x: dx, rotation: rot, scale: 1, duration: 0.45, ease: "power3.out" }, t);
+        return c;
+      });
+      // older clippings settle back a little when a new one lands on top
+      cards.forEach((c, i) => { if (i < cards.length - 1) tl.to(c, { filter: "brightness(0.9)", y: -10, duration: 0.4, ease: "power2.out" }, N[i + 1][3]); });
+      tl.set({}, {}, 4.68);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
