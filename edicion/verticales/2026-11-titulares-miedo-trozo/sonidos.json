@@ -1,0 +1,22 @@
+[
+ {
+  "sonido": "swish",
+  "segundo": 0.1,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "swish",
+  "segundo": 1.0,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "swish",
+  "segundo": 1.84,
+  "volumen": 0.05
+ },
+ {
+  "sonido": "swish",
+  "segundo": 3.2,
+  "volumen": 0.05
+ }
+]
