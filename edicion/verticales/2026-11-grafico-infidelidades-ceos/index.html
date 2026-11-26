@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url(assets/fonts/inter-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url(assets/fonts/inter-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url(assets/fonts/inter-latin-800-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url(assets/fonts/inter-latin-900-normal.woff2) format("woff2"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: #fff; background: #000; }
+      .clip { position: absolute; inset: 0; }
+      .ov { position: absolute; opacity: 0; }
+      #title { left: 60px; right: 60px; top: 170px; text-align: center; opacity: 1; }
+      #title h1 { font-size: 64px; font-weight: 900; line-height: 1.08; letter-spacing: -0.01em; }
+      #title p { margin-top: 14px; font-size: 32px; font-weight: 700; color: #b5b5b5; }
+      .hd { left: 60px; right: 60px; top: 420px; display: flex; align-items: center; gap: 24px; }
+      .hd .ph { width: 120px; height: 120px; border-radius: 50%; flex: none; box-shadow: 0 0 0 4px #1f1f1f; }
+      .hd .nm { font-size: 42px; font-weight: 900; line-height: 1.05; }
+      .hd .co { margin-top: 8px; display: flex; align-items: center; gap: 12px; font-size: 28px; font-weight: 800; color: #cfcfcf; }
+      .hd .co img { width: 40px; height: 40px; border-radius: 50%; }
+      .ev { left: 60px; right: 60px; top: 566px; font-size: 30px; font-weight: 800; color: #ff6b81; line-height: 1.2; }
+      .ev span { color: #8d8d8d; font-weight: 700; }
+      svg.ch { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; opacity: 0; }
+      #date { left: 0; right: 0; top: 1395px; text-align: center; font-size: 86px; font-weight: 800; letter-spacing: -0.01em; opacity: 0; font-variant-numeric: tabular-nums; }
+      #foot { left: 120px; right: 120px; top: 1530px; text-align: center; font-size: 26px; font-weight: 700; color: #d0d0d0; line-height: 1.3; opacity: 1; }
+      .tag { position: absolute; padding: 6px 14px; border-radius: 10px; font-size: 24px; font-weight: 900; white-space: nowrap; }
+      .sum { left: 90px; right: 90px; display: flex; align-items: center; gap: 22px; height: 130px; }
+      .sum img.p { width: 104px; height: 104px; border-radius: 50%; }
+      .sum .t { flex: 1; } .sum .t b { display: block; font-size: 38px; font-weight: 900; } .sum .t span { font-size: 26px; color: #9a9a9a; font-weight: 700; }
+      .sum .v { font-size: 52px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="26.2" data-width="1080" data-height="1920">
+      <div id="fx" class="clip" data-start="0" data-duration="26.2" data-track-index="1"></div>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const NS = "http://www.w3.org/2000/svg";
+      const tl = gsap.timeline({ paused: true });
+      const DUR = 26.2, DATA = [{"t": "AMZN", "peak": 153, "pmax": 242.3, "last": 194.6, "pts": [[0.0, "ene. 2019"], [-1.3, "ene. 2019"], [-2.22, "feb. 2019"], [1.99, "mar. 2019"], [6.35, "mar. 2019"], [10.63, "abr. 2019"], [16.81, "abr. 2019"], [12.76, "may. 2019"], [4.23, "jun. 2019"], [15.59, "jun. 2019"], [21.57, "jul. 2019"], [17.09, "jul. 2019"], [6.24, "ago. 2019"], [7.04, "ago. 2019"], [9.52, "sep. 2019"], [4.41, "oct. 2019"], [6.19, "oct. 2019"], [6.76, "nov. 2019"], [9.59, "nov. 2019"], [7.91, "dic. 2019"], [14.67, "ene. 2020"], [12.19, "ene. 2020"], [29.61, "feb. 2020"], [17.75, "mar. 2020"], [10.28, "mar. 2020"], [14.89, "abr. 2020"], [44.6, "abr. 2020"], [45.17, "may. 2020"], [47.18, "may. 2020"], [57.6, "jun. 2020"], [84.22, "jul. 2020"], [86.81, "jul. 2020"], [89.71, "ago. 2020"], [107.41, "ago. 2020"], [90.19, "sep. 2020"], [94.12, "oct. 2020"], [93.86, "oct. 2020"], [100.19, "nov. 2020"], [86.72, "nov. 2020"], [87.8, "dic. 2020"], [98.01, "dic. 2020"], [96.66, "ene. 2021"], [102.01, "feb. 2021"], [84.23, "feb. 2021"], [85.71, "mar. 2021"], [90.49, "abr. 2021"], [100.96, "abr. 2021"], [98.36, "may. 2021"], [96.4, "may. 2021"], [101.69, "jun. 2021"], [107.31, "jun. 2021"], [113.91, "jul. 2021"], [103.44, "ago. 2021"], [96.81, "ago. 2021"], [109.06, "sep. 2021"], [99.83, "sep. 2021"], [105.43, "oct. 2021"], [99.63, "nov. 2021"], [121.56, "nov. 2021"], [112.31, "dic. 2021"], [105.69, "dic. 2021"], [94.3, "ene. 2022"], [82.22, "feb. 2022"], [83.92, "feb. 2022"], [67.86, "mar. 2022"], [103.67, "mar. 2022"], [87.46, "abr. 2022"], [49.76, "may. 2022"], [29.35, "may. 2022"], [46.05, "jun. 2022"], [36.46, "jun. 2022"], [36.86, "jul. 2022"], [61.7, "ago. 2022"], [66.6, "ago. 2022"], [56.05, "sep. 2022"], [37.13, "sep. 2022"], [36.07, "oct. 2022"], [24.63, "oct. 2022"], [17.05, "nov. 2022"], [9.69, "dic. 2022"], [0.99, "dic. 2022"], [14.61, "ene. 2023"], [24.3, "ene. 2023"], [18.29, "feb. 2023"], [13.2, "mar. 2023"], [18.27, "mar. 2023"], [17.91, "abr. 2023"], [22.99, "may. 2023"], [39.21, "may. 2023"], [52.6, "jun. 2023"], [55.87, "jun. 2023"], [61.86, "jul. 2023"], [61.12, "jul. 2023"], [61.48, "ago. 2023"], [65.44, "sep. 2023"], [55.62, "sep. 2023"], [56.05, "oct. 2023"], [53.96, "oct. 2023"], [75.72, "nov. 2023"], [77.21, "dic. 2023"], [83.34, "dic. 2023"], [82.44, "ene. 2024"], [94.36, "ene. 2024"], [106.07, "feb. 2024"], [109.86, "mar. 2024"], [114.71, "mar. 2024"], [124.11, "abr. 2024"], [116.49, "abr. 2024"], [124.16, "may. 2024"], [114.94, "jun. 2024"], [127.89, "jun. 2024"], [140.79, "jul. 2024"], [119.96, "jul. 2024"], [105.01, "ago. 2024"], [115.14, "ago. 2024"], [128.84, "sep. 2024"], [117.91, "oct. 2024"], [124.63, "oct. 2024"], [149.29, "nov. 2024"], [150.56, "nov. 2024"], [178.59, "dic. 2024"], [167.7, "ene. 2025"], [183.74, "ene. 2025"], [175.92, "feb. 2025"], [145.63, "mar. 2025"], [134.96, "mar. 2025"], [105.69, "abr. 2025"], [127.78, "abr. 2025"], [153.4, "may. 2025"], [149.06, "jun. 2025"], [152.73, "jun. 2025"], [168.21, "jul. 2025"], [180.57, "jul. 2025"], [170.65, "ago. 2025"], [171.59, "sep. 2025"], [178.69, "sep. 2025"], [166.24, "oct. 2025"], [166.47, "oct. 2025"], [199.38, "nov. 2025"], [181.09, "nov. 2025"], [168.24, "dic. 2025"], [190.38, "ene. 2026"], [188.25, "ene. 2026"], [145.97, "feb. 2026"], [151.16, "mar. 2026"], [151.61, "mar. 2026"], [157.64, "abr. 2026"], [207.43, "abr. 2026"], [220.38, "may. 2026"], [226.19, "may. 2026"], [186.24, "jun. 2026"], [196.47, "jul. 2026"], [179.75, "jul. 2026"], [242.31, "ago. 2026"], [228.15, "ago. 2026"], [221.11, "ago. 2026"], [196.44, "sep. 2026"], [203.0, "oct. 2026"], [216.22, "oct. 2026"], [221.71, "nov. 2026"], [194.6, "nov. 2026"]]}, {"t": "MSFT", "peak": 158, "pmax": 124.0, "last": 97.4, "pts": [[0.0, "may. 2021"], [0.47, "may. 2021"], [2.19, "jun. 2021"], [7.0, "jun. 2021"], [11.89, "jul. 2021"], [11.63, "jul. 2021"], [15.45, "jul. 2021"], [15.64, "ago. 2021"], [21.95, "ago. 2021"], [20.97, "sep. 2021"], [20.84, "sep. 2021"], [13.61, "sep. 2021"], [19.41, "oct. 2021"], [24.97, "oct. 2021"], [35.43, "nov. 2021"], [37.53, "nov. 2021"], [32.78, "dic. 2021"], [34.86, "dic. 2021"], [37.52, "dic. 2021"], [26.65, "ene. 2022"], [19.43, "ene. 2022"], [23.29, "feb. 2022"], [20.69, "feb. 2022"], [20.97, "mar. 2022"], [15.72, "mar. 2022"], [25.21, "mar. 2022"], [21.45, "abr. 2022"], [13.16, "abr. 2022"], [16.86, "may. 2022"], [7.52, "may. 2022"], [10.11, "may. 2022"], [1.95, "jun. 2022"], [7.88, "jun. 2022"], [8.16, "jul. 2022"], [5.69, "jul. 2022"], [10.75, "ago. 2022"], [18.26, "ago. 2022"], [12.37, "ago. 2022"], [4.18, "sep. 2022"], [-3.71, "sep. 2022"], [0.29, "oct. 2022"], [-7.89, "oct. 2022"], [-8.62, "oct. 2022"], [-9.53, "nov. 2022"], [-1.26, "nov. 2022"], [0.83, "dic. 2022"], [-1.39, "dic. 2022"], [-3.36, "dic. 2022"], [-3.59, "ene. 2023"], [-0.06, "ene. 2023"], [7.49, "feb. 2023"], [1.35, "feb. 2023"], [2.42, "mar. 2023"], [12.61, "mar. 2023"], [14.47, "mar. 2023"], [16.8, "abr. 2023"], [19.03, "abr. 2023"], [24.38, "may. 2023"], [28.29, "may. 2023"], [35.16, "jun. 2023"], [40.28, "jun. 2023"], [35.34, "jun. 2023"], [35.89, "jul. 2023"], [41.44, "jul. 2023"], [32.09, "ago. 2023"], [27.7, "ago. 2023"], [32.5, "ago. 2023"], [35.43, "sep. 2023"], [27.96, "sep. 2023"], [31.88, "oct. 2023"], [33.52, "oct. 2023"], [39.46, "nov. 2023"], [47.77, "nov. 2023"], [52.57, "nov. 2023"], [50.81, "dic. 2023"], [50.53, "dic. 2023"], [48.27, "ene. 2024"], [58.72, "ene. 2024"], [60.22, "ene. 2024"], [63.74, "feb. 2024"], [64.23, "feb. 2024"], [63.7, "mar. 2024"], [73.03, "mar. 2024"], [68.4, "abr. 2024"], [67.07, "abr. 2024"], [62.1, "abr. 2024"], [67.13, "may. 2024"], [72.07, "may. 2024"], [70.87, "jun. 2024"], [79.87, "jun. 2024"], [85.08, "jul. 2024"], [81.15, "jul. 2024"], [71.38, "jul. 2024"], [62.28, "ago. 2024"], [70.92, "ago. 2024"], [64.78, "sep. 2024"], [73.82, "sep. 2024"], [72.48, "sep. 2024"], [67.58, "oct. 2024"], [72.28, "oct. 2024"], [64.6, "nov. 2024"], [67.24, "nov. 2024"], [70.65, "nov. 2024"], [80.93, "dic. 2024"], [77.04, "dic. 2024"], [71.09, "ene. 2025"], [80.02, "ene. 2025"], [66.18, "feb. 2025"], [65.08, "feb. 2025"], [56.55, "mar. 2025"], [56.58, "mar. 2025"], [57.15, "mar. 2025"], [42.88, "abr. 2025"], [47.82, "abr. 2025"], [75.77, "may. 2025"], [82.6, "may. 2025"], [84.84, "may. 2025"], [90.46, "jun. 2025"], [98.38, "jun. 2025"], [100.13, "jul. 2025"], [105.55, "jul. 2025"], [111.21, "ago. 2025"], [110.55, "ago. 2025"], [102.31, "ago. 2025"], [100.85, "sep. 2025"], [107.31, "sep. 2025"], [108.48, "oct. 2025"], [106.9, "oct. 2025"], [118.44, "oct. 2025"], [103.91, "nov. 2025"], [92.8, "nov. 2025"], [93.77, "dic. 2025"], [91.87, "dic. 2025"], [94.89, "dic. 2025"], [89.67, "ene. 2026"], [93.67, "ene. 2026"], [66.67, "feb. 2026"], [54.93, "feb. 2026"], [65.5, "mar. 2026"], [57.88, "mar. 2026"], [49.17, "mar. 2026"], [58.42, "abr. 2026"], [71.11, "abr. 2026"], [69.56, "may. 2026"], [69.68, "may. 2026"], [72.21, "jun. 2026"], [61.1, "jun. 2026"], [48.53, "jun. 2026"], [57.56, "jul. 2026"], [53.82, "jul. 2026"], [96.44, "ago. 2026"], [94.09, "ago. 2026"], [104.43, "ago. 2026"], [103.67, "sep. 2026"], [100.66, "sep. 2026"], [113.48, "oct. 2026"], [114.33, "oct. 2026"], [104.36, "nov. 2026"], [123.98, "nov. 2026"], [110.76, "nov. 2026"], [97.43, "nov. 2026"]]}, {"t": "000660.KS", "peak": 153, "pmax": 9255.8, "last": 3275.0, "pts": [[0.0, "dic. 2015"], [-10.26, "ene. 2016"], [-4.17, "feb. 2016"], [-6.41, "mar. 2016"], [-10.9, "abr. 2016"], [-14.58, "may. 2016"], [-8.01, "may. 2016"], [1.92, "jun. 2016"], [4.97, "jul. 2016"], [8.33, "ago. 2016"], [20.19, "sep. 2016"], [33.97, "oct. 2016"], [37.5, "oct. 2016"], [34.62, "nov. 2016"], [44.07, "dic. 2016"], [53.85, "ene. 2017"], [69.23, "feb. 2017"], [52.24, "feb. 2017"], [55.93, "mar. 2017"], [59.62, "abr. 2017"], [78.21, "may. 2017"], [81.73, "jun. 2017"], [116.03, "jun. 2017"], [125.64, "jul. 2017"], [114.74, "ago. 2017"], [139.42, "sep. 2017"], [175.96, "oct. 2017"], [164.1, "nov. 2017"], [146.15, "nov. 2017"], [140.71, "dic. 2017"], [128.53, "ene. 2018"], [148.72, "feb. 2018"], [190.71, "mar. 2018"], [157.37, "abr. 2018"], [166.35, "may. 2018"], [203.85, "may. 2018"], [186.86, "jun. 2018"], [183.97, "jul. 2018"], [150.0, "ago. 2018"], [160.26, "sep. 2018"], [136.22, "oct. 2018"], [114.74, "oct. 2018"], [116.35, "nov. 2018"], [109.94, "dic. 2018"], [109.29, "ene. 2019"], [143.27, "feb. 2019"], [124.68, "mar. 2019"], [135.26, "mar. 2019"], [162.18, "abr. 2019"], [130.45, "may. 2019"], [114.1, "jun. 2019"], [121.47, "jul. 2019"], [155.77, "jul. 2019"], [142.95, "ago. 2019"], [154.81, "sep. 2019"], [156.41, "oct. 2019"], [172.76, "nov. 2019"], [165.38, "nov. 2019"], [203.21, "dic. 2019"], [217.31, "ene. 2020"], [226.92, "feb. 2020"], [196.79, "mar. 2020"], [151.28, "abr. 2020"], [164.74, "abr. 2020"], [160.58, "may. 2020"], [173.72, "jun. 2020"], [166.03, "jul. 2020"], [162.18, "ago. 2020"], [152.56, "ago. 2020"], [168.27, "sep. 2020"], [177.88, "oct. 2020"], [178.85, "nov. 2020"], [268.59, "dic. 2020"], [271.79, "dic. 2020"], [332.69, "ene. 2021"], [326.28, "feb. 2021"], [348.72, "mar. 2021"], [348.72, "abr. 2021"], [321.47, "may. 2021"], [300.64, "may. 2021"], [291.03, "jun. 2021"], [295.83, "jul. 2021"], [278.21, "ago. 2021"], [246.15, "sep. 2021"], [220.51, "sep. 2021"], [226.92, "oct. 2021"], [252.56, "nov. 2021"], [286.22, "dic. 2021"], [300.64, "ene. 2022"], [297.44, "feb. 2022"], [294.23, "feb. 2022"], [278.21, "mar. 2022"], [249.36, "abr. 2022"], [260.58, "may. 2022"], [238.14, "jun. 2022"], [185.58, "jul. 2022"], [222.12, "jul. 2022"], [208.97, "ago. 2022"], [194.87, "sep. 2022"], [201.28, "oct. 2022"], [170.83, "nov. 2022"], [166.35, "nov. 2022"], [150.0, "dic. 2022"], [175.0, "ene. 2023"], [199.68, "feb. 2023"], [178.21, "mar. 2023"], [184.62, "mar. 2023"], [179.49, "abr. 2023"], [211.86, "may. 2023"], [281.41, "jun. 2023"], [258.33, "jul. 2023"], [300.96, "ago. 2023"], [273.4, "ago. 2023"], [282.05, "sep. 2023"], [302.88, "oct. 2023"], [318.27, "nov. 2023"], [303.53, "dic. 2023"], [356.41, "ene. 2024"], [340.38, "ene. 2024"], [377.56, "feb. 2024"], [416.67, "mar. 2024"], [486.22, "abr. 2024"], [475.64, "may. 2024"], [506.41, "may. 2024"], [621.15, "jun. 2024"], [581.09, "jul. 2024"], [467.31, "ago. 2024"], [410.9, "sep. 2024"], [492.63, "oct. 2024"], [525.0, "oct. 2024"], [466.35, "nov. 2024"], [489.74, "dic. 2024"], [525.0, "ene. 2025"], [537.5, "feb. 2025"], [516.67, "mar. 2025"], [531.41, "abr. 2025"], [471.47, "abr. 2025"], [531.09, "may. 2025"], [698.08, "jun. 2025"], [851.92, "jul. 2025"], [726.92, "ago. 2025"], [760.58, "ago. 2025"], [1057.05, "sep. 2025"], [1443.27, "oct. 2025"], [1694.87, "nov. 2025"], [1714.1, "dic. 2025"], [2226.92, "ene. 2026"], [2659.62, "ene. 2026"], [3162.82, "feb. 2026"], [2890.38, "mar. 2026"], [3541.03, "abr. 2026"], [5781.41, "may. 2026"], [6534.62, "jun. 2026"], [9255.77, "jun. 2026"], [8393.59, "jun. 2026"], [5537.82, "jul. 2026"], [4707.69, "ago. 2026"], [5707.69, "sep. 2026"], [5287.82, "oct. 2026"], [4380.77, "nov. 2026"], [3275.0, "nov. 2026"]]}, {"t": "GOOGL", "peak": 153, "pmax": 1796.0, "last": 1186.1, "pts": [[0.0, "ago. 2013"], [3.28, "sep. 2013"], [19.62, "oct. 2013"], [24.73, "nov. 2013"], [31.8, "dic. 2013"], [30.45, "ene. 2014"], [43.26, "feb. 2014"], [31.34, "mar. 2014"], [25.94, "abr. 2014"], [34.6, "may. 2014"], [37.91, "jun. 2014"], [39.85, "jul. 2014"], [37.27, "ago. 2014"], [38.43, "sep. 2014"], [29.47, "oct. 2014"], [29.32, "nov. 2014"], [27.51, "dic. 2014"], [20.66, "ene. 2015"], [32.48, "feb. 2015"], [32.13, "mar. 2015"], [32.19, "abr. 2015"], [28.4, "may. 2015"], [27.44, "jun. 2015"], [55.74, "jul. 2015"], [57.28, "ago. 2015"], [46.99, "sep. 2015"], [72.55, "oct. 2015"], [81.13, "nov. 2015"], [84.19, "dic. 2015"], [76.19, "ene. 2016"], [70.68, "feb. 2016"], [80.34, "mar. 2016"], [69.88, "abr. 2016"], [73.52, "may. 2016"], [60.38, "jun. 2016"], [79.41, "jul. 2016"], [86.32, "ago. 2016"], [88.99, "sep. 2016"], [95.09, "oct. 2016"], [83.42, "nov. 2016"], [90.2, "dic. 2016"], [101.78, "ene. 2017"], [100.06, "feb. 2017"], [97.94, "mar. 2017"], [109.9, "abr. 2017"], [133.88, "may. 2017"], [123.24, "jun. 2017"], [124.28, "jul. 2017"], [119.1, "ago. 2017"], [120.73, "sep. 2017"], [132.75, "oct. 2017"], [147.69, "nov. 2017"], [151.67, "dic. 2017"], [178.35, "ene. 2018"], [169.3, "feb. 2018"], [137.09, "mar. 2018"], [145.66, "abr. 2018"], [155.26, "may. 2018"], [166.69, "jun. 2018"], [202.68, "jul. 2018"], [191.21, "ago. 2018"], [181.11, "sep. 2018"], [148.91, "oct. 2018"], [142.55, "nov. 2018"], [146.73, "dic. 2018"], [154.26, "ene. 2019"], [164.4, "feb. 2019"], [176.02, "mar. 2019"], [205.2, "abr. 2019"], [163.7, "may. 2019"], [154.37, "jun. 2019"], [193.2, "jul. 2019"], [175.77, "ago. 2019"], [193.37, "sep. 2019"], [196.47, "oct. 2019"], [204.61, "nov. 2019"], [216.56, "dic. 2019"], [237.12, "ene. 2020"], [227.4, "feb. 2020"], [173.82, "mar. 2020"], [199.24, "abr. 2020"], [234.42, "may. 2020"], [239.32, "jun. 2020"], [260.12, "jul. 2020"], [278.11, "ago. 2020"], [235.03, "sep. 2020"], [284.5, "oct. 2020"], [306.77, "nov. 2020"], [306.93, "dic. 2020"], [349.25, "ene. 2021"], [390.65, "feb. 2021"], [378.56, "mar. 2021"], [443.9, "abr. 2021"], [456.36, "may. 2021"], [476.88, "jun. 2021"], [531.2, "jul. 2021"], [565.23, "ago. 2021"], [565.02, "sep. 2021"], [547.83, "oct. 2021"], [588.97, "nov. 2021"], [589.5, "dic. 2021"], [515.98, "ene. 2022"], [500.84, "feb. 2022"], [566.69, "mar. 2022"], [479.58, "abr. 2022"], [399.03, "may. 2022"], [455.57, "jun. 2022"], [394.56, "jul. 2022"], [435.39, "ago. 2022"], [364.99, "sep. 2022"], [376.24, "oct. 2022"], [350.2, "nov. 2022"], [321.85, "dic. 2022"], [360.09, "ene. 2023"], [328.02, "feb. 2023"], [396.54, "mar. 2023"], [389.05, "abr. 2023"], [469.34, "may. 2023"], [457.29, "jun. 2023"], [508.76, "jul. 2023"], [511.16, "ago. 2023"], [517.42, "sep. 2023"], [553.68, "oct. 2023"], [552.18, "nov. 2023"], [566.31, "dic. 2023"], [615.19, "ene. 2024"], [547.85, "feb. 2024"], [609.54, "mar. 2024"], [634.64, "abr. 2024"], [724.06, "may. 2024"], [766.64, "jun. 2024"], [687.76, "jul. 2024"], [679.94, "ago. 2024"], [664.26, "sep. 2024"], [666.56, "oct. 2024"], [689.4, "nov. 2024"], [816.55, "dic. 2024"], [803.27, "ene. 2025"], [713.42, "feb. 2025"], [664.02, "mar. 2025"], [656.35, "abr. 2025"], [711.68, "may. 2025"], [740.73, "jun. 2025"], [821.83, "jul. 2025"], [877.07, "ago. 2025"], [1061.01, "sep. 2025"], [1168.05, "oct. 2025"], [1423.15, "nov. 2025"], [1376.38, "dic. 2025"], [1482.34, "ene. 2026"], [1347.52, "feb. 2026"], [1191.92, "mar. 2026"], [1547.19, "abr. 2026"], [1796.02, "may. 2026"], [1737.2, "may. 2026"], [1565.41, "jun. 2026"], [1485.64, "jul. 2026"], [1504.19, "ago. 2026"], [1514.08, "sep. 2026"], [1409.68, "oct. 2026"], [1186.08, "nov. 2026"]]}, {"t": "NVDA", "peak": 0, "pmax": 0.0, "last": -14.1, "pts": [[0.0, "11 nov. 2026"], [-4.34, "12 nov. 2026"], [-6.26, "13 nov. 2026"], [-10.12, "16 nov. 2026"], [-10.52, "17 nov. 2026"], [-13.11, "18 nov. 2026"], [-15.97, "19 nov. 2026"], [-27.74, "20 nov. 2026"], [-5.0, "23 nov. 2026"], [-10.56, "24 nov. 2026"], [-14.06, "25 nov. 2026"]]}];
+      const fx = $("#fx");
+      const mk = (html, cls, style, par) => { const d = document.createElement("div"); if (cls) d.className = cls; if (style) d.style.cssText = style; d.innerHTML = html || ""; (par || fx).appendChild(d); return d; };
+      const sv = (p, tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+      const pct = (v, d = 0) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " %";
+
+      // ---------- title (always on) ----------
+      const title = mk(`<h1>Infidelidades de CEOs<br>y su acción después</h1><p>Del día del escándalo a hoy</p>`, "", "", fx); title.id = "title"; title.style.position = "absolute";
+      tl.fromTo(title, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.05);
+      const date = mk("", "", "", fx); date.id = "date"; date.style.position = "absolute";
+      const foot = mk(`Datos reales: Yahoo Finance, del día de la noticia al 25 nov 2026.<br>Que suba después no significa que sea por eso.`, "", "", fx); foot.id = "foot"; foot.style.position = "absolute";
+      tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.6);
+
+      const SC = [
+        ["bezos", "Jeff Bezos", "amzn", "Amazon", "💔 Se destapa su aventura con Lauren Sánchez", "9 ene. 2019"],
+        ["gates", "Bill Gates", "msft", "Microsoft", "💔 Sale a la luz su relación con una empleada (WSJ)", "16 may. 2021"],
+        ["chey", "Chey Tae-won", "skhynix", "SK hynix · presidente de SK Group", "💔 Admite una aventura y una hija fuera del matrimonio", "29 dic. 2015"],
+        ["brin", "Sergey Brin", "googl", "Google · cofundador", "💔 Se publica su relación con una empleada de Google", "28 ago. 2013"],
+        ["huang", "Jensen Huang", "nvda", "NVIDIA · CEO", "🕵️ Según el NYT, relación con una presunta espía china", "11 nov. 2026"],
+      ];
+      const X0 = 150, X1 = 830, Y0 = 690, Y1 = 1300, T0 = 1.3, LEN = 4.25;
+      const nice = (m) => [25, 50, 100, 200, 500, 1000, 2000, 2500, 5000].find((s) => m / s <= 4.2) || 5000;
+      SC.forEach(([ph, nm, lg, co, ev, evd], k) => {
+        const D = DATA[k], P = D.pts, n = P.length, T = T0 + k * LEN, neg = D.pmax <= 0.01;
+        const lo = Math.min(0, ...P.map((p) => p[0])); const vmax = neg ? 6 : D.pmax * 1.08, vmin = neg ? Math.floor((lo - 4) / 10) * 10 : lo - D.pmax * 0.04;
+        const X = (i) => X0 + (i / (n - 1)) * (X1 - X0), Y = (v) => Y1 - ((v - vmin) / (vmax - vmin)) * (Y1 - Y0);
+        const col = neg ? "#ff4d5e" : "#39e07a";
+        // header
+        const hd = mk(`<img class="ph" src="assets/ph/${ph}.png"><div><div class="nm">${nm}</div><div class="co"><img src="assets/logos/${lg}.png">${co}</div></div>`, "hd ov");
+        const evl = mk(`${ev}<br><span>${evd}</span>`, "ev ov");
+        tl.fromTo([hd, evl], { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.08 }, T);
+        // chart
+        const S = sv(fx, "svg", { class: "ch", viewBox: "0 0 1080 1920" });
+        const step = neg ? 10 : nice(vmax);
+        for (let v = neg ? vmin : 0; v <= vmax; v += step) {
+          sv(S, "line", { x1: X0, x2: X1 + 20, y1: Y(v), y2: Y(v), stroke: v === 0 ? "rgba(255,255,255,.35)" : "rgba(255,255,255,.08)", "stroke-width": v === 0 ? 3 : 2 });
+          const t = sv(S, "text", { x: X0 - 16, y: Y(v) + 9, "text-anchor": "end", fill: "#9a9a9a", "font-size": 26, "font-weight": 700, "font-family": "Inter" }); t.textContent = v === 0 ? "0 %" : pct(v);
+        }
+        sv(S, "line", { x1: X0, x2: X0, y1: Y0 - 30, y2: Y1 + 10, stroke: "rgba(255,255,255,.35)", "stroke-width": 3 });
+        const xl = sv(S, "text", { x: X0, y: Y1 + 50, fill: "#9a9a9a", "font-size": 26, "font-weight": 700, "font-family": "Inter" }); xl.textContent = P[0][1];
+        const glow = sv(S, "path", { d: "", fill: "none", stroke: col, "stroke-width": 14, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: 0.35, style: "filter:blur(10px)" });
+        const line = sv(S, "path", { d: "", fill: "none", stroke: col, "stroke-width": 6, "stroke-linejoin": "round", "stroke-linecap": "round", style: `filter:drop-shadow(0 0 8px ${col})` });
+        const ring = sv(S, "circle", { r: 40, fill: "#000", stroke: col, "stroke-width": 5, style: `filter:drop-shadow(0 0 12px ${col})` });
+        const img = sv(S, "image", { href: `assets/ph/${ph}.png`, width: 74, height: 74 });
+        const vl = sv(S, "text", { "font-size": 46, "font-weight": 900, fill: col, "font-family": "Inter", stroke: "#000", "stroke-width": 10, "paint-order": "stroke", "stroke-linejoin": "round" });
+        const vs = sv(S, "text", { "font-size": 24, "font-weight": 800, fill: "#cfcfcf", "font-family": "Inter", stroke: "#000", "stroke-width": 8, "paint-order": "stroke", "stroke-linejoin": "round" }); vs.textContent = neg ? "desde la noticia" : "desde el escándalo";
+        // peak pin
+        const pk = sv(S, "g", { opacity: 0 });
+        if (!neg) {
+          sv(pk, "circle", { cx: X(D.peak), cy: Y(P[D.peak][0]), r: 10, fill: "#f0d488" });
+          const pt = sv(pk, "text", { x: X(D.peak), y: Y(P[D.peak][0]) - 26, "text-anchor": "middle", "font-size": 28, "font-weight": 900, fill: "#f0d488", "font-family": "Inter" });
+          pt.textContent = "máx. " + pct(D.pmax);
+        }
+        const pr = { k: 0 };
+        const draw = () => {
+          const m = Math.max(1, Math.round(pr.k * (n - 1)));
+          let d = `M${X(0)} ${Y(P[0][0])}`; for (let i = 1; i <= m; i++) d += ` L${X(i).toFixed(1)} ${Y(P[i][0]).toFixed(1)}`;
+          line.setAttribute("d", d); glow.setAttribute("d", d);
+          const hx = X(m), hy = Y(P[m][0]);
+          ring.setAttribute("cx", hx); ring.setAttribute("cy", hy); img.setAttribute("x", hx - 37); img.setAttribute("y", hy - 37);
+          const right = hx < 720;
+          [vl, vs].forEach((e) => { e.setAttribute("text-anchor", right ? "start" : "end"); e.setAttribute("x", right ? hx + 56 : hx - 56); });
+          vl.setAttribute("y", hy - 2); vs.setAttribute("y", hy + 30);
+          vl.textContent = pct(P[m][0], Math.abs(P[m][0]) < 100 ? 1 : 0);
+          date.textContent = P[m][1];
+        };
+        draw();
+        tl.set(S, { opacity: 1 }, T + 0.15);
+        tl.fromTo(S, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, T + 0.15);
+        tl.set(date, { opacity: 1 }, T + 0.15);
+        tl.call(draw, null, T + 0.16);
+        tl.to(pr, { k: 1, duration: 3.1, ease: "none", onUpdate: draw }, T + 0.35);
+        if (!neg) tl.fromTo(pk, { opacity: 0 }, { opacity: 1, duration: 0.25 }, T + 0.35 + 3.1 * (D.peak / (n - 1)));
+        tl.fromTo(vl, { scale: 1 }, { scale: 1.15, duration: 0.18, yoyo: true, repeat: 1, transformOrigin: "50% 50%", immediateRender: false }, T + 3.5);
+        if (k < SC.length - 1) { tl.to([hd, evl, S], { opacity: 0, duration: 0.2 }, T + LEN - 0.2); }
+        else {
+          const q = mk("¿Y AHORA?", "tag ov", `left:${X1 - 140}px;top:${Y0 - 10}px;font-size:44px;background:#ff4d5e;color:#fff;`);
+          tl.fromTo(q, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.5)" }, T + 3.55);
+          tl.to([hd, evl, S, q, date], { opacity: 0, duration: 0.25 }, T + LEN + 0.3);
+        }
+      });
+
+      // ---------- summary ----------
+      const TS = T0 + SC.length * LEN + 0.45;
+      const sh = mk(`<span style="font-size:30px;font-weight:800;letter-spacing:.14em;color:#f0d488">RESUMEN · MÁXIMO TRAS EL ESCÁNDALO</span>`, "ov", "left:0;right:0;text-align:center;top:440px;");
+      tl.fromTo(sh, { opacity: 0 }, { opacity: 1, duration: 0.3 }, TS);
+      SC.forEach(([ph, nm, lg, co], k) => {
+        const D = DATA[k], neg = D.pmax <= 0.01;
+        const r = mk(`<img class="p" src="assets/ph/${ph}.png"><div class="t"><b>${co.split(" · ")[0]}</b><span>${nm}</span></div><div class="v" style="color:${neg ? "#ff4d5e" : "#39e07a"}">${neg ? pct(D.last, 1) + " ?" : pct(D.pmax)}</div>`, "sum ov", `top:${520 + k * 150}px;`);
+        tl.fromTo(r, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, TS + 0.15 + k * 0.18);
+      });
+
+      tl.set({}, {}, DUR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
