@@ -1,16 +1,16 @@
 # Mi Primer Proyecto
 
-Bienvenido a mi primer repositorio en GitHub.
+¡Bienvenido a mi primer repositorio en GitHub!
 
 ## Sobre este proyecto
 
-Este es un proyecto de practica para aprender a usar GitHub y hacer Pull Requests.
+Este es un proyecto de práctica para aprender a usar GitHub y hacer Pull Requests.
 
-## Como usar
+## Cómo usar
 
 1. Clona el repositorio
 2. Explora los archivos
-3. Haz tu primera contribucion
+3. Haz tu primera contribución
 
 ## Autor
 
