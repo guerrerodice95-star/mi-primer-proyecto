@@ -1,0 +1,65 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<style>
+@font-face { font-family: "Inter"; font-weight: 500; src: url(fonts/inter-latin-500-normal.woff2); }
+@font-face { font-family: "Inter"; font-weight: 700; src: url(fonts/inter-latin-700-normal.woff2); }
+@font-face { font-family: "Inter"; font-weight: 800; src: url(fonts/inter-latin-800-normal.woff2); }
+@font-face { font-family: "Inter"; font-weight: 900; src: url(fonts/inter-latin-900-normal.woff2); }
+@font-face { font-family: "Serif"; font-style: italic; src: url(fonts/instrument-serif-latin-400-italic.woff2); }
+:root { --gold:#c9a54c; --hi:#f0d488; --lo:#8a6d2a; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { width: var(--w); height: var(--h); overflow:hidden; background:#0b0a08; font-family:"Inter",sans-serif; color:#fff; }
+#c { position:relative; width:var(--w); height:var(--h); overflow:hidden; padding: var(--pad) 64px 0;
+  background: radial-gradient(900px 600px at 50% 18%, rgba(201,165,76,.20), transparent 70%), radial-gradient(700px 500px at 50% 100%, rgba(201,165,76,.10), transparent 70%), #0b0a08; }
+#c::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(135deg, rgba(201,165,76,.035) 0 2px, transparent 2px 26px); }
+.top { position:relative; display:flex; align-items:center; justify-content:flex-start; gap:18px; }
+.top img { height:64px; }
+.top span { font-size:26px; font-weight:800; letter-spacing:.28em; color:var(--hi); }
+.bf { position:relative; text-align:left; margin-top: var(--g1); line-height:.86; padding-left: 6px; }
+.bf .b { font-size: var(--bfs); font-weight:900; letter-spacing:-.02em; }
+.bf .f { font-size: var(--bfs); font-weight:900; letter-spacing:-.02em; background:linear-gradient(180deg,var(--hi),var(--gold) 55%,var(--lo)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.promo { position:absolute; right: 64px; top: var(--promoTop); transform: rotate(-8deg); padding: 16px 26px; border-radius: 22px; text-align:center;
+  background: linear-gradient(180deg,#ff5a5f,#d6262c); box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 0 40px rgba(229,72,77,.4); }
+.promo small { display:block; font-size:22px; font-weight:800; letter-spacing:.14em; }
+.promo b { display:block; font-size:80px; font-weight:900; line-height:1; letter-spacing:-.02em; }
+.plans { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top: var(--g2); }
+.plan { border-radius:26px; padding:22px 26px; background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02)); border:2px solid rgba(201,165,76,.45); }
+.plan.best { border-color: var(--hi); box-shadow: 0 0 40px rgba(240,212,136,.25); background:linear-gradient(180deg,rgba(240,212,136,.16),rgba(240,212,136,.04)); }
+.plan .n { font-size:24px; font-weight:800; letter-spacing:.16em; color:#bdbdbd; }
+.plan .g { margin-top:6px; font-size:46px; font-weight:900; line-height:1.02; }
+.plan .g em { font-style:normal; color:var(--hi); }
+.plan .d { margin-top:10px; display:inline-block; padding:5px 14px; border-radius:10px; background:#e5484d; font-size:24px; font-weight:900; }
+.plan .d.gold { background:linear-gradient(180deg,var(--hi),var(--gold)); color:#1a1408; }
+h3 { position:relative; margin-top: var(--g3); text-align:center; font-size:24px; font-weight:800; letter-spacing:.22em; color:var(--hi); }
+.grid { position:relative; display:grid; grid-template-columns:1fr 1fr 1fr; gap: var(--gg) 14px; margin-top: 18px; }
+.it { display:flex; align-items:center; gap:10px; padding: var(--ip) 12px; border-radius:18px; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.07); }
+.it i { font-style:normal; font-size:32px; width:38px; text-align:center; flex:none; }
+.it b { display:block; font-size:23px; font-weight:900; line-height:1.1; }
+.it span { display:block; font-size:17px; font-weight:600; color:#a9a9a9; line-height:1.15; }
+.cta { position:absolute; left:64px; right:64px; bottom: var(--ctab); display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.cta .m { font-size:24px; font-weight:700; color:#bdbdbd; } .cta .m b { color:#fff; }
+.cta .bt { padding:20px 36px; border-radius:999px; font-size:34px; font-weight:900; color:#1a1408; background:linear-gradient(180deg,var(--hi),var(--gold)); box-shadow:0 14px 34px rgba(0,0,0,.5), 0 0 40px rgba(201,165,76,.45); }
+</style></head><body><div id="c">
+<div class="top"><img src="logo.png"><span>THE CRYPTONS · GRUPO VIP</span></div>
+<div class="bf"><div class="b">BLACK</div><div class="f">FRIDAY</div></div>
+<div class="promo"><small>HASTA</small><b>−25 %</b></div>
+<div class="plans">
+  <div class="plan best"><div class="n">PLAN TRIMESTRAL</div><div class="g"><em>+1 MES</em><br>GRATIS</div><div class="d gold">4 meses al precio de 3 · −25 %</div></div>
+  <div class="plan"><div class="n">PLAN ANUAL</div><div class="g"><em>+2 MESES</em><br>GRATIS</div><div class="d gold">14 meses al precio de 12</div></div>
+</div>
+<h3>TODO LO QUE INCLUYE</h3>
+<div class="grid">
+  <div class="it"><i>📊</i><div><b>Análisis y noticias</b><span>en exclusiva</span></div></div>
+  <div class="it"><i>🎯</i><div><b>Operaciones profes</b><span>entradas y salidas</span></div></div>
+  <div class="it"><i>🤖</i><div><b>Bot de trading</b><span>exclusivo VIP</span></div></div>
+  <div class="it"><i>🪙</i><div><b>Spot profes</b><span>compras 2026/27</span></div></div>
+  <div class="it"><i>🚀</i><div><b>Memecalls</b><span>a por el x20, x50…</span></div></div>
+  <div class="it"><i>📈</i><div><b>Setups y trades</b><span>comparte tu operativa</span></div></div>
+  <div class="it"><i>🔴</i><div><b>Clases en directo</b><span>5-6 a la semana</span></div></div>
+  <div class="it"><i>💼</i><div><b>Portfolio 2026</b><span>top secret</span></div></div>
+  <div class="it"><i>🔎</i><div><b>Spot alumnos</b><span>nuevas altcoins</span></div></div>
+  <div class="it"><i>📚</i><div><b>Formación inicial</b><span>trading y cripto</span></div></div>
+  <div class="it"><i>💬</i><div><b>Chat-bar</b><span>hablamos de todo</span></div></div>
+  <div class="it"><i>🐸</i><div><b>Memes</b><span>y oportunidades</span></div></div>
+</div>
+<div class="cta"><div class="m">Ya somos <b>323 miembros</b></div><div class="bt">ÚNETE AL VIP 👉</div></div>
+</div></body></html>
